@@ -1,5 +1,8 @@
-using Aramis.Api.Helpers;
+using Aramis.Api.Repository.Application;
+using Aramis.Api.Repository.Interfaces;
 using Aramis.Api.Repository.Models;
+using Aramis.Api.SecurityService.Application;
+using Aramis.Api.SecurityService.Helpers;
 using Aramis.Api.SecurityService.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +11,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
- 
+
 builder.Services.AddControllers();
 IServiceCollection serviceCollection = builder.Services.AddDbContext<AramisbdContext>(Options => Options.UseSqlServer(
     builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -33,8 +36,8 @@ builder.Services.AddAuthentication(x =>
         OnTokenValidated = context =>
         {
             ISecurityService? securityService = context.HttpContext.RequestServices.GetRequiredService<ISecurityService>();
-            string userId =  context.Principal!.Identity!.Name!;
-            SecUser? user = securityService.GetById(userId);
+            string userId = context.Principal!.Identity!.Name!;
+            SecUser? user = securityService.GetUserById(userId);
             if (user == null)
             {
                 // return unauthorized if user no longer exists
@@ -84,9 +87,14 @@ builder.Services.AddSwaggerGen(setup =>
     });
 
 });
+//Area Servicios 
+builder.Services.AddScoped<ISecurityService, SecurityService>();
 
+//Area Repositorios
+builder.Services.AddScoped<IUsersRepository, UsersRepository>();
+builder.Services.AddScoped<ISecurityRepository, SecurityRepository>();
+builder.Services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
 WebApplication? app = builder.Build();
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

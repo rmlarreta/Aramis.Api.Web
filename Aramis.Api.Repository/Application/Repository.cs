@@ -24,26 +24,29 @@ namespace Aramis.Api.Repository.Application
             return _dbSet.Find(id)!;
         }
 
-        public void Delete(string id)
+        public bool Delete(string id)
         {
             TEntity? dataToDelete = _dbSet.Find(id)!;
             _dbSet.Remove(dataToDelete);
+            return Save();
         }
 
-        public void Add(TEntity data)
+        public bool Add(TEntity data)
         {
             _dbSet.Add(data);
+            return Save();
         }
 
-        public void Save()
+        public bool Save()
         {
-            _context.SaveChanges();
+            return _context.SaveChanges() > 0;
         }
 
-        public void Update(TEntity data)
+        public bool Update(TEntity data)
         {
             _dbSet.Attach(data);
             _context.Entry(data).State = EntityState.Modified;
+            return Save();
         }
     }
 }

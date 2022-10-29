@@ -13,19 +13,17 @@ public partial class AramisbdContext : DbContext
     {
     }
 
-    public virtual DbSet<SecAction>? SecActions { get; set; } = null;
+    public virtual DbSet<SecAction> SecActions { get; set; }
 
-    public virtual DbSet<SecModule>? SecModules { get; set; } = null;
+    public virtual DbSet<SecModule> SecModules { get; set; }
 
-    public virtual DbSet<SecModuleAction>? SecModuleActions { get; set; } = null;
+    public virtual DbSet<SecModuleAction> SecModuleActions { get; set; }
 
-    public virtual DbSet<SecRole>? SecRoles { get; set; } = null;
+    public virtual DbSet<SecRole> SecRoles { get; set; }
 
-    public virtual DbSet<SecRoleModuleAction>? SecRoleModuleActions { get; set; } = null;
+    public virtual DbSet<SecRoleModuleAction> SecRoleModuleActions { get; set; }
 
-    public virtual DbSet<SecUser>? SecUsers { get; set; } = null;
-
-
+    public virtual DbSet<SecUser> SecUsers { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<SecAction>(entity =>
@@ -96,9 +94,14 @@ public partial class AramisbdContext : DbContext
         {
             entity.ToTable("Sec_Users");
 
+            entity.HasIndex(e => e.UserName, "KEY_Sec_Users_Name").IsUnique();
+
             entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.EndOfLife).HasColumnType("datetime");
-            entity.Property(e => e.Name)
+            entity.Property(e => e.RealName)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.UserName)
                 .HasMaxLength(50)
                 .IsUnicode(false);
 

@@ -3,11 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aramis.Api.Web", "Aramis.Api.Web.csproj", "{A1AFEEEE-FDCB-4497-9D1D-3AAE55401834}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aramis.Api.Web", "Aramis.Api.Web.csproj", "{A1AFEEEE-FDCB-4497-9D1D-3AAE55401834}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aramis.Api.Repository", "..\Aramis.Api.Repository\Aramis.Api.Repository.csproj", "{8C5913AA-0353-4142-BEF9-F7D821E0A6A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aramis.Api.Repository", "..\Aramis.Api.Repository\Aramis.Api.Repository.csproj", "{8C5913AA-0353-4142-BEF9-F7D821E0A6A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aramis.Api.SecurityService", "..\Aramis.Api.SecurityService\Aramis.Api.SecurityService.csproj", "{356F448A-093D-412A-82CB-0F7EF3AB41FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aramis.Api.SecurityService", "..\Aramis.Api.SecurityService\Aramis.Api.SecurityService.csproj", "{356F448A-093D-412A-82CB-0F7EF3AB41FB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aramis.Api.Commons", "..\Aramis.Api.Commons\Aramis.Api.Commons.csproj", "{244BFE5E-4CBA-4908-84A2-9953016D2B96}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F9153F04-1A4F-4062-9332-F90E6BA1111D}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +34,10 @@ Global
 		{356F448A-093D-412A-82CB-0F7EF3AB41FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{356F448A-093D-412A-82CB-0F7EF3AB41FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{356F448A-093D-412A-82CB-0F7EF3AB41FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{244BFE5E-4CBA-4908-84A2-9953016D2B96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{244BFE5E-4CBA-4908-84A2-9953016D2B96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{244BFE5E-4CBA-4908-84A2-9953016D2B96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{244BFE5E-4CBA-4908-84A2-9953016D2B96}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

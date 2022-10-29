@@ -1,4 +1,4 @@
-namespace Aramis.Api.Helpers
+namespace Aramis.Api.SecurityService.Helpers
 {
     public class AppSettings
     {

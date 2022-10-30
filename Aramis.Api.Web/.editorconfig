@@ -1,4 +1,4 @@
 ﻿[*.cs]
 
 # CS8032: No se puede crear una instancia de analizador Microsoft.EntityFrameworkCore.InternalUsageDiagnosticAnalyzer desde C:\Users\Ricardo\.nuget\packages\microsoft.entityframeworkcore.analyzers\7.0.0-rc.2.22472.11\analyzers\dotnet\cs\Microsoft.EntityFrameworkCore.Analyzers.dll : No se puede cargar el archivo o ensamblado 'Microsoft.CodeAnalysis, Version=4.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35' ni una de sus dependencias. El sistema no puede encontrar el archivo especificado..
-dotnet_diagnostic.CS8032.severity = silent
+dotnet_diagnostic.CS8032.severity = none

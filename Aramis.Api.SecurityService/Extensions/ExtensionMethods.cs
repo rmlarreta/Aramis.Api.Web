@@ -1,4 +1,10 @@
-﻿namespace Aramis.Api.SecurityService.Extensions
+﻿using Aramis.Api.Repository.Models;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+
+namespace Aramis.Api.SecurityService.Extensions
 {
     public static class ExtensionMethods
     {
@@ -53,6 +59,26 @@
                 }
             }
             return true;
+        }
+        public static string GetToken(SecUser user, string secret)
+        {
+            JwtSecurityTokenHandler? tokenHandler = new();
+            byte[]? key = Encoding.ASCII.GetBytes(secret);
+            SecurityTokenDescriptor? tokenDescriptor = new()
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim("UserId", user.Id.ToString()),
+                     new Claim("UserName", user.UserName.ToString()),
+                          new Claim("UserRealName", user.RealName.ToString()),
+                       new Claim(ClaimTypes.Role, user.Role.ToString())
+                }),
+                Expires = DateTime.UtcNow.AddHours(4),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            SecurityToken? token = tokenHandler.CreateToken(tokenDescriptor);
+            string? tokenString = tokenHandler.WriteToken(token);
+            return tokenString;
         }
     }
 }

@@ -4,6 +4,7 @@ namespace Aramis.Api.Repository.Interfaces
 {
     public interface IUsersRepository
     {
+        List<SecUser> GetAll();
         SecUser GetByName(string name);
         SecUser GetById(string id);
         bool Add(SecUser secUser);

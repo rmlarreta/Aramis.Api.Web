@@ -1,5 +1,7 @@
 using Aramis.Api.Repository.Application;
+using Aramis.Api.Repository.Application.Security;
 using Aramis.Api.Repository.Interfaces;
+using Aramis.Api.Repository.Interfaces.Security;
 using Aramis.Api.Repository.Models;
 using Aramis.Api.SecurityService.Application;
 using Aramis.Api.SecurityService.Helpers;
@@ -87,13 +89,18 @@ builder.Services.AddSwaggerGen(setup =>
     });
 
 });
-//Area Servicios 
+#region Services
 builder.Services.AddScoped<ISecurityService, SecurityService>();
+#endregion Services
 
-//Area Repositorios
+#region Repositories
+builder.Services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
-builder.Services.AddScoped<ISecurityRepository, SecurityRepository>();
-builder.Services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IModuleRepository, ModuleRepository>();
+builder.Services.AddScoped<IActionRepository, ActionRepository>();
+#endregion Repositories
+
 WebApplication? app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

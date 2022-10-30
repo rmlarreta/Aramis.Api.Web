@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Aramis.Api.Repository.Application
 {
-    public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
+    public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
     {
         private readonly AramisbdContext _context;
         private readonly DbSet<TEntity> _dbSet;
-        public Repository(AramisbdContext context)
+        public GenericRepository(AramisbdContext context)
         {
             _context = context;
             _dbSet = context.Set<TEntity>();
@@ -30,7 +30,6 @@ namespace Aramis.Api.Repository.Application
             _dbSet.Remove(dataToDelete);
             return Save();
         }
-
         public bool Add(TEntity data)
         {
             _dbSet.Add(data);

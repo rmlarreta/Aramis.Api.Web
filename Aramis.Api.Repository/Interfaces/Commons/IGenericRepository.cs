@@ -1,6 +1,6 @@
 ﻿namespace Aramis.Api.Repository.Interfaces
 {
-    public interface IRepository<TEntity>
+    public interface IGenericRepository<TEntity>
     {
         IEnumerable<TEntity> Get();
         TEntity Get(string id);

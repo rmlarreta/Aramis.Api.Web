@@ -1,11 +1,7 @@
-using Aramis.Api.Repository.Application;
-using Aramis.Api.Repository.Application.Security;
-using Aramis.Api.Repository.Interfaces;
-using Aramis.Api.Repository.Interfaces.Security;
 using Aramis.Api.Repository.Models;
-using Aramis.Api.SecurityService.Application;
+using Aramis.Api.SecurityService.Extensions;
 using Aramis.Api.SecurityService.Helpers;
-using Aramis.Api.SecurityService.Interfaces;
+using Aramis.Api.Web;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -13,14 +9,15 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
 builder.Services.AddControllers();
+
 IServiceCollection serviceCollection = builder.Services.AddDbContext<AramisbdContext>(Options => Options.UseSqlServer(
     builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 // configure strongly typed settings objects
 IConfigurationSection? appSettingsSection = builder.Configuration.GetSection("AppSettings");
-
 builder.Services.Configure<AppSettings>(appSettingsSection);
 
 // configure jwt authentication
@@ -33,21 +30,21 @@ builder.Services.AddAuthentication(x =>
 })
 .AddJwtBearer(x =>
 {
-    x.Events = new JwtBearerEvents
-    {
-        OnTokenValidated = context =>
-        {
-            ISecurityService? securityService = context.HttpContext.RequestServices.GetRequiredService<ISecurityService>();
-            string userId = context.Principal!.Identity!.Name!;
-            SecUser? user = securityService.GetUserById(userId);
-            if (user == null)
-            {
-                // return unauthorized if user no longer exists
-                context.Fail("Unauthorized");
-            }
-            return Task.CompletedTask;
-        }
-    };
+    //x.Events = new JwtBearerEvents
+    //{
+    //    OnTokenValidated = context =>
+    //    {
+    //        ISecurityService? securityService = context.HttpContext.RequestServices.GetRequiredService<ISecurityService>();
+    //        string userId = context.Principal!.Identity!.Name!;
+    //        SecUser? user = securityService.GetUserById(userId);
+    //        if (user == null)
+    //        {
+    //            // return unauthorized if user no longer exists
+    //            context.Fail("Unauthorized");
+    //        }
+    //        return Task.CompletedTask;
+    //    }
+    //};
     x.RequireHttpsMetadata = false;
     x.SaveToken = true;
     x.TokenValidationParameters = new TokenValidationParameters
@@ -58,6 +55,13 @@ builder.Services.AddAuthentication(x =>
         ValidateAudience = false
     };
 });
+
+builder.Services.AddAuthorization(config =>
+{
+    config.AddPolicy(Policies.Admin, Policies.AdminPolicy());
+    config.AddPolicy(Policies.User, Policies.UserPolicy());
+});
+
 
 builder.Services.AddHttpContextAccessor();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -89,17 +93,8 @@ builder.Services.AddSwaggerGen(setup =>
     });
 
 });
-#region Services
-builder.Services.AddScoped<ISecurityService, SecurityService>();
-#endregion Services
 
-#region Repositories
-builder.Services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-builder.Services.AddScoped<IUsersRepository, UsersRepository>();
-builder.Services.AddScoped<IRoleRepository, RoleRepository>();
-builder.Services.AddScoped<IModuleRepository, ModuleRepository>();
-builder.Services.AddScoped<IActionRepository, ActionRepository>();
-#endregion Repositories
+IoC.AddServices(builder.Services);
 
 WebApplication? app = builder.Build();
 // Configure the HTTP request pipeline.

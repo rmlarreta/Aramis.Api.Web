@@ -1,10 +1,11 @@
-﻿using Aramis.Api.Repository.Interfaces;
+﻿using Aramis.Api.Commons.ModelsDto.Security;
+using Aramis.Api.Repository.Interfaces;
 using Aramis.Api.Repository.Interfaces.Security;
 using Aramis.Api.Repository.Models;
 using Aramis.Api.SecurityService.Extensions;
 using Aramis.Api.SecurityService.Helpers;
 using Aramis.Api.SecurityService.Interfaces;
-using Aramis.Api.SecurityService.ModelsDto;
+using AutoMapper;
 using Microsoft.Extensions.Options;
 
 namespace Aramis.Api.SecurityService.Application
@@ -13,11 +14,13 @@ namespace Aramis.Api.SecurityService.Application
     {
         private readonly IUsersRepository _usersRepository;
         private readonly IRoleRepository _rolesRepository;
+        private readonly IMapper _mapper;
         private readonly AppSettings _appSettings;
-        public SecurityService(IUsersRepository usersRepository, IOptions<AppSettings> appSettings, IRoleRepository rolesRepository)
+        public SecurityService(IUsersRepository usersRepository, IOptions<AppSettings> appSettings, IRoleRepository rolesRepository, IMapper mapper)
         {
             _usersRepository = usersRepository;
             _rolesRepository = rolesRepository;
+            _mapper = mapper;
             _appSettings = appSettings.Value;
         }
 
@@ -53,10 +56,13 @@ namespace Aramis.Api.SecurityService.Application
                 // authentication successful
                 UserAuth userAuth = new()
                 {
-                    Role = user.Role!,
-                    UserName = user.RealName,
-                    Token = ExtensionMethods.GetToken(user, _appSettings.Secret!)
+                    Id= user.Id.ToString(),
+                    RealName=user.RealName,
+                    Role = user.RoleNavigation.Name!,
+                    UserName = user.UserName                   
                 };
+                var token = ExtensionMethods.GetToken(userAuth, _appSettings.Secret!);
+                userAuth.Token=token;
 
                 return userAuth;
             }
@@ -64,8 +70,8 @@ namespace Aramis.Api.SecurityService.Application
             {
                 throw new Exception(ex.Message);
             }
-        } 
-        public void ChangePassword(string username, string password, string npassword)
+        }
+        public UserAuth ChangePassword(string username, string password, string npassword)
         {
             try
             {
@@ -73,15 +79,18 @@ namespace Aramis.Api.SecurityService.Application
                 UserAuth? user = Authenticate(username, password);
                 if (user != null) { secUser = _usersRepository.GetByName(username); }
 
-                if (!string.IsNullOrWhiteSpace(npassword))
+                if (string.IsNullOrWhiteSpace(npassword))
                 {
-                    ExtensionMethods.CreatePasswordHash(npassword, out byte[] passwordHash, out byte[] passwordSalt);
-
-                    secUser.PasswordHash = passwordHash;
-                    secUser.PasswordSalt = passwordSalt;
-                    secUser.EndOfLife = DateTime.Today.AddMonths(1);
-                    _usersRepository.Update(secUser);
+                    return null!;
                 }
+
+                ExtensionMethods.CreatePasswordHash(npassword, out byte[] passwordHash, out byte[] passwordSalt);
+
+                secUser.PasswordHash = passwordHash;
+                secUser.PasswordSalt = passwordSalt;
+                secUser.EndOfLife = DateTime.Today.AddMonths(1);
+                _usersRepository.Update(secUser);
+                return Authenticate(username, npassword);
             }
             catch (Exception ex)
             {
@@ -116,21 +125,68 @@ namespace Aramis.Api.SecurityService.Application
             {
                 throw new Exception(ex.Message);
             }
-        } 
-        public void DeleteUser(string id)=>_usersRepository.Delete(GetUserById(id));
-        public IEnumerable<SecUser> GetAllUsers() => _usersRepository.GetAll();
-        public SecUser GetUserById(string id) => _usersRepository.GetById(id);
-        public void UpdateUser(SecUser user)=>_usersRepository.Update(user); 
+        }
+        public void DeleteUser(string id)
+        {
+            _usersRepository.Delete(_usersRepository.GetById(id));
+        }
+        public IEnumerable<UserDto> GetAllUsers()
+        {
+            List<SecUser>? users = _usersRepository.GetAll();
+            return _mapper.Map<List<SecUser>, List<UserDto>>(users);
+        }
+        public UserDto GetUserById(string id)
+        {
+            SecUser? user = _usersRepository.GetById(id);
+            return _mapper.Map<SecUser,UserDto>(user);
+        }
+        public UserDto GetUserByName(string name)
+        {
+            SecUser? user = _usersRepository.GetByName(name);
+            return _mapper.Map<SecUser, UserDto>(user);
+        }
+        public void UpdateUser(UserDto userdto)
+        {
+            var user = _mapper.Map<UserDto,SecUser > (userdto);
+            var userpass = _usersRepository.GetById(userdto.Id.ToString());
+            user.PasswordHash = userpass.PasswordHash;
+            user.PasswordSalt=userpass.PasswordSalt;
+            user.RoleNavigation = null!;
+            _usersRepository.Update(user);
+        }
 
         #endregion USERS
 
         #region ROLES
-        public void DeleteRole(string id) => _rolesRepository.Delete(GetRoleById(id));
-        public IEnumerable<SecRole> GetAllRoles() => _rolesRepository.GetAll();
-        public SecRole GetRoleById(string id) =>_rolesRepository.GetById(id); 
-        public SecRole GetRoleByName(string name)=>_rolesRepository.GetByName(name);     
-        public void UpdateRole(SecRole role) => _rolesRepository.Update(role);
-        public void CreateRole(SecRole role)=>_rolesRepository.Add(role);
+        public void DeleteRole(Guid id)
+        {
+            _rolesRepository.Delete(GetRoleById(id));
+        }
+
+        public IEnumerable<SecRole> GetAllRoles()
+        {
+            return _rolesRepository.GetAll();
+        }
+
+        public SecRole GetRoleById(Guid id)
+        {
+            return _rolesRepository.GetById(id);
+        }
+
+        public SecRole GetRoleByName(string name)
+        {
+            return _rolesRepository.GetByName(name);
+        }
+
+        public void UpdateRole(SecRole role)
+        {
+            _rolesRepository.Update(role);
+        }
+
+        public void CreateRole(SecRole role)
+        {
+            _rolesRepository.Add(role);
+        }
         #endregion ROLES
     }
 }

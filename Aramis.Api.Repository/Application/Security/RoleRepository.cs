@@ -14,9 +14,9 @@ namespace Aramis.Api.Repository.Application.Security
             _context = context;
         }
         public bool Add(SecRole data) => _repository.Add(data);
-        public bool Delete(SecRole data) => _repository.Delete(data.Id.ToString());
+        public bool Delete(SecRole data) => _repository.Delete(data.Id);
         public SecRole GetByName(string name) => _context.SecRoles!.SingleOrDefault(x => x.Name.Equals(name))!;
-        public SecRole GetById(string id) => _repository.Get(id);
+        public SecRole GetById(Guid id) => _repository.Get(id);
         public bool Update(SecRole data) => _repository.Update(data);
         public List<SecRole> GetAll() => (List<SecRole>)_repository.Get();
     }

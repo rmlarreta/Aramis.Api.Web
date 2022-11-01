@@ -19,12 +19,12 @@ namespace Aramis.Api.Repository.Application
             return _dbSet.ToList();
         }
 
-        public TEntity Get(string id)
+        public TEntity Get(Guid id)
         {
             return _dbSet.Find(id)!;
         }
 
-        public bool Delete(string id)
+        public bool Delete(Guid id)
         {
             TEntity? dataToDelete = _dbSet.Find(id)!;
             _dbSet.Remove(dataToDelete);

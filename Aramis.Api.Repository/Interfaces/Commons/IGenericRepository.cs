@@ -3,9 +3,9 @@
     public interface IGenericRepository<TEntity>
     {
         IEnumerable<TEntity> Get();
-        TEntity Get(string id);
+        TEntity Get(Guid id);
         bool Add(TEntity data);
-        bool Delete(string id);
+        bool Delete(Guid id);
         bool Update(TEntity data);
         bool Save();
     }

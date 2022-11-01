@@ -6,7 +6,7 @@ namespace Aramis.Api.Repository.Interfaces.Security
     {
         SecRole GetByName(string name);
         List<SecRole> GetAll();
-        SecRole GetById(string id);
+        SecRole GetById(Guid id);
         bool Add(SecRole secRole);
         bool Update(SecRole secRole);
         bool Delete(SecRole secRole);

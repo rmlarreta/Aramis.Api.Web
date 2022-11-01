@@ -1,5 +1,6 @@
 ﻿using Aramis.Api.Repository.Interfaces;
 using Aramis.Api.Repository.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Aramis.Api.Repository.Application
 {
@@ -13,11 +14,16 @@ namespace Aramis.Api.Repository.Application
             _repository = repository;
         }
 
-        public bool Add(SecUser user)=>_repository.Add(user); 
-        public bool Delete(SecUser secUser)=> _repository.Delete(secUser.Id.ToString()); 
-        public SecUser GetByName(string name)=> _context.SecUsers!.SingleOrDefault(x => x.UserName.Equals(name))!; 
-        public SecUser GetById(string id)=> _repository.Get(id); 
-        public bool Update(SecUser secUser)=> _repository.Update(secUser); 
-        public List<SecUser> GetAll()=> (List<SecUser>)_repository.Get(); 
+        public bool Add(SecUser user) => _repository.Add(user);
+        public bool Delete(SecUser secUser) => _repository.Delete(secUser.Id);
+        public SecUser GetByName(string name) => _context.SecUsers!.Include(x => x.RoleNavigation).SingleOrDefault(x => x.UserName.Equals(name))!;
+        public SecUser GetById(string id) => _context.SecUsers
+                                             .AsNoTracking()
+                                             .Include(x => x.RoleNavigation)
+                                             .Where(x => x.Id.Equals(Guid.Parse(id))).FirstOrDefault()!;
+        public bool Update(SecUser secUser) => _repository.Update(secUser);
+        public List<SecUser> GetAll() => _context.SecUsers
+                                        .Include(x => x.RoleNavigation)
+                                        .ToList();
     }
 }

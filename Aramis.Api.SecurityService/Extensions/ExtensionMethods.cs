@@ -1,4 +1,5 @@
-﻿using Aramis.Api.Repository.Models;
+﻿using Aramis.Api.Commons.ModelsDto.Security;
+using Aramis.Api.Repository.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -24,7 +25,6 @@ namespace Aramis.Api.SecurityService.Extensions
             passwordSalt = hmac.Key;
             passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
         }
-
         public static bool VerifyPasswordHash(string password, byte[] storedHash, byte[] storedSalt)
         {
             if (password == null)
@@ -60,7 +60,7 @@ namespace Aramis.Api.SecurityService.Extensions
             }
             return true;
         }
-        public static string GetToken(SecUser user, string secret)
+        public static string GetToken(UserAuth user, string secret)
         {
             JwtSecurityTokenHandler? tokenHandler = new();
             byte[]? key = Encoding.ASCII.GetBytes(secret);
@@ -68,10 +68,10 @@ namespace Aramis.Api.SecurityService.Extensions
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim("UserId", user.Id.ToString()),
-                     new Claim("UserName", user.UserName.ToString()),
-                          new Claim("UserRealName", user.RealName.ToString()),
-                       new Claim(ClaimTypes.Role, user.Role.ToString())
+                     new Claim("UserId", user.Id!.ToString()),
+                     new Claim("UserName", user.UserName!.ToString()),
+                     new Claim("UserRealName", user.RealName!.ToString()),
+                     new Claim(ClaimTypes.Role, user.Role!.ToString())
                 }),
                 Expires = DateTime.UtcNow.AddHours(4),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)

@@ -158,33 +158,38 @@ namespace Aramis.Api.SecurityService.Application
         #endregion USERS
 
         #region ROLES
-        public void DeleteRole(Guid id)
+        public void DeleteRole(string id)
         {
-            _rolesRepository.Delete(GetRoleById(id));
+            _rolesRepository.Delete(_rolesRepository.GetById(Guid.Parse(id)));
         }
 
-        public IEnumerable<SecRole> GetAllRoles()
+        public IEnumerable<RoleDto> GetAllRoles()
         {
-            return _rolesRepository.GetAll();
+            var roles = _rolesRepository.GetAll();
+            return _mapper.Map<List<SecRole>, List<RoleDto>>(roles);
         }
 
-        public SecRole GetRoleById(Guid id)
+        public RoleDto GetRoleById(string id)
         {
-            return _rolesRepository.GetById(id);
+            var role = _rolesRepository.GetById(Guid.Parse(id));
+            return _mapper.Map<SecRole, RoleDto>(role);
         }
 
-        public SecRole GetRoleByName(string name)
+        public RoleDto GetRoleByName(string name)
         {
-            return _rolesRepository.GetByName(name);
+            var role = _rolesRepository.GetByName(name);
+            return _mapper.Map<SecRole, RoleDto>(role);
         }
 
-        public void UpdateRole(SecRole role)
+        public void UpdateRole(RoleDto roledto)
         {
+            var role = _mapper.Map<RoleDto,SecRole>(roledto);
             _rolesRepository.Update(role);
         }
 
-        public void CreateRole(SecRole role)
+        public void CreateRole(RoleDto roledto)
         {
+            var role = _mapper.Map<RoleDto, SecRole>(roledto);
             _rolesRepository.Add(role);
         }
         #endregion ROLES

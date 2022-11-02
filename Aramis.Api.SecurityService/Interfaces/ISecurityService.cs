@@ -16,11 +16,11 @@ namespace Aramis.Api.SecurityService.Interfaces
         void DeleteUser(string id);
 
         //ROLES
-        IEnumerable<SecRole> GetAllRoles();
-        SecRole GetRoleById(Guid id);
-        SecRole GetRoleByName(string name);
-        void CreateRole(SecRole role);
-        void UpdateRole(SecRole role);
-        void DeleteRole(Guid id); 
+        IEnumerable<RoleDto> GetAllRoles();
+        RoleDto GetRoleById(string id);
+        RoleDto GetRoleByName(string name);
+        void CreateRole(RoleDto role);
+        void UpdateRole(RoleDto role);
+        void DeleteRole(string id); 
     }
 }

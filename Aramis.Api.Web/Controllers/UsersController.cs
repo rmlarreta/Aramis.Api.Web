@@ -10,7 +10,7 @@ namespace Aramis.Api.Web.Controllers
     [Authorize]
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class UsersController : Controller
+    public class UsersController : ControllerBase
     {
         private readonly ISecurityService _securityService;
         public UsersController(ISecurityService securityService)

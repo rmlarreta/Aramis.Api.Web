@@ -1,3 +1,4 @@
+using Aramis.Api.Commons.Helpers;
 using Aramis.Api.Repository.Models;
 using Aramis.Api.SecurityService.Extensions;
 using Aramis.Api.SecurityService.Helpers;
@@ -14,13 +15,11 @@ builder.Services.AddControllers();
 IServiceCollection serviceCollection = builder.Services.AddDbContext<AramisbdContext>(Options => Options.UseSqlServer(
     builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddAutoMapper(typeof(MapperProfile));
 
-// configure strongly typed settings objects
 IConfigurationSection? appSettingsSection = builder.Configuration.GetSection("AppSettings");
 builder.Services.Configure<AppSettings>(appSettingsSection);
 
-// configure jwt authentication
 AppSettings? appSettings = appSettingsSection.Get<AppSettings>();
 byte[]? key = Encoding.ASCII.GetBytes(appSettings.Secret!);
 builder.Services.AddAuthentication(x =>
@@ -29,22 +28,7 @@ builder.Services.AddAuthentication(x =>
     x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 .AddJwtBearer(x =>
-{
-    //x.Events = new JwtBearerEvents
-    //{
-    //    OnTokenValidated = context =>
-    //    {
-    //        ISecurityService? securityService = context.HttpContext.RequestServices.GetRequiredService<ISecurityService>();
-    //        string userId = context.Principal!.Identity!.Name!;
-    //        SecUser? user = securityService.GetUserById(userId);
-    //        if (user == null)
-    //        {
-    //            // return unauthorized if user no longer exists
-    //            context.Fail("Unauthorized");
-    //        }
-    //        return Task.CompletedTask;
-    //    }
-    //};
+{ 
     x.RequireHttpsMetadata = false;
     x.SaveToken = true;
     x.TokenValidationParameters = new TokenValidationParameters
@@ -63,8 +47,7 @@ builder.Services.AddAuthorization(config =>
 });
 
 
-builder.Services.AddHttpContextAccessor();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddHttpContextAccessor(); 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(setup =>
 {
@@ -96,8 +79,7 @@ builder.Services.AddSwaggerGen(setup =>
 
 IoC.AddServices(builder.Services);
 
-WebApplication? app = builder.Build();
-// Configure the HTTP request pipeline.
+WebApplication? app = builder.Build(); 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -109,8 +91,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
-// global cors policy
+ 
 app.UseCors(x => x
     .AllowAnyOrigin()
     .AllowAnyMethod()

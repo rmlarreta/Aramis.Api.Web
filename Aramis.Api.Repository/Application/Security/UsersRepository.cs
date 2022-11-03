@@ -2,7 +2,7 @@
 using Aramis.Api.Repository.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Aramis.Api.Repository.Application
+namespace Aramis.Api.Repository.Application.Security
 {
     public class UsersRepository : IUsersRepository
     {

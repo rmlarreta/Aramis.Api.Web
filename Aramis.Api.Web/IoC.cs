@@ -1,6 +1,11 @@
-﻿using Aramis.Api.Repository.Application;
+﻿using Aramis.Api.CustomersService.Interfaces;
+using Aramis.Api.Repository.Application;
+using Aramis.Api.Repository.Application.Commons;
+using Aramis.Api.Repository.Application.Customers;
 using Aramis.Api.Repository.Application.Security;
 using Aramis.Api.Repository.Interfaces;
+using Aramis.Api.Repository.Interfaces.Commons;
+using Aramis.Api.Repository.Interfaces.Customers;
 using Aramis.Api.Repository.Interfaces.Security; 
 using Aramis.Api.SecurityService.Interfaces; 
 
@@ -14,12 +19,15 @@ namespace Aramis.Api.Web
             #region Services
 
             services.AddScoped<ISecurityService, SecurityService.Application.SecurityService>();
+            services.AddScoped<ICustomersService, CustomersService.Application.CustomersService>();
             #endregion 
 
             #region Repositories
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IUsersRepository, UsersRepository>();
-            services.AddScoped<IRoleRepository, RoleRepository>(); 
+            services.AddScoped<IRoleRepository, RoleRepository>();
+            services.AddScoped<ICustomersRepository, CustomersRepository>();
+            services.AddScoped<ICustomersAttributesRepository, CustomersAttributesRepository>();
             #endregion Repositories
         }
     }

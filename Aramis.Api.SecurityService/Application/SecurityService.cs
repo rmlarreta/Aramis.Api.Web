@@ -56,13 +56,13 @@ namespace Aramis.Api.SecurityService.Application
                 // authentication successful
                 UserAuth userAuth = new()
                 {
-                    Id= user.Id.ToString(),
-                    RealName=user.RealName,
+                    Id = user.Id.ToString(),
+                    RealName = user.RealName,
                     Role = user.RoleNavigation.Name!,
-                    UserName = user.UserName                   
+                    UserName = user.UserName
                 };
                 var token = ExtensionMethods.GetToken(userAuth, _appSettings.Secret!);
-                userAuth.Token=token;
+                userAuth.Token = token;
 
                 return userAuth;
             }
@@ -138,7 +138,7 @@ namespace Aramis.Api.SecurityService.Application
         public UserDto GetUserById(string id)
         {
             SecUser? user = _usersRepository.GetById(id);
-            return _mapper.Map<SecUser,UserDto>(user);
+            return _mapper.Map<SecUser, UserDto>(user);
         }
         public UserDto GetUserByName(string name)
         {
@@ -147,10 +147,10 @@ namespace Aramis.Api.SecurityService.Application
         }
         public void UpdateUser(UserDto userdto)
         {
-            var user = _mapper.Map<UserDto,SecUser > (userdto);
+            var user = _mapper.Map<UserDto, SecUser>(userdto);
             var userpass = _usersRepository.GetById(userdto.Id.ToString());
             user.PasswordHash = userpass.PasswordHash;
-            user.PasswordSalt=userpass.PasswordSalt;
+            user.PasswordSalt = userpass.PasswordSalt;
             user.RoleNavigation = null!;
             _usersRepository.Update(user);
         }
@@ -183,7 +183,7 @@ namespace Aramis.Api.SecurityService.Application
 
         public void UpdateRole(RoleDto roledto)
         {
-            var role = _mapper.Map<RoleDto,SecRole>(roledto);
+            var role = _mapper.Map<RoleDto, SecRole>(roledto);
             _rolesRepository.Update(role);
         }
 

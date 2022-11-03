@@ -28,7 +28,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
             }
         }
 
@@ -42,7 +42,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
             }
         }
 
@@ -56,7 +56,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
             }
         }
 
@@ -70,7 +70,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
             }
         }
 
@@ -84,7 +84,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
             }
         }
 
@@ -98,12 +98,8 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
-            }
-
-        }
-
-
-
+                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+            } 
+        } 
     }
 }

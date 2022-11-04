@@ -1,6 +1,6 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Customers;
 using Aramis.Api.CustomersService.Interfaces;
-using Aramis.Api.Repository.Interfaces.Commons;
+using Aramis.Api.Repository.Interfaces.Customers;
 using Aramis.Api.Repository.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

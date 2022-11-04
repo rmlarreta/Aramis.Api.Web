@@ -23,6 +23,10 @@ public partial class OpCliente
 
     public string? Mail { get; set; }
 
+    public virtual ICollection<BusOperacion> BusOperacions { get; } = new List<BusOperacion>();
+
+    public virtual ICollection<CobRecibo> CobRecibos { get; } = new List<CobRecibo>();
+
     public virtual OpGender GenderNavigation { get; set; } = null!;
 
     public virtual OpPai PaisNavigation { get; set; } = null!;

@@ -1,5 +1,6 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Customers;
 using Aramis.Api.Commons.ModelsDto.Security;
+using Aramis.Api.Commons.ModelsDto.Stock;
 using Aramis.Api.Repository.Models;
 using AutoMapper;
 
@@ -21,7 +22,15 @@ namespace Aramis.Api.Commons.Helpers
             .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.RoleNavigation.Name))
             .ReverseMap();
 
-            CreateMap<SecRole, RoleDto>().ReverseMap(); 
+            CreateMap<SecRole, RoleDto>().ReverseMap();
+
+            CreateMap<StockProduct, StockProductDto>()
+          .ForMember(dest => dest.RubroName, opt => opt.MapFrom(src => src.RubroNavigation.Name))
+          .ForMember(dest => dest.IvaValue, opt => opt.MapFrom(src => src.IvaNavigation.Value))
+          .ReverseMap();
+
+            CreateMap<StockProduct, StockProductInsert>() 
+          .ReverseMap();
 
         }
     }

@@ -1,6 +1,6 @@
 ﻿using Aramis.Api.Repository.Models;
 
-namespace Aramis.Api.Repository.Interfaces.Commons
+namespace Aramis.Api.Repository.Interfaces.Customers
 {
     public interface ICustomersAttributesRepository
     {

@@ -1,8 +1,8 @@
 ﻿using Aramis.Api.Repository.Interfaces;
-using Aramis.Api.Repository.Interfaces.Commons;
+using Aramis.Api.Repository.Interfaces.Customers;
 using Aramis.Api.Repository.Models; 
 
-namespace Aramis.Api.Repository.Application.Commons
+namespace Aramis.Api.Repository.Application.Customers
 {
     public class CustomersAttributesRepository : ICustomersAttributesRepository
     {

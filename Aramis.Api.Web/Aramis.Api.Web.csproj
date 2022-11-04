@@ -16,6 +16,7 @@
     <ProjectReference Include="..\Aramis.Api.Commons\Aramis.Api.Commons.csproj" />
     <ProjectReference Include="..\Aramis.Api.CustomersService\Aramis.Api.CustomersService.csproj" />
     <ProjectReference Include="..\Aramis.Api.SecurityService\Aramis.Api.SecurityService.csproj" />
+    <ProjectReference Include="..\Aramis.Api.StockService\Aramis.Api.StockService.csproj" />
   </ItemGroup>
 
 </Project>

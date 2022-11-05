@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Aramis.Api.Repository.Models;
+﻿namespace Aramis.Api.Repository.Models;
 
 public partial class StockProduct
 {
@@ -17,13 +14,15 @@ public partial class StockProduct
 
     public Guid Iva { get; set; }
 
-    public decimal Costo { get; set; }
+    public decimal Neto { get; set; }
 
     public decimal Internos { get; set; }
 
     public decimal Tasa { get; set; }
 
     public bool Servicio { get; set; }
+
+    public virtual ICollection<BusOperacionDetalle> BusOperacionDetalles { get; } = new List<BusOperacionDetalle>();
 
     public virtual StockIva IvaNavigation { get; set; } = null!;
 

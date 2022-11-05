@@ -1,6 +1,6 @@
 ﻿using Aramis.Api.Repository.Interfaces;
 using Aramis.Api.Repository.Interfaces.Customers;
-using Aramis.Api.Repository.Models; 
+using Aramis.Api.Repository.Models;
 
 namespace Aramis.Api.Repository.Application.Customers
 {
@@ -22,7 +22,7 @@ namespace Aramis.Api.Repository.Application.Customers
 
         public List<OpGender> GetGenderList()
         {
-            return  _genderRepository.Get().ToList();
+            return _genderRepository.Get().ToList();
         }
 
         public OpPai GetPais(string id)
@@ -37,7 +37,7 @@ namespace Aramis.Api.Repository.Application.Customers
 
         public OpResp GetResp(string id)
         {
-           return _respRepository.Get(Guid.Parse(id));
+            return _respRepository.Get(Guid.Parse(id));
         }
 
         public List<OpResp> GetRespList()

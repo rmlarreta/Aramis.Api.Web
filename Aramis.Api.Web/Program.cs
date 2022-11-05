@@ -28,7 +28,7 @@ builder.Services.AddAuthentication(x =>
     x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 .AddJwtBearer(x =>
-{ 
+{
     x.RequireHttpsMetadata = false;
     x.SaveToken = true;
     x.TokenValidationParameters = new TokenValidationParameters
@@ -47,7 +47,7 @@ builder.Services.AddAuthorization(config =>
 });
 
 
-builder.Services.AddHttpContextAccessor(); 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(setup =>
 {
@@ -79,7 +79,7 @@ builder.Services.AddSwaggerGen(setup =>
 
 IoC.AddServices(builder.Services);
 
-WebApplication? app = builder.Build(); 
+WebApplication? app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -91,7 +91,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
- 
+
 app.UseCors(x => x
     .AllowAnyOrigin()
     .AllowAnyMethod()

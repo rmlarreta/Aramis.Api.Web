@@ -1,5 +1,4 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Security;
-using Aramis.Api.Repository.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -79,6 +78,28 @@ namespace Aramis.Api.SecurityService.Extensions
             SecurityToken? token = tokenHandler.CreateToken(tokenDescriptor);
             string? tokenString = tokenHandler.WriteToken(token);
             return tokenString;
+        }
+
+        public static string GetUserName(this ClaimsPrincipal user)
+        {
+            if (!user.Identity!.IsAuthenticated)
+            {
+                return null!;
+            }
+
+            ClaimsPrincipal currentUser = user;
+            return currentUser.FindFirst("UserName")!.Value;
+        }
+
+        public static string GetUserPerfil(this ClaimsPrincipal user)
+        {
+            if (!user.Identity!.IsAuthenticated)
+            {
+                return null!;
+            }
+
+            ClaimsPrincipal currentUser = user;
+            return currentUser.FindFirst(ClaimTypes.Role)!.Value;
         }
     }
 }

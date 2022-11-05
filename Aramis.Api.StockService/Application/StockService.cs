@@ -17,13 +17,13 @@ namespace Aramis.Api.StockService.Application
         }
         public bool Delete(string id)
         {
-        return  _stockRepository.Delete(id);
+            return _stockRepository.Delete(id);
         }
 
         public StockProductDto GetById(string id)
-        { 
-          var product= _stockRepository.GetProduct(id);
-            return _mapper.Map<StockProduct,StockProductDto>(product);
+        {
+            StockProduct? product = _stockRepository.GetProduct(id);
+            return _mapper.Map<StockProduct, StockProductDto>(product);
         }
 
         public StockIva GetIva(string id)
@@ -38,7 +38,7 @@ namespace Aramis.Api.StockService.Application
 
         public List<StockProductDto> GetList()
         {
-            var products = _stockRepository.GetProducts().ToList();
+            List<StockProduct>? products = _stockRepository.GetProducts().ToList();
             return _mapper.Map<List<StockProduct>, List<StockProductDto>>(products);
         }
 
@@ -52,9 +52,10 @@ namespace Aramis.Api.StockService.Application
             return _stockRepository.GetRubroList().ToList();
         }
 
-        public bool Insert(StockProductInsert product)
+        public StockProductDto Insert(StockProductInsert product)
         {
-          return _stockRepository.Insert(_mapper.Map<StockProductInsert, StockProduct>(product));
+            _stockRepository.Insert(_mapper.Map<StockProductInsert, StockProduct>(product));
+            return GetById(product.Id.ToString());
         }
 
         public bool InsertRubro(StockRubro rubro)
@@ -62,9 +63,10 @@ namespace Aramis.Api.StockService.Application
             return _stockRepository.InsertRubro(rubro);
         }
 
-        public bool Update(StockProductInsert product)
+        public StockProductDto Update(StockProductInsert product)
         {
-          return _stockRepository.Update(_mapper.Map<StockProductInsert, StockProduct>(product));
+            _stockRepository.Update(_mapper.Map<StockProductInsert, StockProduct>(product));
+            return GetById(product.Id.ToString());
         }
 
         public bool UpdateRubro(StockRubro rubro)

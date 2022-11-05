@@ -1,5 +1,5 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Security;
-using Aramis.Api.Repository.Models; 
+using Aramis.Api.Repository.Models;
 
 namespace Aramis.Api.SecurityService.Interfaces
 {
@@ -11,8 +11,8 @@ namespace Aramis.Api.SecurityService.Interfaces
         IEnumerable<UserDto> GetAllUsers();
         UserDto GetUserById(string id);
         UserDto GetUserByName(string name);
-        void CreateUser(SecUser user, string password);
-        void UpdateUser(UserDto user);
+        UserDto CreateUser(SecUser user, string password);
+        UserDto UpdateUser(UserDto user);
         void DeleteUser(string id);
 
         //ROLES
@@ -21,6 +21,10 @@ namespace Aramis.Api.SecurityService.Interfaces
         RoleDto GetRoleByName(string name);
         void CreateRole(RoleDto role);
         void UpdateRole(RoleDto role);
-        void DeleteRole(string id); 
+        void DeleteRole(string id);
+
+        //CLAIMS
+        public string GetUserAuthenticated();
+        public string GetPerfilAuthenticated();
     }
 }

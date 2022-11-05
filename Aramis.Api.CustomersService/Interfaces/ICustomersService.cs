@@ -7,7 +7,7 @@ namespace Aramis.Api.CustomersService.Interfaces
         List<OpClienteDto> GetAll();
         OpClienteDto GetById(string id);
         bool Delete(string id);
-        bool Update(OpClienteInsert entity);
-        bool Insert(OpClienteInsert entity);
+        OpClienteDto Update(OpClienteInsert entity);
+        OpClienteDto Insert(OpClienteInsert entity);
     }
 }

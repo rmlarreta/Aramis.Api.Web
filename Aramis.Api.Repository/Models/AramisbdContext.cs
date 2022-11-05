@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Aramis.Api.Repository.Models;
 
@@ -54,6 +52,11 @@ public partial class AramisbdContext : DbContext
     public virtual DbSet<StockProduct> StockProducts { get; set; }
 
     public virtual DbSet<StockRubro> StockRubros { get; set; }
+
+    public virtual DbSet<SystemEmpresa> SystemEmpresas { get; set; }
+
+    public virtual DbSet<SystemIndex> SystemIndices { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<BusEstado>(entity =>
@@ -111,15 +114,29 @@ public partial class AramisbdContext : DbContext
 
             entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Cantidad).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.Codigo)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Detalle)
+                .HasMaxLength(50)
+                .IsUnicode(false);
             entity.Property(e => e.Facturado).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.Internos).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.Iva).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.Neto).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.IvaValue).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.Rubro)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Unitario).HasColumnType("decimal(18, 2)");
 
             entity.HasOne(d => d.Operacion).WithMany(p => p.BusOperacionDetalles)
                 .HasForeignKey(d => d.OperacionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Bus_Operacion_Detalle_OperacionId");
+
+            entity.HasOne(d => d.Producto).WithMany(p => p.BusOperacionDetalles)
+                .HasForeignKey(d => d.ProductoId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Bus_Operacion_Detalle_ProductoId");
         });
 
         modelBuilder.Entity<BusOperacionObservacion>(entity =>
@@ -400,11 +417,11 @@ public partial class AramisbdContext : DbContext
 
             entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Cantidad).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.Costo).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.Descripcion)
                 .HasMaxLength(100)
                 .IsUnicode(false);
             entity.Property(e => e.Internos).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.Neto).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.Plu)
                 .HasMaxLength(50)
                 .IsUnicode(false);
@@ -433,6 +450,42 @@ public partial class AramisbdContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<SystemEmpresa>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_System_Empresa_Id");
+
+            entity.ToTable("System_Empresa");
+
+            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Cuit)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Domicilio)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Fantasia)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Iibb)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("IIBB");
+            entity.Property(e => e.Inicio).HasColumnType("date");
+            entity.Property(e => e.Razon)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Respo)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<SystemIndex>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("System_Index");
         });
 
         OnModelCreatingPartial(modelBuilder);

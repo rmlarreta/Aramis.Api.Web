@@ -1,5 +1,4 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Security;
-using Aramis.Api.Repository.Models;
 using Aramis.Api.SecurityService.Extensions;
 using Aramis.Api.SecurityService.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -23,7 +22,7 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                var data = _securityService.GetAllRoles();
+                IEnumerable<RoleDto>? data = _securityService.GetAllRoles();
                 return Ok(data);
             }
             catch (Exception ex)
@@ -37,7 +36,7 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                var data = _securityService.GetRoleById(id);
+                RoleDto? data = _securityService.GetRoleById(id);
                 return Ok(data);
             }
             catch (Exception ex)
@@ -51,7 +50,7 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                var data = _securityService.GetRoleByName(name);
+                RoleDto? data = _securityService.GetRoleByName(name);
                 return Ok(data);
             }
             catch (Exception ex)
@@ -74,7 +73,7 @@ namespace Aramis.Api.Web.Controllers
             }
         }
 
-        [HttpPatch] 
+        [HttpPatch]
         public IActionResult Update([FromBody] RoleDto roleDto)
         {
             try
@@ -99,7 +98,7 @@ namespace Aramis.Api.Web.Controllers
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
-            } 
-        } 
+            }
+        }
     }
 }

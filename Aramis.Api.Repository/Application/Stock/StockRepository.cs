@@ -1,17 +1,17 @@
 ﻿using Aramis.Api.Repository.Interfaces;
 using Aramis.Api.Repository.Interfaces.Stock;
-using Microsoft.EntityFrameworkCore;
 using Aramis.Api.Repository.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Aramis.Api.Repository.Application.Stock
-{ 
-    public class StockRepository : IStockRepository 
+{
+    public class StockRepository : IStockRepository
     {
         private readonly IGenericRepository<StockProduct> _repository;
         private readonly IGenericRepository<StockRubro> _rubrosRepository;
         private readonly IGenericRepository<StockIva> _ivaRepository;
         private readonly AramisbdContext _context;
-        public StockRepository(IGenericRepository<StockProduct> repository,IGenericRepository<StockRubro> rubrosRepository,IGenericRepository<StockIva> ivaRepository, AramisbdContext context)
+        public StockRepository(IGenericRepository<StockProduct> repository, IGenericRepository<StockRubro> rubrosRepository, IGenericRepository<StockIva> ivaRepository, AramisbdContext context)
         {
             _repository = repository;
             _rubrosRepository = rubrosRepository;
@@ -28,7 +28,7 @@ namespace Aramis.Api.Repository.Application.Stock
         {
             return _repository.Delete(Guid.Parse(id));
         }
-         
+
         public bool Update(StockProduct data)
         {
             return _repository.Update(data);

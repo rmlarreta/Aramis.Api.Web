@@ -9,12 +9,12 @@ namespace Aramis.Api.Web.Controllers
     [Authorize]
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class StockController : ControllerBase   
+    public class StockController : ControllerBase
     {
         private readonly IStockService _stockService;
         public StockController(IStockService stockService)
         {
-            _stockService=stockService;
+            _stockService = stockService;
         }
 
         [HttpGet]
@@ -23,7 +23,7 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                var data = _stockService.GetList();
+                List<StockProductDto>? data = _stockService.GetList();
                 return Ok(data);
             }
             catch (Exception ex)
@@ -32,12 +32,12 @@ namespace Aramis.Api.Web.Controllers
             }
         }
 
-        [HttpGet] 
+        [HttpGet]
         public IActionResult ProductById(string id)
         {
             try
             {
-                var data = _stockService.GetById(id);
+                StockProductDto? data = _stockService.GetById(id);
                 return Ok(data);
             }
             catch (Exception ex)
@@ -51,8 +51,8 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                _stockService.Insert(productDto);
-                return Ok("Producto Creado Correctamente");
+                StockProductDto? data = _stockService.Insert(productDto);
+                return Ok(data);
             }
             catch (Exception ex)
             {
@@ -65,8 +65,8 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                _stockService.Update(productDto);
-                return Ok("Producto Modificado Correctamente");
+                StockProductDto? data = _stockService.Update(productDto);
+                return Ok(data);
             }
             catch (Exception ex)
             {
@@ -93,7 +93,7 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                var data = _stockService.GetRubro(id);
+                StockRubro? data = _stockService.GetRubro(id);
                 return Ok(data);
             }
             catch (Exception ex)
@@ -107,7 +107,7 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                var data = _stockService.GetRubroList();
+                List<StockRubro>? data = _stockService.GetRubroList();
                 return Ok(data);
             }
             catch (Exception ex)
@@ -128,7 +128,7 @@ namespace Aramis.Api.Web.Controllers
             {
                 return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
             }
-        } 
+        }
 
         [HttpPatch]
         public IActionResult RubroUpdate([FromBody] StockRubro rubro)
@@ -149,7 +149,7 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                var data = _stockService.GetIvaList();
+                List<StockIva>? data = _stockService.GetIvaList();
                 return Ok(data);
             }
             catch (Exception ex)
@@ -163,7 +163,7 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                var data = _stockService.GetIva(id);
+                StockIva? data = _stockService.GetIva(id);
                 return Ok(data);
             }
             catch (Exception ex)

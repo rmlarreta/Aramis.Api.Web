@@ -6,7 +6,9 @@ using Aramis.Api.SecurityService.Extensions;
 using Aramis.Api.SecurityService.Helpers;
 using Aramis.Api.SecurityService.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using System.Security.Claims;
 
 namespace Aramis.Api.SecurityService.Application
 {
@@ -16,12 +18,16 @@ namespace Aramis.Api.SecurityService.Application
         private readonly IRoleRepository _rolesRepository;
         private readonly IMapper _mapper;
         private readonly AppSettings _appSettings;
-        public SecurityService(IUsersRepository usersRepository, IOptions<AppSettings> appSettings, IRoleRepository rolesRepository, IMapper mapper)
+        private readonly HttpContext _hcontext;
+        private readonly ClaimsPrincipal _cp;
+        public SecurityService(IUsersRepository usersRepository, IOptions<AppSettings> appSettings, IRoleRepository rolesRepository, IMapper mapper, IHttpContextAccessor haccess)
         {
             _usersRepository = usersRepository;
             _rolesRepository = rolesRepository;
             _mapper = mapper;
             _appSettings = appSettings.Value;
+            _hcontext = haccess.HttpContext!;
+            _cp = _hcontext.User;
         }
 
         #region USERS
@@ -61,7 +67,7 @@ namespace Aramis.Api.SecurityService.Application
                     Role = user.RoleNavigation.Name!,
                     UserName = user.UserName
                 };
-                var token = ExtensionMethods.GetToken(userAuth, _appSettings.Secret!);
+                string? token = ExtensionMethods.GetToken(userAuth, _appSettings.Secret!);
                 userAuth.Token = token;
 
                 return userAuth;
@@ -97,7 +103,7 @@ namespace Aramis.Api.SecurityService.Application
                 throw new Exception(ex.Message);
             }
         }
-        public void CreateUser(SecUser user, string password)
+        public UserDto CreateUser(SecUser user, string password)
         {
             try
             {
@@ -120,6 +126,7 @@ namespace Aramis.Api.SecurityService.Application
                 user.Active = false;
                 user.Role = _rolesRepository.GetByName("User").Id;
                 _usersRepository.Add(user);
+                return GetUserById(user.Id.ToString());
             }
             catch (Exception ex)
             {
@@ -145,18 +152,36 @@ namespace Aramis.Api.SecurityService.Application
             SecUser? user = _usersRepository.GetByName(name);
             return _mapper.Map<SecUser, UserDto>(user);
         }
-        public void UpdateUser(UserDto userdto)
+        public UserDto UpdateUser(UserDto userdto)
         {
-            var user = _mapper.Map<UserDto, SecUser>(userdto);
-            var userpass = _usersRepository.GetById(userdto.Id.ToString());
+            SecUser? user = _mapper.Map<UserDto, SecUser>(userdto);
+            SecUser? userpass = _usersRepository.GetById(userdto.Id.ToString());
             user.PasswordHash = userpass.PasswordHash;
             user.PasswordSalt = userpass.PasswordSalt;
             user.RoleNavigation = null!;
             _usersRepository.Update(user);
+            return GetUserById(user.Id.ToString());
         }
 
         #endregion USERS
+        #region Claims
+        public string GetUserAuthenticated()
+        {
+            string? user = ExtensionMethods.GetUserName(_cp);
+            if (user == null)
+            {
+                return null!;
+            }
 
+            return user;
+        }
+
+        public string GetPerfilAuthenticated()
+        {
+            string? perfil = ExtensionMethods.GetUserPerfil(_cp);
+            return perfil;
+        }
+        #endregion Claims
         #region ROLES
         public void DeleteRole(string id)
         {
@@ -165,31 +190,31 @@ namespace Aramis.Api.SecurityService.Application
 
         public IEnumerable<RoleDto> GetAllRoles()
         {
-            var roles = _rolesRepository.GetAll();
+            List<SecRole>? roles = _rolesRepository.GetAll();
             return _mapper.Map<List<SecRole>, List<RoleDto>>(roles);
         }
 
         public RoleDto GetRoleById(string id)
         {
-            var role = _rolesRepository.GetById(Guid.Parse(id));
+            SecRole? role = _rolesRepository.GetById(Guid.Parse(id));
             return _mapper.Map<SecRole, RoleDto>(role);
         }
 
         public RoleDto GetRoleByName(string name)
         {
-            var role = _rolesRepository.GetByName(name);
+            SecRole? role = _rolesRepository.GetByName(name);
             return _mapper.Map<SecRole, RoleDto>(role);
         }
 
         public void UpdateRole(RoleDto roledto)
         {
-            var role = _mapper.Map<RoleDto, SecRole>(roledto);
+            SecRole? role = _mapper.Map<RoleDto, SecRole>(roledto);
             _rolesRepository.Update(role);
         }
 
         public void CreateRole(RoleDto roledto)
         {
-            var role = _mapper.Map<RoleDto, SecRole>(roledto);
+            SecRole? role = _mapper.Map<RoleDto, SecRole>(roledto);
             _rolesRepository.Add(role);
         }
         #endregion ROLES

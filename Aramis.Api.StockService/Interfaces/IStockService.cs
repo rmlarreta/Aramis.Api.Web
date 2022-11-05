@@ -5,9 +5,9 @@ namespace Aramis.Api.StockService.Interfaces
 {
     public interface IStockService
     {
-        bool Insert(StockProductInsert product);
+        StockProductDto Insert(StockProductInsert product);
         bool Delete(string id);
-        bool Update(StockProductInsert product);
+        StockProductDto Update(StockProductInsert product);
         StockProductDto GetById(string id);
         List<StockProductDto> GetList();
 

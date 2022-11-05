@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Aramis.Api.Repository.Models;
+﻿namespace Aramis.Api.Repository.Models;
 
 public partial class BusOperacionDetalle
 {
@@ -11,13 +8,23 @@ public partial class BusOperacionDetalle
 
     public decimal Cantidad { get; set; }
 
-    public decimal Neto { get; set; }
+    public Guid ProductoId { get; set; }
+
+    public string Codigo { get; set; } = null!;
+
+    public string Detalle { get; set; } = null!;
+
+    public string Rubro { get; set; } = null!;
+
+    public decimal Unitario { get; set; }
+
+    public decimal IvaValue { get; set; }
 
     public decimal Internos { get; set; }
-
-    public decimal Iva { get; set; }
 
     public decimal Facturado { get; set; }
 
     public virtual BusOperacion Operacion { get; set; } = null!;
+
+    public virtual StockProduct Producto { get; set; } = null!;
 }

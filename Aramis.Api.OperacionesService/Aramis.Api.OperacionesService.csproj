@@ -7,13 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="6.0.10" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Aramis.Api.Commons\Aramis.Api.Commons.csproj" />
-    <ProjectReference Include="..\Aramis.Api.Repository\Aramis.Api.Repository.csproj" />
   </ItemGroup>
 
 </Project>

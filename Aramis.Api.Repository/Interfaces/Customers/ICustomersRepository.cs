@@ -8,6 +8,6 @@ namespace Aramis.Api.Repository.Interfaces.Customers
         OpCliente Get(string id);
         bool Add(OpCliente opCliente);
         bool Update(OpCliente opCliente);
-        bool Delete(OpCliente opCliente);  
+        bool Delete(OpCliente opCliente);
     }
 }

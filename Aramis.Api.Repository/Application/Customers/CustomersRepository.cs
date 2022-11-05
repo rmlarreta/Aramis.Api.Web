@@ -28,7 +28,7 @@ namespace Aramis.Api.Repository.Application.Customers
                     .AsNoTracking()
                     .Include(x => x.GenderNavigation)
                     .Include(x => x.RespNavigation)
-                    .Include(x=> x.PaisNavigation)
+                    .Include(x => x.PaisNavigation)
                     .Where(x => x.Id.Equals(Guid.Parse(id))).SingleOrDefault()!;
         }
         public List<OpCliente> GetAll()
@@ -37,7 +37,7 @@ namespace Aramis.Api.Repository.Application.Customers
                    .Include(x => x.GenderNavigation)
                    .Include(x => x.RespNavigation)
                    .Include(x => x.PaisNavigation)
-                   .OrderBy(x=>x.Cui)
+                   .OrderBy(x => x.Cui)
                    .ToList()!;
         }
         public bool Update(OpCliente opCliente)

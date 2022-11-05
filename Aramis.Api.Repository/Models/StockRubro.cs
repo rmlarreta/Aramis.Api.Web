@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Aramis.Api.Repository.Models;
+﻿namespace Aramis.Api.Repository.Models;
 
 public partial class StockRubro
 {

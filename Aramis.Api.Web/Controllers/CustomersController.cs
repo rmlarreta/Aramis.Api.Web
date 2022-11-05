@@ -14,10 +14,10 @@ namespace Aramis.Api.Web.Controllers
     {
         private readonly ICustomersService _customersService;
         private readonly ICustomersAttributesRepository _customersAttributesRepository;
-        public CustomersController(ICustomersService customersService,ICustomersAttributesRepository customersAttributesRepository)
+        public CustomersController(ICustomersService customersService, ICustomersAttributesRepository customersAttributesRepository)
         {
             _customersService = customersService;
-            _customersAttributesRepository = customersAttributesRepository; 
+            _customersAttributesRepository = customersAttributesRepository;
         }
 
         [HttpPost]
@@ -25,12 +25,12 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                _customersService.Insert(opclientedto);
-                return Ok("Cliente Creado Correctamente");
+                OpClienteDto data = _customersService.Insert(opclientedto);
+                return Ok(data);
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.InnerException!.Message.Any()?ex.InnerException.Message:ex.Message });
+                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
             }
         }
 
@@ -39,8 +39,8 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                _customersService.Update(opclientedto);
-                return Ok("CLiente Actualizado Correctamente");
+                OpClienteDto data = _customersService.Update(opclientedto);
+                return Ok(data);
             }
             catch (Exception ex)
             {

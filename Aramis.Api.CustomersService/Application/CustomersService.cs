@@ -1,18 +1,18 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Customers;
 using Aramis.Api.CustomersService.Extensions;
-using Aramis.Api.CustomersService.Interfaces; 
+using Aramis.Api.CustomersService.Interfaces;
 using Aramis.Api.Repository.Interfaces.Customers;
 using Aramis.Api.Repository.Models;
 using AutoMapper;
 
 namespace Aramis.Api.CustomersService.Application
 {
-    public class CustomersService : ICustomersService,ICustomersAttributesRepository
+    public class CustomersService : ICustomersService, ICustomersAttributesRepository
     {
         private readonly ICustomersRepository _customersRepository;
         private readonly ICustomersAttributesRepository _attributesRepository;
         private readonly IMapper _mapper;
-        public CustomersService(ICustomersRepository customersRepository,ICustomersAttributesRepository attributesRepository, IMapper mapper)
+        public CustomersService(ICustomersRepository customersRepository, ICustomersAttributesRepository attributesRepository, IMapper mapper)
         {
             _mapper = mapper;
             _customersRepository = customersRepository;
@@ -33,21 +33,23 @@ namespace Aramis.Api.CustomersService.Application
         {
             OpCliente? entity = _customersRepository.Get(id);
             return _mapper.Map<OpCliente, OpClienteDto>(entity);
-        } 
-
-        public bool Insert(OpClienteInsert entity)
-        {  
-            entity.Cui = ExtensionMethods.ConformaCui(entity, GetGender(entity.Gender).Name);
-            entity.Id = Guid.NewGuid().ToString();
-            var cliente = _mapper.Map<OpClienteInsert, OpCliente>(entity);
-            return _customersRepository.Add(cliente); 
         }
 
-        public bool Update(OpClienteInsert entity)
+        public OpClienteDto Insert(OpClienteInsert entity)
         {
             entity.Cui = ExtensionMethods.ConformaCui(entity, GetGender(entity.Gender).Name);
-            var cliente = _mapper.Map<OpClienteInsert, OpCliente>(entity);
-            return _customersRepository.Update(cliente);
+            entity.Id = Guid.NewGuid().ToString();
+            OpCliente? cliente = _mapper.Map<OpClienteInsert, OpCliente>(entity);
+            _customersRepository.Add(cliente);
+            return GetById(entity.Id);
+        }
+
+        public OpClienteDto Update(OpClienteInsert entity)
+        {
+            entity.Cui = ExtensionMethods.ConformaCui(entity, GetGender(entity.Gender).Name);
+            OpCliente? cliente = _mapper.Map<OpClienteInsert, OpCliente>(entity);
+            _customersRepository.Update(cliente);
+            return GetById(entity.Id!);
         }
         #region Atributos
         public OpGender GetGender(string id)

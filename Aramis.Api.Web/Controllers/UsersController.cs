@@ -3,7 +3,7 @@ using Aramis.Api.Repository.Models;
 using Aramis.Api.SecurityService.Extensions;
 using Aramis.Api.SecurityService.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc; 
+using Microsoft.AspNetCore.Mvc;
 
 namespace Aramis.Api.Web.Controllers
 {
@@ -36,7 +36,7 @@ namespace Aramis.Api.Web.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public IActionResult ChangePassword(string user, string password,string npassword)
+        public IActionResult ChangePassword(string user, string password, string npassword)
         {
             try
             {
@@ -61,8 +61,8 @@ namespace Aramis.Api.Web.Controllers
                     RealName = userInsertDto.RealName!,
                     Id = Guid.NewGuid(),
                 };
-                _securityService.CreateUser(user, userInsertDto.PassWord!);
-                return Ok("Usuario Creado Correctamente");
+                UserDto? data = _securityService.CreateUser(user, userInsertDto.PassWord!);
+                return Ok(data);
             }
             catch (Exception ex)
             {
@@ -70,14 +70,14 @@ namespace Aramis.Api.Web.Controllers
             }
 
         }
-        
+
         [HttpGet]
         [Authorize(Policy = Policies.Admin)]
         public IActionResult GetUsers()
         {
             try
             {
-                var data = _securityService.GetAllUsers();                
+                IEnumerable<UserDto>? data = _securityService.GetAllUsers();
                 return Ok(data);
             }
             catch (Exception ex)
@@ -93,7 +93,7 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                var data = _securityService.GetUserById(id);
+                UserDto? data = _securityService.GetUserById(id);
                 return Ok(data);
             }
             catch (Exception ex)
@@ -108,7 +108,7 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                var data = _securityService.GetUserByName(name);
+                UserDto? data = _securityService.GetUserByName(name);
                 return Ok(data);
             }
             catch (Exception ex)
@@ -116,15 +116,15 @@ namespace Aramis.Api.Web.Controllers
                 return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
             }
         }
-       
+
         [HttpPatch]
         [Authorize(Policy = Policies.Admin)]
         public IActionResult Update([FromBody] UserDto userDto)
         {
             try
-            { 
-                _securityService.UpdateUser(userDto);
-                return Ok("Usuario Actualizado Correctamente");
+            {
+                UserDto? data = _securityService.UpdateUser(userDto);
+                return Ok(data);
             }
             catch (Exception ex)
             {

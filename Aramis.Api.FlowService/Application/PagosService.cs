@@ -2,8 +2,7 @@
 using Aramis.Api.Commons.ModelsDto.Pagos;
 using Aramis.Api.FlowService.Interfaces; 
 using Aramis.Api.Repository.Interfaces.Pagos;
-using Aramis.Api.Repository.Models;
-
+using Aramis.Api.Repository.Models; 
 namespace Aramis.Api.FlowService.Application
 {
     public class PagosService : IPagosService
@@ -23,6 +22,7 @@ namespace Aramis.Api.FlowService.Application
                 cuenta.Saldo += item.Monto;
                 _unitOfWork.Cuentas.Update(cuenta);
             }
+             
             if (!pago.Total.Equals(pago.Operaciones.Sum(x => x.Total))) throw new Exception("Existe una diferencia en los pagos ingresados");
             foreach(var item in pago.Operaciones)
             {

@@ -4,16 +4,8 @@ namespace Aramis.Api.Commons.ModelsDto.Pagos
 {
     public class PagoInsert
     {
-        public Guid ReciboId { get; set; }
-
-        public Guid ClienteId { get; set; }
-
-        public DateTime Fecha { get; set; }
-
-        public string Operador { get; set; } = null!;
-
+        public Guid ReciboId { get; set; } 
         public decimal? Total => Detalles.Sum(x=>x.Monto);
-
 
         #region Detalle De Pagos
         public List<DetallesInsert> Detalles { get; set; } = new List<DetallesInsert>();

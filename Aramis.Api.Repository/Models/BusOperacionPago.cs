@@ -9,7 +9,7 @@ public partial class BusOperacionPago
 
     public Guid OperacionId { get; set; }
 
-    public Guid ReciboId { get; set; } 
+    public Guid ReciboId { get; set; }
 
     public virtual BusOperacion Operacion { get; set; } = null!;
 

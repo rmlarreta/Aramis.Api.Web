@@ -58,6 +58,7 @@ public partial class AramisbdContext : DbContext
     public virtual DbSet<SystemEmpresa> SystemEmpresas { get; set; }
 
     public virtual DbSet<SystemIndex> SystemIndices { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<BusEstado>(entity =>
@@ -167,7 +168,7 @@ public partial class AramisbdContext : DbContext
 
             entity.ToTable("Bus_Operacion_Pago");
 
-            entity.Property(e => e.Id).ValueGeneratedNever(); 
+            entity.Property(e => e.Id).ValueGeneratedNever();
 
             entity.HasOne(d => d.Operacion).WithMany(p => p.BusOperacionPagos)
                 .HasForeignKey(d => d.OperacionId)
@@ -219,9 +220,13 @@ public partial class AramisbdContext : DbContext
             entity.ToTable("Cob_Pos");
 
             entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.DeviceId)
+                .HasMaxLength(50)
+                .IsUnicode(false);
             entity.Property(e => e.Name)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.Token).IsUnicode(false);
         });
 
         modelBuilder.Entity<CobRecibo>(entity =>

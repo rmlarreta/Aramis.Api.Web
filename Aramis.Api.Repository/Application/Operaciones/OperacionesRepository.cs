@@ -15,6 +15,18 @@ namespace Aramis.Api.Repository.Application.Operaciones
             _context = context;
         }
 
+        public bool DeleteDetalles(List<BusOperacionDetalle> detalles)
+        {
+            _context.BusOperacionDetalles.RemoveRange(detalles);
+            return _context.SaveChanges() > 0;
+        }
+
+        public bool DeleteOperacion(string operacion)
+        {
+            _operacionRespository.Delete(Guid.Parse(operacion));
+            return _operacionRespository.Save();
+        }
+
         public BusOperacion Get(string id)
         {
             return _context.BusOperacions
@@ -30,7 +42,14 @@ namespace Aramis.Api.Repository.Application.Operaciones
 
         public bool Insert(BusOperacion entity)
         {
-            return _operacionRespository.Add(entity);
+            _operacionRespository.Add(entity);
+            return _operacionRespository.Save();
+        }
+
+        public bool Update(BusOperacion entity)
+        {
+            _operacionRespository.Update(entity);
+            return _operacionRespository.Save();
         }
     }
 }

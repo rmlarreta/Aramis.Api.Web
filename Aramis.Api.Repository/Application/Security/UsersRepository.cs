@@ -16,12 +16,14 @@ namespace Aramis.Api.Repository.Application.Security
 
         public bool Add(SecUser user)
         {
-            return _repository.Add(user);
+             _repository.Add(user);
+            return _repository.Save();
         }
 
         public bool Delete(SecUser secUser)
         {
-            return _repository.Delete(secUser.Id);
+            _repository.Delete(secUser.Id);
+            return _repository.Save();
         }
 
         public SecUser GetByName(string name)
@@ -39,7 +41,8 @@ namespace Aramis.Api.Repository.Application.Security
 
         public bool Update(SecUser secUser)
         {
-            return _repository.Update(secUser);
+           _repository.Update(secUser);
+            return _repository.Save();
         }
 
         public List<SecUser> GetAll()

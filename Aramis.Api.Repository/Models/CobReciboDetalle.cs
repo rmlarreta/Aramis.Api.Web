@@ -1,4 +1,7 @@
-﻿namespace Aramis.Api.Repository.Models;
+﻿using System;
+using System.Collections.Generic;
+
+namespace Aramis.Api.Repository.Models;
 
 public partial class CobReciboDetalle
 {
@@ -13,6 +16,8 @@ public partial class CobReciboDetalle
     public string Observacion { get; set; } = null!;
 
     public Guid? PosId { get; set; }
+
+    public string? CodAut { get; set; }
 
     public virtual CobPo? Pos { get; set; }
 

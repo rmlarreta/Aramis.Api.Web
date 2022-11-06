@@ -24,16 +24,14 @@ namespace Aramis.Api.Repository.Application
             return _dbSet.Find(id)!;
         }
 
-        public bool Delete(Guid id)
+        public void Delete(Guid id)
         {
             TEntity? dataToDelete = _dbSet.Find(id)!;
-            _dbSet.Remove(dataToDelete);
-            return Save();
+            _dbSet.Remove(dataToDelete); 
         }
-        public bool Add(TEntity data)
+        public void Add(TEntity data)
         {
-            _dbSet.Add(data);
-            return Save();
+            _dbSet.Add(data); 
         }
 
         public bool Save()
@@ -41,11 +39,10 @@ namespace Aramis.Api.Repository.Application
             return _context.SaveChanges() > 0;
         }
 
-        public bool Update(TEntity data)
+        public void Update(TEntity data)
         {
             _dbSet.Attach(data);
-            _context.Entry(data).State = EntityState.Modified;
-            return Save();
+            _context.Entry(data).State = EntityState.Modified; 
         }
     }
 }

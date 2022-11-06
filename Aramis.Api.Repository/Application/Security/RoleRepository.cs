@@ -15,12 +15,14 @@ namespace Aramis.Api.Repository.Application.Security
         }
         public bool Add(SecRole data)
         {
-            return _repository.Add(data);
+            _repository.Add(data);
+            return _repository.Save();
         }
 
         public bool Delete(SecRole data)
         {
-            return _repository.Delete(data.Id);
+            _repository.Delete(data.Id);
+            return _repository.Save();
         }
 
         public SecRole GetByName(string name)
@@ -35,7 +37,8 @@ namespace Aramis.Api.Repository.Application.Security
 
         public bool Update(SecRole data)
         {
-            return _repository.Update(data);
+           _repository.Update(data);
+            return _repository.Save();
         }
 
         public List<SecRole> GetAll()

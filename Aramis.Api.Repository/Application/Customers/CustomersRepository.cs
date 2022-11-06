@@ -15,12 +15,14 @@ namespace Aramis.Api.Repository.Application.Customers
         }
         public bool Add(OpCliente opCliente)
         {
-            return _repository.Add(opCliente);
+            _repository.Add(opCliente);
+            return _repository.Save();
         }
 
         public bool Delete(OpCliente opCliente)
         {
-            return _repository.Delete(opCliente.Id);
+           _repository.Delete(opCliente.Id);
+            return _repository.Save();  
         }
         public OpCliente Get(string id)
         {
@@ -42,7 +44,8 @@ namespace Aramis.Api.Repository.Application.Customers
         }
         public bool Update(OpCliente opCliente)
         {
-            return _repository.Update(opCliente);
+            _repository.Update(opCliente);
+            return _repository.Save();
         }
     }
 }

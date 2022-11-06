@@ -1,5 +1,6 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Customers;
 using Aramis.Api.Commons.ModelsDto.Operaciones;
+using Aramis.Api.Commons.ModelsDto.Pagos;
 using Aramis.Api.Commons.ModelsDto.Security;
 using Aramis.Api.Commons.ModelsDto.Stock;
 using Aramis.Api.Repository.Models;
@@ -51,6 +52,8 @@ namespace Aramis.Api.Commons.Helpers
             CreateMap<BusOperacionDetalle, BusDetalleOperacionesInsert>()
     .ReverseMap();
 
-        }
+            CreateMap<BusOperacionObservacion, BusObservacionesInsert>()
+  .ReverseMap();
+         }
     }
 }

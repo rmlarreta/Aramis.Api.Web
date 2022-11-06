@@ -1,4 +1,7 @@
-﻿namespace Aramis.Api.Repository.Models;
+﻿using System;
+using System.Collections.Generic;
+
+namespace Aramis.Api.Repository.Models;
 
 public partial class BusOperacionTipo
 {

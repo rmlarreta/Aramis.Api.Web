@@ -1,4 +1,7 @@
-﻿namespace Aramis.Api.Repository.Models;
+﻿using System;
+using System.Collections.Generic;
+
+namespace Aramis.Api.Repository.Models;
 
 public partial class CobRecibo
 {
@@ -7,8 +10,6 @@ public partial class CobRecibo
     public Guid ClienteId { get; set; }
 
     public DateTime Fecha { get; set; }
-
-    public string CodAut { get; set; } = null!;
 
     public string Operador { get; set; } = null!;
 

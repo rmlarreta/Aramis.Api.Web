@@ -21,11 +21,12 @@ namespace Aramis.Api.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Insert([FromBody] BusOperacionesInsert op)
+        public IActionResult NuevaOperacion([FromBody] BusOperacionesInsert op)
         {
             try
             {
                 op.Operador = _securityService.GetUserAuthenticated();
+                op.Fecha = DateTime.Now;
                 BusOperacionesDto data = _operacionesService.NuevaOperacion(op);
                 return Ok(data);
             }
@@ -33,6 +34,32 @@ namespace Aramis.Api.Web.Controllers
             {
                 return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
             }
+        }
+        [HttpPost]
+        public IActionResult UpdateOperacion([FromBody] BusOperacionesInsert op)
+        {
+            try
+            {
+                op.Operador = _securityService.GetUserAuthenticated();
+                BusOperacionesDto data = _operacionesService.UpdateOperacion(op);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+            }
+        }
+
+        [HttpDelete]
+        public bool DeleteOperacion(string id)
+        {
+            return _operacionesService.DeleteOperacion(id);
+        }
+
+        [HttpGet]
+        public BusOperacionesDto GetOperationById(string id)
+        {
+            return _operacionesService.GetOperacion(id);
         }
 
         [HttpPost]
@@ -49,25 +76,65 @@ namespace Aramis.Api.Web.Controllers
             }
         }
 
-        [HttpGet]
-        public BusOperacionesDto GetOperationById(string id)
-        {
-            return _operacionesService.GetOperacion(id);
-        }
-
         [HttpDelete]
         public BusOperacionesDto DeleteDetalle(string id)
         {
             return _operacionesService.DeleteDetalle(id);
         }
 
-        [HttpPost]
+        [HttpPatch]
         public IActionResult UpdateDetalle([FromBody] BusDetalleOperacionesInsert detalle)
         {
             try
             {
                 BusOperacionesDto data = _operacionesService.UpdateDetalle(detalle);
                 return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public IActionResult InsertObservacion([FromBody] BusObservacionesInsert observa)
+        {
+            try
+            {
+                observa.Operador = _securityService.GetUserAuthenticated();
+                observa.Fecha = DateTime.Now;
+                _operacionesService.InsertObservacion(observa);
+                return Ok("Correcto");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+            }
+        }
+
+        [HttpDelete]
+        public IActionResult DeleteObservacion(string id)
+        {
+            try
+            {
+                _operacionesService.DeleteObservacion(id);
+                return Ok("Correcto");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+            }
+        }
+
+        [HttpPatch]
+        public IActionResult UpdateObservacion([FromBody] BusObservacionesInsert observa)
+        {
+            try
+            {
+                observa.Operador = _securityService.GetUserAuthenticated();
+                observa.Fecha = DateTime.Now;
+                _operacionesService.UpdateObservacion(observa);
+                return Ok("Correcto");
             }
             catch (Exception ex)
             {

@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace Aramis.Api.Repository.Models;
 
@@ -56,7 +58,6 @@ public partial class AramisbdContext : DbContext
     public virtual DbSet<SystemEmpresa> SystemEmpresas { get; set; }
 
     public virtual DbSet<SystemIndex> SystemIndices { get; set; }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<BusEstado>(entity =>
@@ -166,7 +167,7 @@ public partial class AramisbdContext : DbContext
 
             entity.ToTable("Bus_Operacion_Pago");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Id).ValueGeneratedNever(); 
 
             entity.HasOne(d => d.Operacion).WithMany(p => p.BusOperacionPagos)
                 .HasForeignKey(d => d.OperacionId)
@@ -230,9 +231,6 @@ public partial class AramisbdContext : DbContext
             entity.ToTable("Cob_Recibo");
 
             entity.Property(e => e.Id).ValueGeneratedNever();
-            entity.Property(e => e.CodAut)
-                .HasMaxLength(254)
-                .IsUnicode(false);
             entity.Property(e => e.Fecha).HasColumnType("datetime");
             entity.Property(e => e.Operador)
                 .HasMaxLength(50)
@@ -251,6 +249,9 @@ public partial class AramisbdContext : DbContext
             entity.ToTable("Cob_Recibo_Detalles");
 
             entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.CodAut)
+                .HasMaxLength(254)
+                .IsUnicode(false);
             entity.Property(e => e.Monto).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.Observacion)
                 .HasMaxLength(50)

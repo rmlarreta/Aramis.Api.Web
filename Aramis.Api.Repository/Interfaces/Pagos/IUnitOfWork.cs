@@ -1,14 +1,17 @@
-﻿using Aramis.Api.Repository.Models;
+﻿using Aramis.Api.Repository.Interfaces.Operaciones;
+using Aramis.Api.Repository.Interfaces.Recibos;
+using Aramis.Api.Repository.Models;
 
 namespace Aramis.Api.Repository.Interfaces.Pagos
 {
     public interface IUnitOfWork
     {
+        public IRecibosRepository Recibos { get; } 
         public IGenericRepository<CobCuentum> Cuentas { get; }
         public IGenericRepository<CobTipoPago> TipoPagos { get; }
-        public IGenericRepository<BusOperacion> Operaciones { get; }
+        public IOperacionesRepository Operaciones { get; } 
         public IGenericRepository<BusEstado> Estados { get; }
-        public IGenericRepository<BusOperacionPago> OperacionPagos { get; }
+        public IGenericRepository<BusOperacionPago> OperacionPagos { get; } 
         public bool Save();
     }
 }

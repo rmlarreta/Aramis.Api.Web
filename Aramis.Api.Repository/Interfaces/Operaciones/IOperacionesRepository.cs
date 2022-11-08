@@ -4,10 +4,11 @@ namespace Aramis.Api.Repository.Interfaces.Operaciones
 {
     public interface IOperacionesRepository
     {
-        bool Insert(BusOperacion entity);
-        bool Update(BusOperacion entity);
+        void Insert(BusOperacion entity);
+        void Update(BusOperacion entity);
         BusOperacion Get(string id);
-        bool DeleteDetalles(List<BusOperacionDetalle> detalles);
-        bool DeleteOperacion(string operacion);
+        void DeleteDetalles(List<BusOperacionDetalle> detalles);
+        void DeleteOperacion(string operacion);
+        bool Save();
     }
 }

@@ -1,7 +1,7 @@
 ﻿namespace Aramis.Api.Commons.ModelsDto.Pagos
 {
 
-    public class PaymentIntentResponeDto
+    public class PaymentIntentResponseDto
     {
         public AddionalInfo? Additional_info { get; set; }
         public int Amount { get; set; }

@@ -1,30 +1,26 @@
-﻿using Aramis.Api.Repository.Interfaces;
-using Aramis.Api.Repository.Interfaces.Operaciones;
+﻿using Aramis.Api.Repository.Interfaces.Operaciones;
 using Aramis.Api.Repository.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Aramis.Api.Repository.Application.Operaciones
 {
     public class OperacionesRepository : IOperacionesRepository
-    {
-        private readonly IGenericRepository<BusOperacion> _operacionRespository;
+    { 
         private readonly AramisbdContext _context;
-        public OperacionesRepository(IGenericRepository<BusOperacion> operacionRespository, AramisbdContext context)
+        public OperacionesRepository(AramisbdContext context)
         {
-            _operacionRespository = operacionRespository;
             _context = context;
         }
 
-        public bool DeleteDetalles(List<BusOperacionDetalle> detalles)
+        public void DeleteDetalles(List<BusOperacionDetalle> detalles)
         {
-            _context.BusOperacionDetalles.RemoveRange(detalles);
-            return _context.SaveChanges() > 0;
+            _context.BusOperacionDetalles.RemoveRange(detalles); 
         }
 
-        public bool DeleteOperacion(string operacion)
+        public void DeleteOperacion(string operacion)
         {
-            _operacionRespository.Delete(Guid.Parse(operacion));
-            return _operacionRespository.Save();
+            var op = _context.BusOperacions.FirstOrDefault(x=>x.Id.Equals(operacion));
+            _context.BusOperacions.Remove(op!); 
         }
 
         public BusOperacion Get(string id)
@@ -34,22 +30,25 @@ namespace Aramis.Api.Repository.Application.Operaciones
                  .Include(x => x.Cliente.RespNavigation)
                  .Include(x => x.TipoDoc)
                  .Include(x => x.Estado)
-                 .Include(x => x.BusOperacionDetalles)
+                 .Include(x => x.BusOperacionDetalles) 
                  .Include(x => x.BusOperacionObservacions)
                  .Where(x => x.Id.Equals(Guid.Parse(id)))
                  .FirstOrDefault()!;
         }
 
-        public bool Insert(BusOperacion entity)
+        public void Insert(BusOperacion entity)
         {
-            _operacionRespository.Add(entity);
-            return _operacionRespository.Save();
+            _context.BusOperacions.Add(entity); 
         }
 
-        public bool Update(BusOperacion entity)
+        public void Update(BusOperacion entity)
         {
-            _operacionRespository.Update(entity);
-            return _operacionRespository.Save();
+            _context.BusOperacions.Update(entity); 
+        }
+
+        public bool Save()
+        {
+            return _context.SaveChanges() > 0;
         }
     }
 }

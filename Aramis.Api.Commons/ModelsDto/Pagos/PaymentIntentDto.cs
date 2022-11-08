@@ -3,7 +3,7 @@
     public class PaymentIntentDto
     {
         public AddionalInfo? Additional_info { get; set; }
-        public int Amount { get; set; }
+        public int Amount { get; set; } 
     }
 
     public class AddionalInfo

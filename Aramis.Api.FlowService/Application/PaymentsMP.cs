@@ -8,14 +8,14 @@ using System.Text.Json;
 
 namespace Aramis.Api.FlowService.Application
 {
-    internal class PaymentsMP : IPaymentsMp
+    public class PaymentsMP : IPaymentsMp
     {
         private readonly IGenericRepository<CobPo> _points;
         public PaymentsMP(IGenericRepository<CobPo> points)
         {
             _points=points;
         }
-        public async Task<PaymentIntentResponeDto> CreatePaymentIntent(PaymentIntentDto PaymentIntent, string id)
+        public async Task<PaymentIntentResponseDto> CreatePaymentIntent(PaymentIntentDto PaymentIntent, string id)
         {
             try
             {
@@ -38,7 +38,7 @@ namespace Aramis.Api.FlowService.Application
                     {
                         try
                         {
-                            PaymentIntentResponeDto? result = await response.Content.ReadFromJsonAsync<PaymentIntentResponeDto>();
+                            PaymentIntentResponseDto? result = await response.Content.ReadFromJsonAsync<PaymentIntentResponseDto>();
                             return result!;
 
                         }

@@ -17,7 +17,7 @@ namespace Aramis.Api.OperacionesService.Application
         public OperacionesService(
             IOperacionesRepository repository,
             IGenericRepository<SystemEmpresa> empresa,
-            IMapper mapper, 
+            IMapper mapper,
             IGenericRepository<BusOperacionDetalle> busOperacionDetalle,
             IGenericRepository<BusOperacionObservacion> busOperacionObservacion
             )
@@ -31,6 +31,7 @@ namespace Aramis.Api.OperacionesService.Application
         public BusOperacionesDto NuevaOperacion(BusOperacionesInsert busoperacionesinsert)
         {
             _repository.Insert(_mapper.Map<BusOperacionesInsert, BusOperacion>(busoperacionesinsert));
+            _repository.Save();
             return GetOperacion(busoperacionesinsert.Id.ToString());
         }
 
@@ -54,6 +55,7 @@ namespace Aramis.Api.OperacionesService.Application
             if (DetalleAbierto(detalle.Id.ToString()))
             {
                 _busOperacionDetalle.Add(_mapper.Map<BusDetalleOperacionesInsert, BusOperacionDetalle>(detalle));
+                _busOperacionDetalle.Save();
                 return GetOperacion(detalle.OperacionId.ToString());
             }
             throw new Exception("No se pudo completar la operación");
@@ -65,6 +67,7 @@ namespace Aramis.Api.OperacionesService.Application
             {
                 BusOperacionDetalle? det = _busOperacionDetalle.Get(Guid.Parse(id));
                 _busOperacionDetalle.Delete(Guid.Parse(id));
+                _busOperacionDetalle.Save();
                 return GetOperacion(det.OperacionId.ToString());
             }
             throw new Exception("No se pudo completar la operación");
@@ -75,6 +78,7 @@ namespace Aramis.Api.OperacionesService.Application
             if (DetalleAbierto(detalle.Id.ToString()))
             {
                 _busOperacionDetalle.Update(_mapper.Map<BusDetalleOperacionesInsert, BusOperacionDetalle>(detalle));
+                _busOperacionDetalle.Save();
                 return GetOperacion(detalle.OperacionId.ToString());
             }
             throw new Exception("No se pudo completar la operación");
@@ -85,11 +89,10 @@ namespace Aramis.Api.OperacionesService.Application
             if (OperacionAbierta(operacionid))
             {
                 var dets = _busOperacionDetalle.Get().Where(x => x.OperacionId.Equals(operacionid)).ToList();
-                if (_repository.DeleteDetalles(dets))
-                {
-                    return _repository.DeleteOperacion(operacionid);
-                }
-                throw new Exception("No se pudo completar la operación");
+
+                _repository.DeleteDetalles(dets);
+                _repository.DeleteOperacion(operacionid);
+                return _repository.Save();
             }
             throw new Exception("No se pudo completar la operación");
         }
@@ -101,7 +104,9 @@ namespace Aramis.Api.OperacionesService.Application
                 &
                 CuitOperacion(busoperacionesinsert.Id.ToString()).Equals("0")
               ) throw new Exception("No se puede asignar este CUI a este tipo de Operaciones");
-            if (_repository.Update(_mapper.Map<BusOperacionesInsert, BusOperacion>(busoperacionesinsert)))
+
+            _repository.Update(_mapper.Map<BusOperacionesInsert, BusOperacion>(busoperacionesinsert));
+            if (_repository.Save())
             {
                 return GetOperacion(busoperacionesinsert.Id.ToString());
             }
@@ -111,17 +116,17 @@ namespace Aramis.Api.OperacionesService.Application
         #region Observas
         public bool InsertObservacion(BusObservacionesInsert observacion)
         {
-           _busOperacionObservacion.Add(_mapper.Map<BusObservacionesInsert, BusOperacionObservacion>(observacion));
+            _busOperacionObservacion.Add(_mapper.Map<BusObservacionesInsert, BusOperacionObservacion>(observacion));
             return _busOperacionObservacion.Save();
         }
         public bool DeleteObservacion(string id)
         {
-           _busOperacionObservacion.Delete(Guid.Parse(id));
+            _busOperacionObservacion.Delete(Guid.Parse(id));
             return _busOperacionObservacion.Save();
         }
         public bool UpdateObservacion(BusObservacionesInsert observacion)
         {
-           _busOperacionObservacion.Update(_mapper.Map<BusObservacionesInsert, BusOperacionObservacion>(observacion));
+            _busOperacionObservacion.Update(_mapper.Map<BusObservacionesInsert, BusOperacionObservacion>(observacion));
             return _busOperacionObservacion.Save();
         }
         #endregion Observas

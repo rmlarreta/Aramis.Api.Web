@@ -2,7 +2,7 @@
 
 namespace Aramis.Api.FlowService.Interfaces
 {
-    internal interface IPagosService
+    public interface IPagosService
     {
         bool NuevoPago(PagoInsert pago);
     }

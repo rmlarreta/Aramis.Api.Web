@@ -35,6 +35,7 @@ namespace Aramis.Api.Web.Controllers
                 return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
             }
         }
+        
         [HttpPost]
         public IActionResult UpdateOperacion([FromBody] BusOperacionesInsert op)
         {

@@ -1,5 +1,9 @@
-﻿using Aramis.Api.Repository.Interfaces;
+﻿using Aramis.Api.Repository.Application.Operaciones;
+using Aramis.Api.Repository.Application.Recibos;
+using Aramis.Api.Repository.Interfaces;
+using Aramis.Api.Repository.Interfaces.Operaciones;
 using Aramis.Api.Repository.Interfaces.Pagos;
+using Aramis.Api.Repository.Interfaces.Recibos;
 using Aramis.Api.Repository.Models;
 
 namespace Aramis.Api.Repository.Application.Pagos
@@ -7,15 +11,25 @@ namespace Aramis.Api.Repository.Application.Pagos
     public class UnitOfWork : IUnitOfWork
     {
         private readonly AramisbdContext _context;
+        private IRecibosRepository _cobRecibosRepository = null!;
         private IGenericRepository<CobCuentum> _cobCuentumRepository=null!;
         private IGenericRepository<CobTipoPago> _cobTipoPagoRepository=null!;
-        private IGenericRepository<BusOperacion> _busOperacionRepository = null!;
+        private IOperacionesRepository _busOperacionRepository = null!;
         private IGenericRepository<BusEstado> _busEstadosRepository = null!;
         private IGenericRepository<BusOperacionPago> _operacionPagosRepository=null!;
         public UnitOfWork(AramisbdContext context)
         {
             _context = context;
         }
+
+        public IRecibosRepository Recibos
+        {
+            get
+            {
+                return _cobRecibosRepository ??= new RecibosRepository(_context);
+            }
+        }
+
         public IGenericRepository<CobCuentum> Cuentas
         {
             get
@@ -32,11 +46,11 @@ namespace Aramis.Api.Repository.Application.Pagos
             }
         }
 
-        public IGenericRepository<BusOperacion> Operaciones
+        public IOperacionesRepository Operaciones
         {
             get
             {
-                return _busOperacionRepository ??= new GenericRepository<BusOperacion>(_context);
+                return _busOperacionRepository ??= new OperacionesRepository(_context);
             }
         }
 

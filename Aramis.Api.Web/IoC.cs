@@ -4,11 +4,15 @@ using Aramis.Api.OperacionesService.Interfaces;
 using Aramis.Api.Repository.Application;
 using Aramis.Api.Repository.Application.Customers;
 using Aramis.Api.Repository.Application.Operaciones;
+using Aramis.Api.Repository.Application.Pagos;
+using Aramis.Api.Repository.Application.Recibos;
 using Aramis.Api.Repository.Application.Security;
 using Aramis.Api.Repository.Application.Stock;
 using Aramis.Api.Repository.Interfaces;
 using Aramis.Api.Repository.Interfaces.Customers;
 using Aramis.Api.Repository.Interfaces.Operaciones;
+using Aramis.Api.Repository.Interfaces.Pagos;
+using Aramis.Api.Repository.Interfaces.Recibos;
 using Aramis.Api.Repository.Interfaces.Security;
 using Aramis.Api.Repository.Interfaces.Stock;
 using Aramis.Api.SecurityService.Interfaces;
@@ -29,6 +33,9 @@ namespace Aramis.Api.Web
             services.AddScoped<IOperacionesService, OperacionesService.Application.OperacionesService>();
             services.AddScoped<ICuentasService, FlowService.Application.CuentasService>();
             services.AddScoped<ITipoPagoService, FlowService.Application.TipoPagoService>();
+            services.AddScoped<IRecibosService, FlowService.Application.RecibosService>();
+            services.AddScoped<IPaymentsMp, FlowService.Application.PaymentsMP>();
+            services.AddScoped<IPagosService, FlowService.Application.PagosService>();
             #endregion 
 
             #region Repositories
@@ -39,6 +46,8 @@ namespace Aramis.Api.Web
             services.AddScoped<ICustomersAttributesRepository, CustomersAttributesRepository>();
             services.AddScoped<IStockRepository, StockRepository>();
             services.AddScoped<IOperacionesRepository, OperacionesRepository>();
+            services.AddScoped<IRecibosRepository, RecibosRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             #endregion Repositories
         }
     }

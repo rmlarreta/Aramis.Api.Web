@@ -13,7 +13,7 @@ public partial class CobReciboDetalle
 
     public Guid Tipo { get; set; }
 
-    public string Observacion { get; set; } = null!;
+    public string? Observacion { get; set; } = null!;
 
     public Guid? PosId { get; set; }
 

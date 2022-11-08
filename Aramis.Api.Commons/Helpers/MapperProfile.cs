@@ -27,33 +27,39 @@ namespace Aramis.Api.Commons.Helpers
             CreateMap<SecRole, RoleDto>().ReverseMap();
 
             CreateMap<StockProduct, StockProductDto>()
-          .ForMember(dest => dest.RubroName, opt => opt.MapFrom(src => src.RubroNavigation.Name))
-          .ForMember(dest => dest.IvaValue, opt => opt.MapFrom(src => src.IvaNavigation.Value))
-          .ReverseMap();
+            .ForMember(dest => dest.RubroName, opt => opt.MapFrom(src => src.RubroNavigation.Name))
+            .ForMember(dest => dest.IvaValue, opt => opt.MapFrom(src => src.IvaNavigation.Value))
+            .ReverseMap();
 
             CreateMap<StockProduct, StockProductInsert>()
-          .ReverseMap();
+            .ReverseMap();
 
             CreateMap<BusOperacion, BusOperacionesInsert>()
-         .ReverseMap();
+            .ReverseMap();
 
             CreateMap<BusOperacion, BusOperacionesDto>()
-        .ForMember(dest => dest.TipoDocName, opt => opt.MapFrom(src => src.TipoDoc.Name))
-        .ForMember(dest => dest.EstadoName, opt => opt.MapFrom(src => src.Estado.Name))
-        .ForMember(dest => dest.Cui, opt => opt.MapFrom(src => src.Cliente.Cui))
-        .ForMember(dest => dest.Domicilio, opt => opt.MapFrom(src => src.Cliente.Domicilio))
-        .ForMember(dest => dest.Resp, opt => opt.MapFrom(src => src.Cliente.RespNavigation.Name))
-        .ForMember(dest => dest.Detalles, opt => opt.MapFrom(src => src.BusOperacionDetalles))
-       .ReverseMap();
+            .ForMember(dest => dest.TipoDocName, opt => opt.MapFrom(src => src.TipoDoc.Name))  
+            .ForMember(dest => dest.EstadoName, opt => opt.MapFrom(src => src.Estado.Name))  
+            .ForMember(dest => dest.Cui, opt => opt.MapFrom(src => src.Cliente.Cui))  
+            .ForMember(dest => dest.Domicilio, opt => opt.MapFrom(src => src.Cliente.Domicilio))  
+            .ForMember(dest => dest.Resp, opt => opt.MapFrom(src => src.Cliente.RespNavigation.Name))  
+            .ForMember(dest => dest.Detalles, opt => opt.MapFrom(src => src.BusOperacionDetalles))  
+            .ReverseMap();             
 
             CreateMap<BusOperacionDetalle, BusDetallesOperacionesDto>()
-.ReverseMap();
+            .ForMember(dest=>dest.Detalle,opt=>opt.MapFrom(src => src.Detalle))
+            .ReverseMap();
 
-            CreateMap<BusOperacionDetalle, BusDetalleOperacionesInsert>()
-    .ReverseMap();
+            CreateMap<BusOperacionDetalle, BusDetalleOperacionesInsert>().ReverseMap();
 
-            CreateMap<BusOperacionObservacion, BusObservacionesInsert>()
-  .ReverseMap();
-         }
+            CreateMap<BusOperacionObservacion, BusObservacionesInsert>().ReverseMap();
+
+            CreateMap<CobRecibo, ReciboInsert>()
+            .ForMember(dest => dest.Detalles, opt => opt.MapFrom(src => src.CobReciboDetalles))  
+            .ReverseMap();
+
+            CreateMap<CobReciboDetalle, ReciboDetallesInsert>() 
+            .ReverseMap();
+        }
     }
 }

@@ -52,15 +52,32 @@ namespace Aramis.Api.Web.Controllers
         }
 
         [HttpDelete]
-        public bool DeleteOperacion(string id)
+        public IActionResult DeleteOperacion(string id)
         {
-            return _operacionesService.DeleteOperacion(id);
+            try
+            {
+                return Ok(_operacionesService.DeleteOperacion(id));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+            }
+            
         }
 
         [HttpGet]
-        public BusOperacionesDto GetOperationById(string id)
+        public IActionResult GetOperationById(string id)
         {
-            return _operacionesService.GetOperacion(id);
+            try
+            {
+                var data = _operacionesService.GetOperacion(id);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+            }
+          
         }
 
         [HttpPost]
@@ -68,7 +85,7 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                BusOperacionesDto data = _operacionesService.InsertDetalle(detalle);
+                var data = _operacionesService.InsertDetalle(detalle);
                 return Ok(data);
             }
             catch (Exception ex)
@@ -78,9 +95,17 @@ namespace Aramis.Api.Web.Controllers
         }
 
         [HttpDelete]
-        public BusOperacionesDto DeleteDetalle(string id)
+        public IActionResult DeleteDetalle(string id)
         {
-            return _operacionesService.DeleteDetalle(id);
+            try
+            { 
+                var data = _operacionesService.DeleteDetalle(id);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+            }           
         }
 
         [HttpPatch]
@@ -88,7 +113,7 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                BusOperacionesDto data = _operacionesService.UpdateDetalle(detalle);
+                var data = _operacionesService.UpdateDetalle(detalle);
                 return Ok(data);
             }
             catch (Exception ex)
@@ -98,14 +123,13 @@ namespace Aramis.Api.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult InsertObservacion([FromBody] BusObservacionesInsert observa)
+        public IActionResult InsertObservacion([FromBody] BusObservacionesDto observa)
         {
             try
             {
                 observa.Operador = _securityService.GetUserAuthenticated();
                 observa.Fecha = DateTime.Now;
-                _operacionesService.InsertObservacion(observa);
-                return Ok("Correcto");
+                return Ok(_operacionesService.InsertObservacion(observa)); 
             }
             catch (Exception ex)
             {
@@ -118,8 +142,7 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                _operacionesService.DeleteObservacion(id);
-                return Ok("Correcto");
+                return Ok(_operacionesService.DeleteObservacion(id)); 
             }
             catch (Exception ex)
             {
@@ -128,14 +151,13 @@ namespace Aramis.Api.Web.Controllers
         }
 
         [HttpPatch]
-        public IActionResult UpdateObservacion([FromBody] BusObservacionesInsert observa)
+        public IActionResult UpdateObservacion([FromBody] BusObservacionesDto observa)
         {
             try
             {
                 observa.Operador = _securityService.GetUserAuthenticated();
                 observa.Fecha = DateTime.Now;
-                _operacionesService.UpdateObservacion(observa);
-                return Ok("Correcto");
+                return Ok(_operacionesService.UpdateObservacion(observa)); 
             }
             catch (Exception ex)
             {

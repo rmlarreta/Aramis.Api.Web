@@ -6,8 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Aramis.Api.Web.Controllers
 { 
-    //[Authorize]
-    [AllowAnonymous]
+    [Authorize] 
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class PagosController : ControllerBase

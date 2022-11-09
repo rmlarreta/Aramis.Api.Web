@@ -31,7 +31,7 @@ namespace Aramis.Api.Repository.Application.Operaciones
                  .Include(x => x.TipoDoc)
                  .Include(x => x.Estado)
                  .Include(x => x.BusOperacionDetalles) 
-                 .Include(x => x.BusOperacionObservacions)
+                 .Include(x => x.BusOperacionObservacions) 
                  .Where(x => x.Id.Equals(Guid.Parse(id)))
                  .FirstOrDefault()!;
         }
@@ -49,6 +49,31 @@ namespace Aramis.Api.Repository.Application.Operaciones
         public bool Save()
         {
             return _context.SaveChanges() > 0;
+        }
+
+        public List<BusEstado> GetEstados()
+        {
+            return _context.BusEstados.ToList();
+        }
+
+        public List<StockProduct> GetProducts()
+        {
+           return _context.StockProducts.ToList();
+        }
+
+        public void UpdateProducts(List<StockProduct> products)
+        {
+            _context.UpdateRange(products);
+        }
+
+        public SystemIndex GetIndexs()
+        {
+          return _context.SystemIndices.First();
+        }
+         
+        public void UpdateIndexs(SystemIndex indexs)
+        {
+          _context.SystemIndices.Update(indexs);
         }
     }
 }

@@ -25,6 +25,8 @@ public partial class BusOperacion
 
     public string Operador { get; set; } = null!;
 
+    public int Numero { get; set; }
+
     public virtual ICollection<BusOperacionDetalle> BusOperacionDetalles { get; } = new List<BusOperacionDetalle>();
 
     public virtual ICollection<BusOperacionObservacion> BusOperacionObservacions { get; } = new List<BusOperacionObservacion>();

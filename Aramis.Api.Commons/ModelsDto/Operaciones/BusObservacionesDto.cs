@@ -1,8 +1,8 @@
 ﻿namespace Aramis.Api.Commons.ModelsDto.Operaciones
 {
-    public class BusObservacionesInsert
+    public class BusObservacionesDto
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; set; }=Guid.NewGuid();
 
         public Guid OperacionId { get; set; }
 

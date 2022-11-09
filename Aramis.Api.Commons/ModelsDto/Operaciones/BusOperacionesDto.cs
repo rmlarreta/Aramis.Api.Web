@@ -6,6 +6,8 @@ namespace Aramis.Api.Commons.ModelsDto.Operaciones
     {
         public Guid Id { get; set; }
 
+        public int? Numero { get; set; }    
+
         public Guid ClienteId { get; set; }
 
         public string? Cui { get; set; }
@@ -51,6 +53,7 @@ namespace Aramis.Api.Commons.ModelsDto.Operaciones
         //DETALLES 
 
         public List<BusDetallesOperacionesDto>? Detalles { get; set; } = new List<BusDetallesOperacionesDto>();
+        public List<BusObservacionesDto> Observaciones { get; set; } = new List<BusObservacionesDto>();
 
         //Empresa 
         public string CuitEmpresa { get; set; } = null!;

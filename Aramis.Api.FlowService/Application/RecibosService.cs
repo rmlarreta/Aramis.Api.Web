@@ -19,11 +19,14 @@ namespace Aramis.Api.FlowService.Application
         }
         public string InsertRecibo(ReciboInsert recibo)
         {
-            foreach(var det in recibo.Detalles)
+            var index = _recibos.GetIndexs();
+            recibo.Numero = index.Recibo += 1;
+            foreach (var det in recibo.Detalles)
             {
                 det.ReciboId = recibo.Id;
             }
-            _recibos.Add(_mapper.Map<ReciboInsert, CobRecibo>(recibo));
+            _recibos.UpdateIndexs(index);
+            _recibos.Add(_mapper.Map<ReciboInsert, CobRecibo>(recibo));            
             return recibo.Id.ToString();
         }
 

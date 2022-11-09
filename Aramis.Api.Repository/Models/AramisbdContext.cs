@@ -58,7 +58,7 @@ public partial class AramisbdContext : DbContext
     public virtual DbSet<SystemEmpresa> SystemEmpresas { get; set; }
 
     public virtual DbSet<SystemIndex> SystemIndices { get; set; }
-
+     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<BusEstado>(entity =>

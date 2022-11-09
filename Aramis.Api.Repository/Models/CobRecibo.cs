@@ -13,6 +13,8 @@ public partial class CobRecibo
 
     public string Operador { get; set; } = null!;
 
+    public int Numero { get; set; }
+
     public virtual ICollection<BusOperacionPago> BusOperacionPagos { get; } = new List<BusOperacionPago>();
 
     public virtual OpCliente Cliente { get; set; } = null!;

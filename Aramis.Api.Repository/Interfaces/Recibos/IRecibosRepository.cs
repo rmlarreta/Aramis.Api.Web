@@ -8,6 +8,8 @@ namespace Aramis.Api.Repository.Interfaces.Recibos
         IEnumerable<CobRecibo> GetAll();
         void Update(CobRecibo recibo);
         void Delete(string id);
+        SystemIndex GetIndexs();
+        void UpdateIndexs(SystemIndex indexs);
         bool Save();
     }
 }

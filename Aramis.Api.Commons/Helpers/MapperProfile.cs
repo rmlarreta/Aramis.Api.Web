@@ -1,5 +1,6 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Customers;
 using Aramis.Api.Commons.ModelsDto.Operaciones;
+using Aramis.Api.Commons.ModelsDto.Ordenes;
 using Aramis.Api.Commons.ModelsDto.Pagos;
 using Aramis.Api.Commons.ModelsDto.Security;
 using Aramis.Api.Commons.ModelsDto.Stock;
@@ -43,7 +44,8 @@ namespace Aramis.Api.Commons.Helpers
             .ForMember(dest => dest.Cui, opt => opt.MapFrom(src => src.Cliente.Cui))  
             .ForMember(dest => dest.Domicilio, opt => opt.MapFrom(src => src.Cliente.Domicilio))  
             .ForMember(dest => dest.Resp, opt => opt.MapFrom(src => src.Cliente.RespNavigation.Name))  
-            .ForMember(dest => dest.Detalles, opt => opt.MapFrom(src => src.BusOperacionDetalles))  
+            .ForMember(dest => dest.Detalles, opt => opt.MapFrom(src => src.BusOperacionDetalles))
+            .ForMember(dest => dest.Observaciones, opt => opt.MapFrom(src => src.BusOperacionObservacions))
             .ReverseMap();             
 
             CreateMap<BusOperacionDetalle, BusDetallesOperacionesDto>()
@@ -52,10 +54,17 @@ namespace Aramis.Api.Commons.Helpers
 
             CreateMap<BusOperacionDetalle, BusDetalleOperacionesInsert>().ReverseMap();
 
-            CreateMap<BusOperacionObservacion, BusObservacionesInsert>().ReverseMap();
+            CreateMap<BusOperacion, BusOrdenesTicketDto>()
+             .ForMember(dest => dest.Nombre, opt => opt.MapFrom(src => src.Cliente.Razon))
+             .ForMember(dest => dest.Observaciones, opt => opt.MapFrom(src => src.BusOperacionObservacions))
+             .ReverseMap();
+
+            CreateMap<BusOperacionObservacion, BusObservacionesDto>()
+            .ForMember(dest => dest.Observacion, opt => opt.MapFrom(src => src.Observacion)) 
+            .ReverseMap();
 
             CreateMap<CobRecibo, ReciboInsert>()
-            .ForMember(dest => dest.Detalles, opt => opt.MapFrom(src => src.CobReciboDetalles))  
+            .ForMember(dest => dest.Detalles, opt => opt.MapFrom(src => src.CobReciboDetalles)) 
             .ReverseMap();
 
             CreateMap<CobReciboDetalle, ReciboDetallesInsert>() 

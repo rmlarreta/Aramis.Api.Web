@@ -1,5 +1,4 @@
-﻿using Aramis.Api.Repository.Interfaces;
-using Aramis.Api.Repository.Interfaces.Recibos;
+﻿using Aramis.Api.Repository.Interfaces.Recibos;
 using Aramis.Api.Repository.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,7 +25,7 @@ namespace Aramis.Api.Repository.Application.Recibos
         public CobRecibo Get(string id)
         {
            return _context.CobRecibos
-                   .Include(x => x.CobReciboDetalles)
+                   .Include(x => x.CobReciboDetalles) 
                    .Where(x => x.Id.Equals(Guid.Parse(id)))
                    .FirstOrDefault()!;
         }
@@ -36,8 +35,7 @@ namespace Aramis.Api.Repository.Application.Recibos
             return _context.CobRecibos
                    .Include(x => x.CobReciboDetalles) 
                    .ToList()!;
-        }
-
+        } 
         public bool Save()
         {
            return _context.SaveChanges()>0;
@@ -47,6 +45,15 @@ namespace Aramis.Api.Repository.Application.Recibos
         {
            _context.CobRecibos.Update(recibo);
         }
-         
+
+        public SystemIndex GetIndexs()
+        {
+            return _context.SystemIndices.First();
+        }
+
+        public void UpdateIndexs(SystemIndex indexs)
+        {
+            _context.SystemIndices.Update(indexs);
+        }
     }
 }

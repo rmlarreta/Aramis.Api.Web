@@ -3,7 +3,7 @@
     public class BusDetallesOperacionesDto
     {
         public Guid Id { get; set; }
-
+        public int? Numero { get; set; }
         public Guid OperacionId { get; set; }
 
         public decimal Cantidad { get; set; }

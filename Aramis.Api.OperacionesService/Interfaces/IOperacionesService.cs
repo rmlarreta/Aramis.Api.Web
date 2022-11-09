@@ -1,5 +1,6 @@
 ﻿
 using Aramis.Api.Commons.ModelsDto.Operaciones;
+using Aramis.Api.Commons.ModelsDto.Ordenes;
 
 namespace Aramis.Api.OperacionesService.Interfaces
 {
@@ -13,10 +14,17 @@ namespace Aramis.Api.OperacionesService.Interfaces
         BusOperacionesDto DeleteDetalle(string id);
         BusOperacionesDto UpdateDetalle(BusDetalleOperacionesInsert detalle);
 
+        #region Remitos
+        BusOperacionesDto NuevoRemito(string id);
+        #endregion
+
+        #region #Ordenes
+        BusOrdenesTicketDto NuevaOrden(string id);
+        #endregion
         #region Observas
-        bool InsertObservacion(BusObservacionesInsert observacion);
+        bool InsertObservacion(BusObservacionesDto observacion);
         bool DeleteObservacion(string id);
-        bool UpdateObservacion(BusObservacionesInsert observacion);
+        bool UpdateObservacion(BusObservacionesDto observacion);
 
         #endregion Observas
     }

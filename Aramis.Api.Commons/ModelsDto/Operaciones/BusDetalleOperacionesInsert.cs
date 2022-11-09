@@ -3,6 +3,7 @@
     public class BusDetalleOperacionesInsert
     {
         public Guid Id { get; set; } = Guid.NewGuid();
+        public int? Numero { get; set; }
 
         public Guid OperacionId { get; set; }
 

@@ -27,11 +27,11 @@ namespace Aramis.Api.Repository.Application
         public void Delete(Guid id)
         {
             TEntity? dataToDelete = _dbSet.Find(id)!;
-            _dbSet.Remove(dataToDelete); 
+            _dbSet.Remove(dataToDelete);
         }
         public void Add(TEntity data)
         {
-            _dbSet.Add(data); 
+            _dbSet.Add(data);
         }
 
         public bool Save()
@@ -42,7 +42,7 @@ namespace Aramis.Api.Repository.Application
         public void Update(TEntity data)
         {
             _dbSet.Attach(data);
-            _context.Entry(data).State = EntityState.Modified; 
+            _context.Entry(data).State = EntityState.Modified;
         }
     }
 }

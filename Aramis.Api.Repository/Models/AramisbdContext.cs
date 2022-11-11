@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Aramis.Api.Repository.Models;
 
@@ -58,7 +56,7 @@ public partial class AramisbdContext : DbContext
     public virtual DbSet<SystemEmpresa> SystemEmpresas { get; set; }
 
     public virtual DbSet<SystemIndex> SystemIndices { get; set; }
-     
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<BusEstado>(entity =>
@@ -489,9 +487,8 @@ public partial class AramisbdContext : DbContext
 
         modelBuilder.Entity<SystemIndex>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("System_Index");
+            entity.HasKey(e => e.Id).HasName("PK_System_Index_Id");
+            entity.ToTable("System_Index");
         });
 
         OnModelCreatingPartial(modelBuilder);

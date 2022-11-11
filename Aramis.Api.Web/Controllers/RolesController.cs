@@ -32,6 +32,7 @@ namespace Aramis.Api.Web.Controllers
         }
 
         [HttpGet]
+        [Route("{id}")]
         public IActionResult GetById(string id)
         {
             try
@@ -46,6 +47,7 @@ namespace Aramis.Api.Web.Controllers
         }
 
         [HttpGet]
+        [Route("{name}")]
         public IActionResult GetByName(string name)
         {
             try
@@ -88,6 +90,7 @@ namespace Aramis.Api.Web.Controllers
         }
 
         [HttpDelete]
+        [Route("{id}")]
         public IActionResult Delete(string Id)
         {
             try

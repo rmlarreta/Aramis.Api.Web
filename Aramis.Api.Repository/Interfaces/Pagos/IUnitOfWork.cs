@@ -6,12 +6,12 @@ namespace Aramis.Api.Repository.Interfaces.Pagos
 {
     public interface IUnitOfWork
     {
-        public IRecibosRepository Recibos { get; } 
+        public IRecibosRepository Recibos { get; }
         public IGenericRepository<CobCuentum> Cuentas { get; }
         public IGenericRepository<CobTipoPago> TipoPagos { get; }
-        public IOperacionesRepository Operaciones { get; } 
+        public IOperacionesRepository Operaciones { get; }
         public IGenericRepository<BusEstado> Estados { get; }
-        public IGenericRepository<BusOperacionPago> OperacionPagos { get; } 
+        public IGenericRepository<BusOperacionPago> OperacionPagos { get; }
         public bool Save();
     }
 }

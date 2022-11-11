@@ -21,8 +21,8 @@ namespace Aramis.Api.Repository.Application.Customers
 
         public bool Delete(OpCliente opCliente)
         {
-           _repository.Delete(opCliente.Id);
-            return _repository.Save();  
+            _repository.Delete(opCliente.Id);
+            return _repository.Save();
         }
         public OpCliente Get(string id)
         {

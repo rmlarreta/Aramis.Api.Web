@@ -16,7 +16,7 @@ namespace Aramis.Api.Repository.Application.Security
 
         public bool Add(SecUser user)
         {
-             _repository.Add(user);
+            _repository.Add(user);
             return _repository.Save();
         }
 
@@ -41,7 +41,7 @@ namespace Aramis.Api.Repository.Application.Security
 
         public bool Update(SecUser secUser)
         {
-           _repository.Update(secUser);
+            _repository.Update(secUser);
             return _repository.Save();
         }
 

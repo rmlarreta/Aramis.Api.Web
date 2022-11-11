@@ -6,8 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Aramis.Api.Web.Controllers
 {
-    //[Authorize]
-    [AllowAnonymous]
+    [Authorize]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class OperacionesController : ControllerBase
@@ -35,7 +34,53 @@ namespace Aramis.Api.Web.Controllers
                 return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
             }
         }
-        
+
+        [HttpPost]
+        [Route("{id}")]
+        public IActionResult NuevoRemito(string id )
+        {
+            try
+            {
+                var data = _operacionesService.NuevoRemito(id);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [Route("{id}")]
+        public IActionResult NuevaOrden(string id)
+        {
+            try
+            {
+                var data = _operacionesService.NuevaOrden(id);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+            }
+        }
+
+        [HttpGet]
+        [Route("{estado}")]
+        public IActionResult OrdenesByEstado(string estado)
+        {
+            try
+            {
+                var data = _operacionesService.OrdenesByEstado(estado);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+            }
+
+        }
+
         [HttpPost]
         public IActionResult UpdateOperacion([FromBody] BusOperacionesInsert op)
         {
@@ -52,6 +97,7 @@ namespace Aramis.Api.Web.Controllers
         }
 
         [HttpDelete]
+        [Route("{id}")]
         public IActionResult DeleteOperacion(string id)
         {
             try
@@ -66,6 +112,7 @@ namespace Aramis.Api.Web.Controllers
         }
 
         [HttpGet]
+        [Route("{id}")]
         public IActionResult GetOperationById(string id)
         {
             try
@@ -78,6 +125,36 @@ namespace Aramis.Api.Web.Controllers
                 return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
             }
           
+        }
+       
+        [HttpGet] 
+        public IActionResult RemitosPendientes()
+        {
+            try
+            {
+                var data = _operacionesService.RemitosPendientes();
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+            }
+
+        }
+
+        [HttpGet]
+        public IActionResult Presupuestos()
+        {
+            try
+            {
+                var data = _operacionesService.Presupuestos();
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+            }
+
         }
 
         [HttpPost]
@@ -95,6 +172,7 @@ namespace Aramis.Api.Web.Controllers
         }
 
         [HttpDelete]
+        [Route("{id}")]
         public IActionResult DeleteDetalle(string id)
         {
             try
@@ -138,6 +216,7 @@ namespace Aramis.Api.Web.Controllers
         }
 
         [HttpDelete]
+        [Route("{id}")]
         public IActionResult DeleteObservacion(string id)
         {
             try

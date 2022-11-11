@@ -12,62 +12,26 @@ namespace Aramis.Api.Repository.Application.Pagos
     {
         private readonly AramisbdContext _context;
         private IRecibosRepository _cobRecibosRepository = null!;
-        private IGenericRepository<CobCuentum> _cobCuentumRepository=null!;
-        private IGenericRepository<CobTipoPago> _cobTipoPagoRepository=null!;
+        private IGenericRepository<CobCuentum> _cobCuentumRepository = null!;
+        private IGenericRepository<CobTipoPago> _cobTipoPagoRepository = null!;
         private IOperacionesRepository _busOperacionRepository = null!;
         private IGenericRepository<BusEstado> _busEstadosRepository = null!;
-        private IGenericRepository<BusOperacionPago> _operacionPagosRepository=null!;
+        private IGenericRepository<BusOperacionPago> _operacionPagosRepository = null!;
         public UnitOfWork(AramisbdContext context)
         {
             _context = context;
         }
 
-        public IRecibosRepository Recibos
-        {
-            get
-            {
-                return _cobRecibosRepository ??= new RecibosRepository(_context);
-            }
-        }
+        public IRecibosRepository Recibos => _cobRecibosRepository ??= new RecibosRepository(_context);
 
-        public IGenericRepository<CobCuentum> Cuentas
-        {
-            get
-            {
-                return _cobCuentumRepository ??= new GenericRepository<CobCuentum>(_context);
-            }
-        }
+        public IGenericRepository<CobCuentum> Cuentas => _cobCuentumRepository ??= new GenericRepository<CobCuentum>(_context);
 
-        public IGenericRepository<CobTipoPago> TipoPagos
-        {
-            get
-            {
-                return _cobTipoPagoRepository ??= new GenericRepository<CobTipoPago>(_context);
-            }
-        }
+        public IGenericRepository<CobTipoPago> TipoPagos => _cobTipoPagoRepository ??= new GenericRepository<CobTipoPago>(_context);
 
-        public IOperacionesRepository Operaciones
-        {
-            get
-            {
-                return _busOperacionRepository ??= new OperacionesRepository(_context);
-            }
-        }
+        public IOperacionesRepository Operaciones => _busOperacionRepository ??= new OperacionesRepository(_context);
 
-        public IGenericRepository<BusEstado> Estados
-        {
-            get
-            {
-                return _busEstadosRepository ??= new GenericRepository<BusEstado>(_context);
-            }
-        }
-        public IGenericRepository<BusOperacionPago> OperacionPagos
-        {
-            get
-            {
-                return _operacionPagosRepository ??= new GenericRepository<BusOperacionPago>(_context);
-            }
-        }
+        public IGenericRepository<BusEstado> Estados => _busEstadosRepository ??= new GenericRepository<BusEstado>(_context);
+        public IGenericRepository<BusOperacionPago> OperacionPagos => _operacionPagosRepository ??= new GenericRepository<BusOperacionPago>(_context);
 
         public bool Save()
         {

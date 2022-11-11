@@ -56,6 +56,7 @@ namespace Aramis.Api.Commons.Helpers
 
             CreateMap<BusOperacion, BusOrdenesTicketDto>()
              .ForMember(dest => dest.Nombre, opt => opt.MapFrom(src => src.Cliente.Razon))
+             .ForMember(dest => dest.Cui, opt => opt.MapFrom(src => src.Cliente.Cui))
              .ForMember(dest => dest.Observaciones, opt => opt.MapFrom(src => src.BusOperacionObservacions))
              .ReverseMap();
 

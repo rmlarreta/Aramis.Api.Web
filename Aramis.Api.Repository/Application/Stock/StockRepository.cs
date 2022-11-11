@@ -21,7 +21,7 @@ namespace Aramis.Api.Repository.Application.Stock
 
         public bool Insert(StockProduct data)
         {
-             _repository.Add(data);
+            _repository.Add(data);
             return _repository.Save();
         }
 
@@ -60,8 +60,8 @@ namespace Aramis.Api.Repository.Application.Stock
 
         public IEnumerable<StockRubro> GetRubroList()
         {
-             return _rubrosRepository.Get();
-           
+            return _rubrosRepository.Get();
+
         }
 
         public bool InsertRubro(StockRubro rubro)

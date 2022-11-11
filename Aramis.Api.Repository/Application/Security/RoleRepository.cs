@@ -37,7 +37,7 @@ namespace Aramis.Api.Repository.Application.Security
 
         public bool Update(SecRole data)
         {
-           _repository.Update(data);
+            _repository.Update(data);
             return _repository.Save();
         }
 

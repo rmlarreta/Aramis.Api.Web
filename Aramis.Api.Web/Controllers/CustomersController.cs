@@ -49,6 +49,7 @@ namespace Aramis.Api.Web.Controllers
         }
 
         [HttpDelete]
+        [Route("{id}")]
         public IActionResult Delete(string id)
         {
             try
@@ -69,6 +70,7 @@ namespace Aramis.Api.Web.Controllers
         }
 
         [HttpGet]
+        [Route("{id}")]
         public OpClienteDto Get(string id)
         {
             return _customersService.GetById(id);
@@ -82,6 +84,7 @@ namespace Aramis.Api.Web.Controllers
         }
 
         [HttpGet]
+        [Route("{id}")]
         public OpResp GetResp(string id)
         {
             return _customersAttributesRepository.GetResp(id);
@@ -94,6 +97,7 @@ namespace Aramis.Api.Web.Controllers
         }
 
         [HttpGet]
+        [Route("{id}")]
         public OpPai GetPais(string id)
         {
             return _customersAttributesRepository.GetPais(id);
@@ -106,6 +110,7 @@ namespace Aramis.Api.Web.Controllers
         }
 
         [HttpGet]
+        [Route("{id}")]
         public OpGender GetGender(string id)
         {
             return _customersAttributesRepository.GetGender(id);

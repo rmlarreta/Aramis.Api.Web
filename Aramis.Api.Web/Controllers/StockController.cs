@@ -33,6 +33,7 @@ namespace Aramis.Api.Web.Controllers
         }
 
         [HttpGet]
+        [Route("{id}")]
         public IActionResult ProductById(string id)
         {
             try
@@ -75,6 +76,7 @@ namespace Aramis.Api.Web.Controllers
         }
 
         [HttpDelete]
+        [Route("{id}")]
         public IActionResult ProductDelete(string id)
         {
             try
@@ -89,6 +91,7 @@ namespace Aramis.Api.Web.Controllers
         }
 
         [HttpGet]
+        [Route("{id}")]
         public IActionResult RubroById(string id)
         {
             try
@@ -159,6 +162,7 @@ namespace Aramis.Api.Web.Controllers
         }
 
         [HttpGet]
+        [Route("{id}")]
         public IActionResult IvaById(string id)
         {
             try

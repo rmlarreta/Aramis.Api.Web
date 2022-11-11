@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Aramis.Api.Repository.Application.Operaciones
 {
     public class OperacionesRepository : IOperacionesRepository
-    { 
+    {
         private readonly AramisbdContext _context;
         public OperacionesRepository(AramisbdContext context)
         {
@@ -14,13 +14,13 @@ namespace Aramis.Api.Repository.Application.Operaciones
 
         public void DeleteDetalles(List<BusOperacionDetalle> detalles)
         {
-            _context.BusOperacionDetalles.RemoveRange(detalles); 
+            _context.BusOperacionDetalles.RemoveRange(detalles);
         }
 
         public void DeleteOperacion(string operacion)
         {
-            var op = _context.BusOperacions.FirstOrDefault(x=>x.Id.Equals(operacion));
-            _context.BusOperacions.Remove(op!); 
+            BusOperacion? op = _context.BusOperacions.FirstOrDefault(x => x.Id.Equals(operacion));
+            _context.BusOperacions.Remove(op!);
         }
 
         public BusOperacion Get(string id)
@@ -30,20 +30,33 @@ namespace Aramis.Api.Repository.Application.Operaciones
                  .Include(x => x.Cliente.RespNavigation)
                  .Include(x => x.TipoDoc)
                  .Include(x => x.Estado)
-                 .Include(x => x.BusOperacionDetalles) 
-                 .Include(x => x.BusOperacionObservacions) 
+                 .Include(x => x.BusOperacionDetalles)
+                 .Include(x => x.BusOperacionObservacions)
                  .Where(x => x.Id.Equals(Guid.Parse(id)))
                  .FirstOrDefault()!;
         }
 
+        public List<BusOperacion> Get()
+        { 
+            return _context.BusOperacions
+                 .OrderBy(x=>x.Cliente.Razon)
+                 .Include(x => x.Cliente)
+                 .Include(x => x.Cliente.RespNavigation)
+                 .Include(x => x.TipoDoc)
+                 .Include(x => x.Estado)
+                 .Include(x => x.BusOperacionDetalles)
+                 .Include(x => x.BusOperacionObservacions) 
+                 .ToList()!;
+        }
+
         public void Insert(BusOperacion entity)
         {
-            _context.BusOperacions.Add(entity); 
+            _context.BusOperacions.Add(entity);
         }
 
         public void Update(BusOperacion entity)
         {
-            _context.BusOperacions.Update(entity); 
+            _context.BusOperacions.Update(entity);
         }
 
         public bool Save()
@@ -53,12 +66,17 @@ namespace Aramis.Api.Repository.Application.Operaciones
 
         public List<BusEstado> GetEstados()
         {
-            return _context.BusEstados.ToList();
+            return _context.BusEstados.OrderBy(x=>x.Name).ToList();
+        }
+
+        public List<BusOperacionTipo> GetTipos()
+        {
+            return _context.BusOperacionTipos.OrderBy(x => x.Name).ToList();
         }
 
         public List<StockProduct> GetProducts()
         {
-           return _context.StockProducts.ToList();
+            return _context.StockProducts.OrderBy(x => x.Descripcion).ToList();
         }
 
         public void UpdateProducts(List<StockProduct> products)
@@ -68,12 +86,12 @@ namespace Aramis.Api.Repository.Application.Operaciones
 
         public SystemIndex GetIndexs()
         {
-          return _context.SystemIndices.First();
+            return _context.SystemIndices.First();
         }
-         
+
         public void UpdateIndexs(SystemIndex indexs)
         {
-          _context.SystemIndices.Update(indexs);
+            _context.SystemIndices.Update(indexs);
         }
     }
 }

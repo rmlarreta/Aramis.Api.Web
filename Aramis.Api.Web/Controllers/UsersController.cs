@@ -20,6 +20,7 @@ namespace Aramis.Api.Web.Controllers
 
         [AllowAnonymous]
         [HttpGet]
+        [Route("{user}/{password}")]
         public IActionResult Authenticate(string user, string password)
         {
             try
@@ -36,6 +37,7 @@ namespace Aramis.Api.Web.Controllers
 
         [AllowAnonymous]
         [HttpGet]
+        [Route("{user}/{password}/{npassword}")]
         public IActionResult ChangePassword(string user, string password, string npassword)
         {
             try
@@ -89,6 +91,7 @@ namespace Aramis.Api.Web.Controllers
 
         [HttpGet]
         [Authorize(Policy = Policies.Admin)]
+        [Route("{id}")]
         public IActionResult GetUserById(string id)
         {
             try
@@ -104,6 +107,7 @@ namespace Aramis.Api.Web.Controllers
 
         [HttpGet]
         [Authorize(Policy = Policies.Admin)]
+        [Route("{name}")]
         public IActionResult GetUserByName(string name)
         {
             try
@@ -134,6 +138,7 @@ namespace Aramis.Api.Web.Controllers
 
         [HttpDelete]
         [Authorize(Policy = Policies.Admin)]
+        [Route("{id}")]
         public IActionResult DeleteUser(string id)
         {
             try

@@ -8,11 +8,10 @@
 
   <ItemGroup>
     <PackageReference Include="AfipWsfeClient" Version="1.1.0" />
-    <PackageReference Include="AutoMapper" Version="12.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Aramis.Api.Repository\Aramis.Api.Repository.csproj" />
+    <ProjectReference Include="..\Aramis.Api.Commons\Aramis.Api.Commons.csproj" />
   </ItemGroup>
 
 </Project>

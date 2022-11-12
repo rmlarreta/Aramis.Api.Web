@@ -10,6 +10,9 @@ namespace Aramis.Api.Repository.Interfaces.Operaciones
         List<BusOperacion> Get();
         void DeleteDetalles(List<BusOperacionDetalle> detalles);
         void DeleteOperacion(string operacion);
+        void InsertObservaciones(List<BusOperacionObservacion> observaciones);
+        void InsertDetalles(List<BusOperacionDetalle> detalles);
+        void UpdateDetalles(List<BusOperacionDetalle> detalles);
         List<BusEstado> GetEstados();
         List<BusOperacionTipo> GetTipos();
         List<StockProduct> GetProducts();

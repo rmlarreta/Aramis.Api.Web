@@ -1,12 +1,12 @@
-﻿using Aramis.Api.Commons.ModelsDto.Pagos; 
+﻿using Aramis.Api.Commons.ModelsDto.Pagos;
 using Aramis.Api.FlowService.Interfaces;
 using Aramis.Api.SecurityService.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Aramis.Api.Web.Controllers
-{ 
-    [Authorize] 
+{
+    [Authorize]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class PagosController : ControllerBase
@@ -27,7 +27,7 @@ namespace Aramis.Api.Web.Controllers
             try
             {
                 recibo.Operador = _securityService.GetUserAuthenticated();
-                recibo.Fecha = DateTime.Now;  
+                recibo.Fecha = DateTime.Now;
                 return Ok(_recibosService.InsertRecibo(recibo));
             }
             catch (Exception ex)
@@ -40,7 +40,7 @@ namespace Aramis.Api.Web.Controllers
         public IActionResult ImputarPago([FromBody] PagoInsert pago)
         {
             try
-            { 
+            {
                 return Ok(_pagosService.NuevoPago(pago));
             }
             catch (Exception ex)

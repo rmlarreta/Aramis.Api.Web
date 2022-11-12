@@ -14,25 +14,25 @@ namespace Aramis.Api.OperacionesService.Application
         private readonly IMapper _mapper;
         private readonly IGenericRepository<SystemEmpresa> _empresa;
         private readonly IGenericRepository<BusOperacionDetalle> _busOperacionDetalle;
-        private readonly IGenericRepository<BusOperacionObservacion> _busOperacionObservacion; 
+        private readonly IGenericRepository<BusOperacionObservacion> _busOperacionObservacion;
         public OperacionesService(
             IOperacionesRepository repository,
             IGenericRepository<SystemEmpresa> empresa,
             IMapper mapper,
             IGenericRepository<BusOperacionDetalle> busOperacionDetalle,
-            IGenericRepository<BusOperacionObservacion> busOperacionObservacion 
+            IGenericRepository<BusOperacionObservacion> busOperacionObservacion
             )
         {
             _repository = repository;
             _busOperacionDetalle = busOperacionDetalle;
             _busOperacionObservacion = busOperacionObservacion;
-            _empresa = empresa; 
+            _empresa = empresa;
             _mapper = mapper;
         }
-        
+
         public BusOperacionesDto GetOperacion(string id)
         {
-            BusOperacion? op = _repository.Get(id); 
+            BusOperacion? op = _repository.Get(id);
             BusOperacionesDto? dto = _mapper.Map<BusOperacion, BusOperacionesDto>(op);
             IEnumerable<SystemEmpresa>? emp = _empresa.Get().Take(1);
             dto.CuitEmpresa = emp.OrderBy(x => x.Id).First().Cuit;
@@ -44,7 +44,7 @@ namespace Aramis.Api.OperacionesService.Application
             dto.Inicio = emp.OrderBy(x => x.Id).First().Inicio;
             return dto;
         }
-       
+
         public BusOperacionesDto InsertDetalle(BusDetalleOperacionesInsert detalle)
         {
             if (DetalleEstado(detalle.Id.ToString(), "ABIERTO"))
@@ -83,7 +83,7 @@ namespace Aramis.Api.OperacionesService.Application
         {
             if (OperacionEstado(operacionid, "ABIERTO"))
             {
-                var dets = _busOperacionDetalle.Get().Where(x => x.OperacionId.Equals(operacionid)).ToList();
+                List<BusOperacionDetalle>? dets = _busOperacionDetalle.Get().Where(x => x.OperacionId.Equals(operacionid)).ToList();
 
                 _repository.DeleteDetalles(dets);
                 _repository.DeleteOperacion(operacionid);
@@ -93,12 +93,19 @@ namespace Aramis.Api.OperacionesService.Application
         }
         public BusOperacionesDto UpdateOperacion(BusOperacionesInsert busoperacionesinsert) //Orden o Presupuesto
         {
-            if (!OperacionEstado(busoperacionesinsert.Id.ToString(), "ABIERTO")) throw new Exception("No puden modificarse las operaciones confirmadas");
+            if (!OperacionEstado(busoperacionesinsert.Id.ToString(), "ABIERTO"))
+            {
+                throw new Exception("No puden modificarse las operaciones confirmadas");
+            }
+
             if (
                 TipoOperacion(busoperacionesinsert.Id.ToString()).Equals("O")
                 &
                 CuitOperacion(busoperacionesinsert.Id.ToString()).Equals("0")
-              ) throw new Exception("No se puede asignar este CUI a este tipo de Operaciones");
+              )
+            {
+                throw new Exception("No se puede asignar este CUI a este tipo de Operaciones");
+            }
 
             _repository.Update(_mapper.Map<BusOperacionesInsert, BusOperacion>(busoperacionesinsert));
             if (_repository.Save())
@@ -132,10 +139,10 @@ namespace Aramis.Api.OperacionesService.Application
 
         private bool DetalleEstado(string id, string status)
         {
-            var data = _busOperacionDetalle.Get(Guid.Parse(id));
+            BusOperacionDetalle? data = _busOperacionDetalle.Get(Guid.Parse(id));
             return _repository.Get(data.OperacionId.ToString()).Estado.Name.Contains(status);
         }
-        private bool OperacionEstado(string id, string status)
+        public bool OperacionEstado(string id, string status)
         {
             return _repository.Get(id).Estado.Name.Contains(status);
         }
@@ -153,32 +160,40 @@ namespace Aramis.Api.OperacionesService.Application
         #region Remitos
 
         public BusOperacionesDto NuevoRemito(string id)
-        { 
-            if (OperacionEstado(id, "ABIERTO")) throw new Exception("No puede emitirse un remito en el estado actual del documento");
-            if (OperacionEstado(id, "ENTREGADO")) throw new Exception("Ya se ha realizado un remito sobre este documento");
-            if (!((TipoOperacion(id).Equals("P")  
-               || 
-               TipoOperacion(id).Equals("O")) 
-               && 
-               OperacionEstado(id, "PAGADO")))  
+        {
+            if (OperacionEstado(id, "ABIERTO"))
+            {
+                throw new Exception("No puede emitirse un remito en el estado actual del documento");
+            }
+
+            if (OperacionEstado(id, "ENTREGADO"))
+            {
+                throw new Exception("Ya se ha realizado un remito sobre este documento");
+            }
+
+            if (!((TipoOperacion(id).Equals("P")
+               ||
+               TipoOperacion(id).Equals("O"))
+               &&
+               OperacionEstado(id, "PAGADO")))
             {
                 throw new Exception("No existen pagos asociados a ese documento. Impute un pago o realice la cobranza");
             }
-            var operacion = _repository.Get(id); 
+            BusOperacion? operacion = _repository.Get(id);
             List<StockProduct> products = new();
-            foreach(var det in _mapper.Map<BusOperacion, BusOperacionesDto>(operacion).Detalles!)
+            foreach (BusDetallesOperacionesDto? det in _mapper.Map<BusOperacion, BusOperacionesDto>(operacion).Detalles!)
             {
-               var product=_repository.GetProducts().Where(x=>x.Id.Equals(det.ProductoId)).Where(x=>x.Servicio==false).FirstOrDefault();  
+                StockProduct? product = _repository.GetProducts().Where(x => x.Id.Equals(det.ProductoId)).Where(x => x.Servicio == false).FirstOrDefault();
                 if (product != null)
                 {
-                    product.Cantidad -= det.Cantidad; 
+                    product.Cantidad -= det.Cantidad;
                     products.Add(product);
                 }
             }
             operacion.EstadoId = _repository.GetEstados().Where(x => x.Name.Equals("ENTREGADO")).FirstOrDefault()!.Id;
-            operacion.TipoDocId= _repository.GetTipos().Where(x => x.Code!.Equals("X")).FirstOrDefault()!.Id;
-            var index = _repository.GetIndexs();
-            operacion.Numero = index.Remito += 1; 
+            operacion.TipoDocId = _repository.GetTipos().Where(x => x.Code!.Equals("X")).FirstOrDefault()!.Id;
+            SystemIndex? index = _repository.GetIndexs();
+            operacion.Numero = index.Remito += 1;
             _repository.UpdateIndexs(index);
             _repository.Update(operacion);
             _repository.Save();
@@ -186,7 +201,7 @@ namespace Aramis.Api.OperacionesService.Application
         }
         public List<BusOperacionesDto> RemitosPendientes()
         {
-            var remitos = _repository.Get()
+            List<BusOperacion>? remitos = _repository.Get()
                         .OrderBy(x => x.Cliente.Razon)
                         .Where(x => x.Estado.Name.Equals("ENTREGADO"))
                         .Where(x => x.TipoDoc.Code!.Equals("X"))
@@ -197,16 +212,28 @@ namespace Aramis.Api.OperacionesService.Application
                         .Where(x => x.Cliente.Cui.Equals("0") & DateTime.Now.Date.Subtract((x.Fecha).Date).Days <= 3))
                         .ToList();
             List<BusOperacionesDto>? dto = _mapper.Map<List<BusOperacion>, List<BusOperacionesDto>>(remitos);
+            List<BusOperacionesDto>? dtoEnCero = new();
             IEnumerable<SystemEmpresa>? emp = _empresa.Get().Take(1);
-            foreach (var item in dto)
+            foreach (BusOperacionesDto? item in dto)
             {
-                item.CuitEmpresa = emp.OrderBy(x => x.Id).First().Cuit;
-                item.DomicilioEmpresa = emp.OrderBy(x => x.Id).First().Domicilio;
-                item.RazonEmpresa = emp.OrderBy(x => x.Id).First().Razon;
-                item.RespoEmpresa = emp.OrderBy(x => x.Id).First().Respo;
-                item.Fantasia = emp.OrderBy(x => x.Id).First().Fantasia;
-                item.Iibb = emp.OrderBy(x => x.Id).First().Iibb;
-                item.Inicio = emp.OrderBy(x => x.Id).First().Inicio;
+                if (item.Total.Equals(0.0m))
+                {
+                    dtoEnCero.Add(item);
+                }
+                else
+                {
+                    item.CuitEmpresa = emp.OrderBy(x => x.Id).First().Cuit;
+                    item.DomicilioEmpresa = emp.OrderBy(x => x.Id).First().Domicilio;
+                    item.RazonEmpresa = emp.OrderBy(x => x.Id).First().Razon;
+                    item.RespoEmpresa = emp.OrderBy(x => x.Id).First().Respo;
+                    item.Fantasia = emp.OrderBy(x => x.Id).First().Fantasia;
+                    item.Iibb = emp.OrderBy(x => x.Id).First().Iibb;
+                    item.Inicio = emp.OrderBy(x => x.Id).First().Inicio;
+                }
+            }
+            foreach (BusOperacionesDto? item in dtoEnCero)
+            {
+                dto.Remove(item);
             }
             return dto;
         }
@@ -215,7 +242,7 @@ namespace Aramis.Api.OperacionesService.Application
         #region Presupuestos
         public BusOperacionesDto NuevaOperacion(BusOperacionesInsert busoperacionesinsert)
         {
-            var index = _repository.GetIndexs();
+            SystemIndex? index = _repository.GetIndexs();
             busoperacionesinsert.Numero = index.Presupuesto += 1;
             _repository.Insert(_mapper.Map<BusOperacionesInsert, BusOperacion>(busoperacionesinsert));
             _repository.UpdateIndexs(index);
@@ -224,15 +251,15 @@ namespace Aramis.Api.OperacionesService.Application
         }
         public List<BusOperacionesDto> Presupuestos()
         {
-            var presupuestos = _repository.Get()
+            List<BusOperacion>? presupuestos = _repository.Get()
                         .OrderBy(x => x.Cliente.Razon)
                         .Where(x => x.Estado.Name.Equals("ABIERTO"))
-                        .Where(x => x.TipoDoc.Code!.Equals("P")) 
+                        .Where(x => x.TipoDoc.Code!.Equals("P"))
                         .Where(x => DateTime.Now.Date.Subtract((x.Fecha).Date).Days <= 15)
                         .ToList();
             List<BusOperacionesDto>? dto = _mapper.Map<List<BusOperacion>, List<BusOperacionesDto>>(presupuestos);
             IEnumerable<SystemEmpresa>? emp = _empresa.Get().Take(1);
-            foreach (var item in dto)
+            foreach (BusOperacionesDto? item in dto)
             {
                 item.CuitEmpresa = emp.OrderBy(x => x.Id).First().Cuit;
                 item.DomicilioEmpresa = emp.OrderBy(x => x.Id).First().Domicilio;
@@ -247,33 +274,32 @@ namespace Aramis.Api.OperacionesService.Application
 
         #endregion
         #region Ordenes
-
         public BusOrdenesTicketDto NuevaOrden(string id)
         {
-             if (!(TipoOperacion(id).Equals("P") 
-               &&
-               OperacionEstado(id, "ABIERTO")))
+            if (!(TipoOperacion(id).Equals("P")
+              &&
+              OperacionEstado(id, "ABIERTO")))
             {
                 throw new Exception("Este documento no puede pasar a Orden");
             }
-            var operacion = _repository.Get(id); 
-            var index = _repository.GetIndexs();
+            BusOperacion? operacion = _repository.Get(id);
+            SystemIndex? index = _repository.GetIndexs();
             operacion.Numero = index.Orden += 1;
             _repository.UpdateIndexs(index);
             _repository.Update(operacion);
             _repository.Save();
-            return _mapper.Map<BusOperacion, BusOrdenesTicketDto>(operacion);  
+            return _mapper.Map<BusOperacion, BusOrdenesTicketDto>(operacion);
         }
         public List<BusOperacionesDto> OrdenesByEstado(string estado)
         {
-            var ordenes = _repository.Get()
+            List<BusOperacion>? ordenes = _repository.Get()
                         .OrderBy(x => x.Cliente.Razon)
                         .Where(x => x.Estado.Id.Equals(estado))
-                        .Where(x => x.TipoDoc.Code!.Equals("O")) 
+                        .Where(x => x.TipoDoc.Code!.Equals("O"))
                         .ToList();
             List<BusOperacionesDto>? dto = _mapper.Map<List<BusOperacion>, List<BusOperacionesDto>>(ordenes);
             IEnumerable<SystemEmpresa>? emp = _empresa.Get().Take(1);
-            foreach (var item in dto)
+            foreach (BusOperacionesDto? item in dto)
             {
                 item.CuitEmpresa = emp.OrderBy(x => x.Id).First().Cuit;
                 item.DomicilioEmpresa = emp.OrderBy(x => x.Id).First().Domicilio;

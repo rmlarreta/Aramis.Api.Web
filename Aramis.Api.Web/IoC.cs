@@ -1,4 +1,5 @@
 ﻿using Aramis.Api.CustomersService.Interfaces;
+using Aramis.Api.FiscalService.Interfaces;
 using Aramis.Api.FlowService.Interfaces;
 using Aramis.Api.OperacionesService.Interfaces;
 using Aramis.Api.Repository.Application;
@@ -36,6 +37,7 @@ namespace Aramis.Api.Web
             services.AddScoped<IRecibosService, FlowService.Application.RecibosService>();
             services.AddScoped<IPaymentsMp, FlowService.Application.PaymentsMP>();
             services.AddScoped<IPagosService, FlowService.Application.PagosService>();
+            services.AddScoped<IFiscalService, FiscalService.Application.FiscalService>();
             #endregion 
 
             #region Repositories

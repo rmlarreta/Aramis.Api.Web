@@ -2,10 +2,10 @@
 {
     public class PagoInsert
     {
-        public Guid ReciboId { get; set; }  
+        public Guid ReciboId { get; set; }
 
         #region Documentos
-        public List<string> Operaciones { get; set; } = new List<string>();   
+        public List<string> Operaciones { get; set; } = new List<string>();
         #endregion
 
     }

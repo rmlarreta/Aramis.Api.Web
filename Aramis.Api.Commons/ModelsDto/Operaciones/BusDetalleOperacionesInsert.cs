@@ -2,7 +2,7 @@
 {
     public class BusDetalleOperacionesInsert
     {
-        public Guid Id { get; set; } = Guid.NewGuid(); 
+        public Guid Id { get; set; } = Guid.NewGuid();
 
         public Guid OperacionId { get; set; }
 
@@ -23,5 +23,7 @@
         public decimal Internos { get; set; }
 
         public decimal Facturado { get; set; }
+
+        public string? Operador { get; set; }
     }
 }

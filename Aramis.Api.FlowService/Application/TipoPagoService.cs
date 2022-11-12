@@ -14,7 +14,7 @@ namespace Aramis.Api.FlowService.Application
 
         public bool Delete(string id)
         {
-           _repository.Delete(Guid.Parse(id));
+            _repository.Delete(Guid.Parse(id));
             return _repository.Save();
         }
 

@@ -2,7 +2,7 @@
 {
     public class ReciboInsert
     {
-        public Guid Id { get; set; }=Guid.NewGuid();
+        public Guid Id { get; set; } = Guid.NewGuid();
         public int? Numero { get; set; }
         public Guid ClienteId { get; set; }
 

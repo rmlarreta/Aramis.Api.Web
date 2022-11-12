@@ -7,6 +7,6 @@
         public string? Nombre { get; set; }
         public int? Numero { get; set; }
         public List<BusOrdenesTicketDto>? Observaciones { get; set; } = new List<BusOrdenesTicketDto>();
-        public DateTime? Fecha { get; set; }    
+        public DateTime? Fecha { get; set; }
     }
 }

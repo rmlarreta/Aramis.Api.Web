@@ -7,7 +7,7 @@ namespace Aramis.Api.OperacionesService.Interfaces
     {
         BusOperacionesDto NuevaOperacion(BusOperacionesInsert busoperacionesinsert);
         BusOperacionesDto UpdateOperacion(BusOperacionesInsert busoperacionesinsert);
-        BusOperacionesDto GetOperacion(string id); 
+        BusOperacionesDto GetOperacion(string id);
         bool DeleteOperacion(string operacionid);
         BusOperacionesDto InsertDetalle(BusDetalleOperacionesInsert detalle);
         BusOperacionesDto DeleteDetalle(string id);
@@ -33,5 +33,9 @@ namespace Aramis.Api.OperacionesService.Interfaces
         bool UpdateObservacion(BusObservacionesDto observacion);
 
         #endregion Observas
+
+        #region Utils
+        bool OperacionEstado(string id, string status);
+        #endregion
     }
 }

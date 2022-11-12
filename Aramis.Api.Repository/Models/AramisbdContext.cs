@@ -196,6 +196,8 @@ public partial class AramisbdContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.TipoAfip)
+            .HasColumnType("int");
         });
 
         modelBuilder.Entity<CobCuentum>(entity =>
@@ -483,6 +485,8 @@ public partial class AramisbdContext : DbContext
             entity.Property(e => e.Respo)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.PtoVenta).HasColumnType("int");
+
         });
 
         modelBuilder.Entity<SystemIndex>(entity =>

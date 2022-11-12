@@ -13,7 +13,7 @@ namespace Aramis.Api.FlowService.Application
         private readonly IGenericRepository<CobPo> _points;
         public PaymentsMP(IGenericRepository<CobPo> points)
         {
-            _points=points;
+            _points = points;
         }
         public async Task<PaymentIntentResponseDto> CreatePaymentIntent(PaymentIntentDto PaymentIntent, string id)
         {

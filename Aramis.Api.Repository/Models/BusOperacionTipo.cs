@@ -10,5 +10,7 @@ public partial class BusOperacionTipo
 
     public string? CodeExt { get; set; }
 
+    public int? TipoAfip { get; set; }
+
     public virtual ICollection<BusOperacion> BusOperacions { get; } = new List<BusOperacion>();
 }

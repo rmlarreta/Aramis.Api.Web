@@ -6,9 +6,9 @@ namespace Aramis.Api.FlowService.Interfaces
     {
         CobTipoPago Insert(CobTipoPago cobTipoPago);
         CobTipoPago Update(CobTipoPago cobTipoPago);
-        bool Delete(string id );
+        bool Delete(string id);
         CobTipoPago GetById(string id);
         List<CobTipoPago> GetAll();
-        
+
     }
 }

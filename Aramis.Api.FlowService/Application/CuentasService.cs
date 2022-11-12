@@ -13,7 +13,7 @@ namespace Aramis.Api.FlowService.Application
         }
         public bool Delete(string id)
         {
-             _cuentas.Delete(Guid.Parse(id));
+            _cuentas.Delete(Guid.Parse(id));
             return _cuentas.Save();
         }
 
@@ -36,7 +36,7 @@ namespace Aramis.Api.FlowService.Application
 
         public CobCuentum Update(CobCuentum cobCuentum)
         {
-           _cuentas.Update(cobCuentum);
+            _cuentas.Update(cobCuentum);
             return cobCuentum;
         }
     }

@@ -6,7 +6,7 @@ namespace Aramis.Api.Commons.ModelsDto.Operaciones
     {
         public Guid Id { get; set; }
 
-        public int? Numero { get; set; }    
+        public int? Numero { get; set; }
 
         public Guid ClienteId { get; set; }
 

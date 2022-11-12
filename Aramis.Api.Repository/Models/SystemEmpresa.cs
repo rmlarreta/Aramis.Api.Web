@@ -17,4 +17,5 @@ public partial class SystemEmpresa
     public DateTime Inicio { get; set; }
 
     public string Respo { get; set; } = null!;
+    public int PtoVenta { get; set; } = 0!;
 }

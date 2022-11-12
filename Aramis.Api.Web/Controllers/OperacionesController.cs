@@ -37,11 +37,11 @@ namespace Aramis.Api.Web.Controllers
 
         [HttpPost]
         [Route("{id}")]
-        public IActionResult NuevoRemito(string id )
+        public IActionResult NuevoRemito(string id)
         {
             try
             {
-                var data = _operacionesService.NuevoRemito(id);
+                BusOperacionesDto? data = _operacionesService.NuevoRemito(id);
                 return Ok(data);
             }
             catch (Exception ex)
@@ -56,7 +56,7 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                var data = _operacionesService.NuevaOrden(id);
+                Commons.ModelsDto.Ordenes.BusOrdenesTicketDto? data = _operacionesService.NuevaOrden(id);
                 return Ok(data);
             }
             catch (Exception ex)
@@ -71,7 +71,7 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                var data = _operacionesService.OrdenesByEstado(estado);
+                List<BusOperacionesDto>? data = _operacionesService.OrdenesByEstado(estado);
                 return Ok(data);
             }
             catch (Exception ex)
@@ -108,7 +108,7 @@ namespace Aramis.Api.Web.Controllers
             {
                 return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
             }
-            
+
         }
 
         [HttpGet]
@@ -117,22 +117,22 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                var data = _operacionesService.GetOperacion(id);
+                BusOperacionesDto? data = _operacionesService.GetOperacion(id);
                 return Ok(data);
             }
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
             }
-          
+
         }
-       
-        [HttpGet] 
+
+        [HttpGet]
         public IActionResult RemitosPendientes()
         {
             try
             {
-                var data = _operacionesService.RemitosPendientes();
+                List<BusOperacionesDto>? data = _operacionesService.RemitosPendientes();
                 return Ok(data);
             }
             catch (Exception ex)
@@ -147,7 +147,7 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                var data = _operacionesService.Presupuestos();
+                List<BusOperacionesDto>? data = _operacionesService.Presupuestos();
                 return Ok(data);
             }
             catch (Exception ex)
@@ -162,7 +162,7 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                var data = _operacionesService.InsertDetalle(detalle);
+                BusOperacionesDto? data = _operacionesService.InsertDetalle(detalle);
                 return Ok(data);
             }
             catch (Exception ex)
@@ -176,14 +176,14 @@ namespace Aramis.Api.Web.Controllers
         public IActionResult DeleteDetalle(string id)
         {
             try
-            { 
-                var data = _operacionesService.DeleteDetalle(id);
+            {
+                BusOperacionesDto? data = _operacionesService.DeleteDetalle(id);
                 return Ok(data);
             }
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
-            }           
+            }
         }
 
         [HttpPatch]
@@ -191,7 +191,7 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                var data = _operacionesService.UpdateDetalle(detalle);
+                BusOperacionesDto? data = _operacionesService.UpdateDetalle(detalle);
                 return Ok(data);
             }
             catch (Exception ex)
@@ -207,7 +207,7 @@ namespace Aramis.Api.Web.Controllers
             {
                 observa.Operador = _securityService.GetUserAuthenticated();
                 observa.Fecha = DateTime.Now;
-                return Ok(_operacionesService.InsertObservacion(observa)); 
+                return Ok(_operacionesService.InsertObservacion(observa));
             }
             catch (Exception ex)
             {
@@ -221,7 +221,7 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                return Ok(_operacionesService.DeleteObservacion(id)); 
+                return Ok(_operacionesService.DeleteObservacion(id));
             }
             catch (Exception ex)
             {
@@ -236,7 +236,7 @@ namespace Aramis.Api.Web.Controllers
             {
                 observa.Operador = _securityService.GetUserAuthenticated();
                 observa.Fecha = DateTime.Now;
-                return Ok(_operacionesService.UpdateObservacion(observa)); 
+                return Ok(_operacionesService.UpdateObservacion(observa));
             }
             catch (Exception ex)
             {

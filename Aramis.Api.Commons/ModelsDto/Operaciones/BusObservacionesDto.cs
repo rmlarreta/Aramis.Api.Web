@@ -2,7 +2,7 @@
 {
     public class BusObservacionesDto
     {
-        public Guid Id { get; set; }=Guid.NewGuid();
+        public Guid Id { get; set; } = Guid.NewGuid();
 
         public Guid OperacionId { get; set; }
 

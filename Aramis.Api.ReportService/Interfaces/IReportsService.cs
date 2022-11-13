@@ -2,7 +2,7 @@
 {
     public interface IReportsService
     {
-        IOperacionsReports Operaciones {get;}
+        IOperacionsReports Operaciones { get; }
         //servicio de reporteria
         //servicio de informes crudos
 

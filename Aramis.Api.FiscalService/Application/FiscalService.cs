@@ -46,7 +46,7 @@ namespace Aramis.Api.FiscalService.Application
             documentoFiscal.Iva21 = (decimal)busDetalles.Sum(x => x.TotalIva21)!;
             documentoFiscal.IvaTotal = (decimal)busDetalles.Sum(x => x.TotalIva)!;
             documentoFiscal.TotalComprobante = (decimal)busDetalles.Sum(x => x.Total)!;
-            List<AlicIva> alicIvas = new(); 
+            List<AlicIva> alicIvas = new();
 
             if (documentoFiscal.Iva10 > 0)
             {

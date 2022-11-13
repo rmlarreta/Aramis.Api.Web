@@ -5,8 +5,10 @@ namespace Aramis.Api.ReportService.Interfaces
     public interface IOperacionsReports
     {
         FileStreamResult FacturaReport(string id);
-        //reporte remitos
-        //reporte ordenes
+        FileStreamResult RemitoReport(string id);
+        FileStreamResult PresupuestoReport(string id);
+        FileStreamResult TicketOrdenReport(string id);
+        
         //reporte recibos
     }
 }

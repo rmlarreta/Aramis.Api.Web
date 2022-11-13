@@ -1,7 +1,7 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Pagos;
 using Aramis.Api.FlowService.Interfaces;
 using Aramis.Api.Repository.Interfaces.Recibos;
-using Aramis.Api.Repository.Models; 
+using Aramis.Api.Repository.Models;
 using AutoMapper;
 
 namespace Aramis.Api.FlowService.Application
@@ -10,7 +10,7 @@ namespace Aramis.Api.FlowService.Application
     {
         private readonly IPaymentsMp _paymentsMP;
         private readonly IRecibosRepository _recibos;
-        private readonly IMapper _mapper; 
+        private readonly IMapper _mapper;
         public RecibosService(IPaymentsMp paymentsMP, IRecibosRepository recibos, IMapper mapper)
         {
             _paymentsMP = paymentsMP;
@@ -59,6 +59,6 @@ namespace Aramis.Api.FlowService.Application
                 }
             }
             return intento!;
-        } 
+        }
     }
 }

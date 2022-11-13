@@ -42,7 +42,7 @@ namespace Aramis.Api.Web
             services.AddScoped<IPagosService, FlowService.Application.PagosService>();
             services.AddScoped<IFiscalService, FiscalService.Application.FiscalService>();
             services.AddScoped<IOperacionsReports, ReportService.Application.OperacionsReports>();
-            services.AddScoped<IReportsService,ReportService.Application.ReportsService>();
+            services.AddScoped<IReportsService, ReportService.Application.ReportsService>();
             #endregion 
 
             #region Repositories

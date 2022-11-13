@@ -1,4 +1,6 @@
-﻿namespace Aramis.Api.Commons.ModelsDto.Ordenes
+﻿using Aramis.Api.Repository.Models;
+
+namespace Aramis.Api.Commons.ModelsDto.Ordenes
 {
     public class BusOrdenesTicketDto
     {
@@ -6,7 +8,7 @@
         public string? Cui { get; set; }
         public string? Nombre { get; set; }
         public int? Numero { get; set; }
-        public List<BusOrdenesTicketDto>? Observaciones { get; set; } = new List<BusOrdenesTicketDto>();
+        public List<BusOperacionObservacion>? Observaciones { get; set; } = new List<BusOperacionObservacion>();
         public DateTime? Fecha { get; set; }
     }
 }

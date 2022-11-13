@@ -28,5 +28,47 @@ namespace Aramis.Api.Web.Controllers
                 return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
             }
         }
+
+        [HttpGet]
+        [Route("{id}")]
+        public IActionResult ReporteRemito(string id)
+        {
+            try
+            {
+                return _service.Operaciones.RemitoReport(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+            }
+        }
+
+        [HttpGet]
+        [Route("{id}")]
+        public IActionResult ReportePresupuesto(string id)
+        {
+            try
+            {
+                return _service.Operaciones.PresupuestoReport(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+            }
+        }
+
+        [HttpGet]
+        [Route("{id}")]
+        public IActionResult ReporteTicketOrden(string id)
+        {
+            try
+            {
+                return _service.Operaciones.TicketOrdenReport(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+            }
+        }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using Aramis.Api.ReportService.Interfaces;
-using Aramis.Api.Repository.Interfaces.Reports; 
+using Aramis.Api.Repository.Interfaces.Reports;
 using AutoMapper;
 
 namespace Aramis.Api.ReportService.Application
@@ -14,6 +14,6 @@ namespace Aramis.Api.ReportService.Application
             _repository = repository;
             _mapper = mapper;
         }
-        public IOperacionsReports Operaciones => _operacionsReports ??= new OperacionsReports(_repository,_mapper);
+        public IOperacionsReports Operaciones => _operacionsReports ??= new OperacionsReports(_repository, _mapper);
     }
 }

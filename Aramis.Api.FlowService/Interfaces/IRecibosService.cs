@@ -1,4 +1,4 @@
-﻿using Aramis.Api.Commons.ModelsDto.Pagos; 
+﻿using Aramis.Api.Commons.ModelsDto.Pagos;
 
 namespace Aramis.Api.FlowService.Interfaces
 {
@@ -6,7 +6,7 @@ namespace Aramis.Api.FlowService.Interfaces
     {
         string InsertRecibo(ReciboInsert recibo);
 
-        public Task<PaymentIntentResponseDto> PagoMP(PaymentIntentDto intent, string point); 
+        public Task<PaymentIntentResponseDto> PagoMP(PaymentIntentDto intent, string point);
 
     }
 }

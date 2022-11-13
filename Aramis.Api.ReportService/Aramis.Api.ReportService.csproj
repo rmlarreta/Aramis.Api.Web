@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <PackageReference Include="QRCoder" Version="1.4.3" />
+    <PackageReference Include="QuestPDF" Version="2022.11.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Aramis.Api.Commons\Aramis.Api.Commons.csproj" />
+    <ProjectReference Include="..\Aramis.Api.Repository\Aramis.Api.Repository.csproj" />
+  </ItemGroup>
+
+</Project>

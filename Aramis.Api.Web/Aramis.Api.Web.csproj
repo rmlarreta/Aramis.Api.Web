@@ -19,6 +19,7 @@
     <ProjectReference Include="..\Aramis.Api.FiscalService\Aramis.Api.FiscalService.csproj" />
     <ProjectReference Include="..\Aramis.Api.FlowService\Aramis.Api.FlowService.csproj" />
     <ProjectReference Include="..\Aramis.Api.OperacionesService\Aramis.Api.OperacionesService.csproj" />
+    <ProjectReference Include="..\Aramis.Api.ReportService\Aramis.Api.ReportService.csproj" />
     <ProjectReference Include="..\Aramis.Api.SecurityService\Aramis.Api.SecurityService.csproj" />
     <ProjectReference Include="..\Aramis.Api.StockService\Aramis.Api.StockService.csproj" />
   </ItemGroup>

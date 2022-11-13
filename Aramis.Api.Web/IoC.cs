@@ -2,11 +2,13 @@
 using Aramis.Api.FiscalService.Interfaces;
 using Aramis.Api.FlowService.Interfaces;
 using Aramis.Api.OperacionesService.Interfaces;
+using Aramis.Api.ReportService.Interfaces;
 using Aramis.Api.Repository.Application;
 using Aramis.Api.Repository.Application.Customers;
 using Aramis.Api.Repository.Application.Operaciones;
 using Aramis.Api.Repository.Application.Pagos;
 using Aramis.Api.Repository.Application.Recibos;
+using Aramis.Api.Repository.Application.Reports;
 using Aramis.Api.Repository.Application.Security;
 using Aramis.Api.Repository.Application.Stock;
 using Aramis.Api.Repository.Interfaces;
@@ -14,6 +16,7 @@ using Aramis.Api.Repository.Interfaces.Customers;
 using Aramis.Api.Repository.Interfaces.Operaciones;
 using Aramis.Api.Repository.Interfaces.Pagos;
 using Aramis.Api.Repository.Interfaces.Recibos;
+using Aramis.Api.Repository.Interfaces.Reports;
 using Aramis.Api.Repository.Interfaces.Security;
 using Aramis.Api.Repository.Interfaces.Stock;
 using Aramis.Api.SecurityService.Interfaces;
@@ -38,6 +41,8 @@ namespace Aramis.Api.Web
             services.AddScoped<IPaymentsMp, FlowService.Application.PaymentsMP>();
             services.AddScoped<IPagosService, FlowService.Application.PagosService>();
             services.AddScoped<IFiscalService, FiscalService.Application.FiscalService>();
+            services.AddScoped<IOperacionsReports, ReportService.Application.OperacionsReports>();
+            services.AddScoped<IReportsService,ReportService.Application.ReportsService>();
             #endregion 
 
             #region Repositories
@@ -49,7 +54,8 @@ namespace Aramis.Api.Web
             services.AddScoped<IStockRepository, StockRepository>();
             services.AddScoped<IOperacionesRepository, OperacionesRepository>();
             services.AddScoped<IRecibosRepository, RecibosRepository>();
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IPagosRepository, PagosRepository>();
+            services.AddScoped<IReportsRepository, ReportsRepository>();
             #endregion Repositories
         }
     }

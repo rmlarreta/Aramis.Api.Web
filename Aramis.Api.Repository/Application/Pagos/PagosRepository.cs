@@ -8,7 +8,7 @@ using Aramis.Api.Repository.Models;
 
 namespace Aramis.Api.Repository.Application.Pagos
 {
-    public class UnitOfWork : IUnitOfWork
+    public class PagosRepository : IPagosRepository
     {
         private readonly AramisbdContext _context;
         private IRecibosRepository _cobRecibosRepository = null!;
@@ -17,7 +17,7 @@ namespace Aramis.Api.Repository.Application.Pagos
         private IOperacionesRepository _busOperacionRepository = null!;
         private IGenericRepository<BusEstado> _busEstadosRepository = null!;
         private IGenericRepository<BusOperacionPago> _operacionPagosRepository = null!;
-        public UnitOfWork(AramisbdContext context)
+        public PagosRepository(AramisbdContext context)
         {
             _context = context;
         }

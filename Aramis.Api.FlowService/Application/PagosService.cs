@@ -10,9 +10,9 @@ namespace Aramis.Api.FlowService.Application
 {
     public class PagosService : IPagosService
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IPagosRepository _unitOfWork;
         private readonly IMapper _mapper;
-        public PagosService(IUnitOfWork unitOfWork, IMapper mapper)
+        public PagosService(IPagosRepository unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;

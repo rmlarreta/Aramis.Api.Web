@@ -8,7 +8,6 @@ namespace Aramis.Api.ReportService.Interfaces
         FileStreamResult RemitoReport(string id);
         FileStreamResult PresupuestoReport(string id);
         FileStreamResult TicketOrdenReport(string id);
-        
-        //reporte recibos
+        FileStreamResult RecibosReport(string id);
     }
 }

@@ -26,14 +26,22 @@ namespace Aramis.Api.Repository.Application.Recibos
         {
             return _context.CobRecibos
                     .Include(x => x.CobReciboDetalles)
+                    .Include("CobReciboDetalles.TipoNavigation")
+                    .Include("CobReciboDetalles.TipoNavigation.Cuenta")
+                    .Include(x => x.Cliente)
+                    .Include(x => x.Cliente.RespNavigation)
                     .Where(x => x.Id.Equals(Guid.Parse(id)))
-                    .FirstOrDefault()!;
+                    .FirstOrDefault()!; 
         }
 
         public IEnumerable<CobRecibo> GetAll()
         {
             return _context.CobRecibos
-                   .Include(x => x.CobReciboDetalles)
+                    .Include(x => x.CobReciboDetalles)
+                    .Include("CobReciboDetalles.TipoNavigation")
+                    .Include("CobReciboDetalles.TipoNavigation.Cuenta")
+                    .Include(x => x.Cliente)
+                    .Include(x => x.Cliente.RespNavigation)
                    .ToList()!;
         }
         public bool Save()

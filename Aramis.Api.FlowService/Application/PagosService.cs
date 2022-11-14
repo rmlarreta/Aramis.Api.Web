@@ -10,16 +10,16 @@ namespace Aramis.Api.FlowService.Application
 {
     public class PagosService : IPagosService
     {
-        private readonly IPagosRepository _unitOfWork;
+        private readonly IPagosRepository _repository;
         private readonly IMapper _mapper;
-        public PagosService(IPagosRepository unitOfWork, IMapper mapper)
+        public PagosService(IPagosRepository repository, IMapper mapper)
         {
-            _unitOfWork = unitOfWork;
+            _repository = repository;
             _mapper = mapper;
         }
         public bool NuevoPago(PagoInsert pago)
         {
-            CobRecibo? recibo = _unitOfWork.Recibos.Get(pago.ReciboId.ToString());
+            CobRecibo? recibo = _repository.Recibos.Get(pago.ReciboId.ToString());
             if (recibo.CobReciboDetalles.Sum(x => x.Monto) == 0)
             {
                 throw new Exception("No puede insertarse un Recibo en 0");
@@ -27,16 +27,16 @@ namespace Aramis.Api.FlowService.Application
 
             foreach (CobReciboDetalle? item in recibo!.CobReciboDetalles)
             {
-                CobCuentum? cuenta = _unitOfWork.Cuentas.Get().FirstOrDefault(x => x.Id.Equals(_unitOfWork.TipoPagos.Get().FirstOrDefault(x => x.Id.Equals(item.Tipo))!.CuentaId));
+                CobCuentum? cuenta = _repository.Cuentas.Get().FirstOrDefault(x => x.Id.Equals(_repository.TipoPagos.Get().FirstOrDefault(x => x.Id.Equals(item.Tipo))!.CuentaId));
                 if (cuenta is null)
                 {
                     throw new Exception("Existe un error en las cuentas");
                 }
 
                 cuenta.Saldo += item.Monto;
-                _unitOfWork.Cuentas.Update(cuenta);
+                _repository.Cuentas.Update(cuenta);
             }
-            if (_unitOfWork.OperacionPagos.Get().Where(x => x.ReciboId.Equals(pago.ReciboId)).Any())
+            if (_repository.OperacionPagos.Get().Where(x => x.ReciboId.Equals(pago.ReciboId)).Any())
             {
                 throw new Exception("Ese Recibo ya ha sido imputado");
             }
@@ -44,7 +44,7 @@ namespace Aramis.Api.FlowService.Application
             List<BusOperacion> ops = new();
             foreach (string? id in pago.Operaciones)
             {
-                BusOperacion? op = _unitOfWork.Operaciones.Get(id);
+                BusOperacion? op = _repository.Operaciones.Get(id);
                 ops.Add(op!);
             }
             List<BusOperacionesDto>? operaciones = _mapper.Map<List<BusOperacion>, List<BusOperacionesDto>>(ops);
@@ -55,17 +55,17 @@ namespace Aramis.Api.FlowService.Application
 
             foreach (BusOperacion? item in ops)
             {
-                item.EstadoId = _unitOfWork.Estados.Get().Where(x => x.Name.Equals("PAGADO")).SingleOrDefault()!.Id;
-                _unitOfWork.Operaciones.Update(item);
+                item.EstadoId = _repository.Estados.Get().Where(x => x.Name.Equals("PAGADO")).SingleOrDefault()!.Id;
+                _repository.Operaciones.Update(item);
                 BusOperacionPago op = new()
                 {
                     Id = Guid.NewGuid(),
                     OperacionId = item.Id,
                     ReciboId = pago.ReciboId
                 };
-                _unitOfWork.OperacionPagos.Add(op);
+                _repository.OperacionPagos.Add(op);
             }
-            return _unitOfWork.Save();
+            return _repository.Save();
         }
     }
 }

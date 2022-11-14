@@ -59,6 +59,20 @@ namespace Aramis.Api.Web.Controllers
 
         [HttpGet]
         [Route("{id}")]
+        public IActionResult ReporteRecibo(string id)
+        {
+            try
+            {
+                return _service.Operaciones.RecibosReport(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+            }
+
+        }
+        [HttpGet]
+        [Route("{id}")]
         public IActionResult ReporteTicketOrden(string id)
         {
             try

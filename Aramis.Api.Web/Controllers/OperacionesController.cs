@@ -24,6 +24,7 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
+                op.Id = Guid.NewGuid();
                 op.Operador = _securityService.GetUserAuthenticated();
                 op.Fecha = DateTime.Now;
                 BusOperacionesDto data = _operacionesService.NuevaOperacion(op);
@@ -243,5 +244,37 @@ namespace Aramis.Api.Web.Controllers
                 return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
             }
         }
+
+        #region Auxiliares
+
+        [HttpGet]
+        public IActionResult Tipos()
+        {
+            try
+            {
+                List<BusOperacionTipoDto>? data = _operacionesService.TipoOperacions();
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult Estados()
+        {
+            try
+            {
+                List<BusEstadoDto>? data = _operacionesService.Estados();
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+            }
+        }
+
+        #endregion
     }
 }

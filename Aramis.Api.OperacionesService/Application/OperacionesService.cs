@@ -149,7 +149,8 @@ namespace Aramis.Api.OperacionesService.Application
         private string TipoOperacion(string id)
         {
             return _repository.Get(id).TipoDoc.Code!.ToString();
-        }
+        } 
+       
         private string CuitOperacion(string id)
         {
             return _repository.Get(id).Cliente.Cui.ToString();
@@ -247,7 +248,7 @@ namespace Aramis.Api.OperacionesService.Application
             _repository.Insert(_mapper.Map<BusOperacionesInsert, BusOperacion>(busoperacionesinsert));
             _repository.UpdateIndexs(index);
             _repository.Save();
-            return GetOperacion(busoperacionesinsert.Id.ToString());
+            return GetOperacion(busoperacionesinsert.Id.ToString()!);
         }
         public List<BusOperacionesDto> Presupuestos()
         {
@@ -311,6 +312,21 @@ namespace Aramis.Api.OperacionesService.Application
             }
             return dto;
         }
+        #endregion
+
+        #region auxiliares
+        public List<BusOperacionTipoDto> TipoOperacions()
+        {
+            List<BusOperacionTipo> tipos = _repository.GetTipos();
+            return _mapper.Map<List<BusOperacionTipo>, List<BusOperacionTipoDto>>(tipos);
+        }
+
+        public List<BusEstadoDto> Estados()
+        {
+            List<BusEstado> estados = _repository.GetEstados();
+            return _mapper.Map<List<BusEstado>, List<BusEstadoDto>>(estados);
+        }
+
         #endregion
     }
 }

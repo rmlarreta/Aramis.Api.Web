@@ -76,6 +76,13 @@ namespace Aramis.Api.Web.Controllers
             return _customersService.GetById(id);
         }
 
+        [HttpGet]
+        [Route("{cui}")]
+        public OpClienteDto GetByCui(string cui)
+        {
+            return _customersService.GetByCui(cui);
+        }
+
         #region Attributes
         [HttpGet]
         public IEnumerable<OpResp> GetRespList()

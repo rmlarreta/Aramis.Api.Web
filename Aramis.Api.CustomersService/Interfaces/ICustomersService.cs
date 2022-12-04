@@ -6,6 +6,7 @@ namespace Aramis.Api.CustomersService.Interfaces
     {
         List<OpClienteDto> GetAll();
         OpClienteDto GetById(string id);
+        OpClienteDto GetByCui(string cui);
         bool Delete(string id);
         OpClienteDto Update(OpClienteInsert entity);
         OpClienteDto Insert(OpClienteInsert entity);

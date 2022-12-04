@@ -35,6 +35,12 @@ namespace Aramis.Api.CustomersService.Application
             return _mapper.Map<OpCliente, OpClienteDto>(entity);
         }
 
+        public OpClienteDto GetByCui(string cui)
+        {
+            OpCliente? entity = _customersRepository.GetAll().Where(x=>x.Cui==cui).FirstOrDefault()!;
+            return _mapper.Map<OpCliente, OpClienteDto>(entity);
+        }
+
         public OpClienteDto Insert(OpClienteInsert entity)
         {
             entity.Cui = ExtensionMethods.ConformaCui(entity, GetGender(entity.Gender).Name);

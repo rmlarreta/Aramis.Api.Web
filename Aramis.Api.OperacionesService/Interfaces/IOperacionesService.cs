@@ -1,5 +1,5 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Operaciones;
-using Aramis.Api.Commons.ModelsDto.Ordenes;
+using Aramis.Api.Commons.ModelsDto.Ordenes; 
 
 namespace Aramis.Api.OperacionesService.Interfaces
 {
@@ -36,6 +36,8 @@ namespace Aramis.Api.OperacionesService.Interfaces
 
         #region Utils
         bool OperacionEstado(string id, string status);
+        List<BusOperacionTipoDto> TipoOperacions();
+        List<BusEstadoDto> Estados();
         #endregion
     }
 }

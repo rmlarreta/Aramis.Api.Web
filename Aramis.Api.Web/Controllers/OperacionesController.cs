@@ -19,15 +19,13 @@ namespace Aramis.Api.Web.Controllers
             _securityService = securityService;
         }
 
-        [HttpPost]
-        public IActionResult NuevaOperacion([FromBody] BusOperacionesInsert op)
+        [HttpGet]
+        public IActionResult NuevaOperacion()
         {
             try
-            {
-                op.Id = Guid.NewGuid();
-                op.Operador = _securityService.GetUserAuthenticated();
-                op.Fecha = DateTime.Now;
-                BusOperacionesDto data = _operacionesService.NuevaOperacion(op);
+            { 
+                var operador = _securityService.GetUserAuthenticated(); 
+                BusOperacionesDto data = _operacionesService.NuevaOperacion(operador);
                 return Ok(data);
             }
             catch (Exception ex)

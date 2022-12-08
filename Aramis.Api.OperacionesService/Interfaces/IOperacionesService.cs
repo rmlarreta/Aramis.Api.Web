@@ -5,7 +5,7 @@ namespace Aramis.Api.OperacionesService.Interfaces
 {
     public interface IOperacionesService
     {
-        BusOperacionesDto NuevaOperacion(BusOperacionesInsert busoperacionesinsert);
+        BusOperacionesDto NuevaOperacion(string operador);
         BusOperacionesDto UpdateOperacion(BusOperacionesInsert busoperacionesinsert);
         BusOperacionesDto GetOperacion(string id);
         bool DeleteOperacion(string operacionid);

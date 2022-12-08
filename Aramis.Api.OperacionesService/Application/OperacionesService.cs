@@ -15,17 +15,20 @@ namespace Aramis.Api.OperacionesService.Application
         private readonly IGenericRepository<SystemEmpresa> _empresa;
         private readonly IGenericRepository<BusOperacionDetalle> _busOperacionDetalle;
         private readonly IGenericRepository<BusOperacionObservacion> _busOperacionObservacion;
+        private readonly IGenericRepository<OpCliente> _opClientes;
         public OperacionesService(
             IOperacionesRepository repository,
             IGenericRepository<SystemEmpresa> empresa,
             IMapper mapper,
             IGenericRepository<BusOperacionDetalle> busOperacionDetalle,
-            IGenericRepository<BusOperacionObservacion> busOperacionObservacion
+            IGenericRepository<BusOperacionObservacion> busOperacionObservacion,
+            IGenericRepository<OpCliente> opClientes
             )
         {
             _repository = repository;
             _busOperacionDetalle = busOperacionDetalle;
             _busOperacionObservacion = busOperacionObservacion;
+            _opClientes = opClientes;
             _empresa = empresa;
             _mapper = mapper;
         }
@@ -93,15 +96,15 @@ namespace Aramis.Api.OperacionesService.Application
         }
         public BusOperacionesDto UpdateOperacion(BusOperacionesInsert busoperacionesinsert) //Orden o Presupuesto
         {
-            if (!OperacionEstado(busoperacionesinsert.Id.ToString(), "ABIERTO"))
+            if (!OperacionEstado(busoperacionesinsert.Id.ToString()!, "ABIERTO"))
             {
                 throw new Exception("No puden modificarse las operaciones confirmadas");
             }
 
             if (
-                TipoOperacion(busoperacionesinsert.Id.ToString()).Equals("O")
+                TipoOperacion(busoperacionesinsert.Id.ToString()!).Equals("O")
                 &
-                CuitOperacion(busoperacionesinsert.Id.ToString()).Equals("0")
+                CuitOperacion(busoperacionesinsert.Id.ToString()!).Equals("0")
               )
             {
                 throw new Exception("No se puede asignar este CUI a este tipo de Operaciones");
@@ -110,7 +113,7 @@ namespace Aramis.Api.OperacionesService.Application
             _repository.Update(_mapper.Map<BusOperacionesInsert, BusOperacion>(busoperacionesinsert));
             if (_repository.Save())
             {
-                return GetOperacion(busoperacionesinsert.Id.ToString());
+                return GetOperacion(busoperacionesinsert.Id.ToString()!);
             }
             throw new Exception("No se pudo completar la operación");
         }
@@ -149,8 +152,8 @@ namespace Aramis.Api.OperacionesService.Application
         private string TipoOperacion(string id)
         {
             return _repository.Get(id).TipoDoc.Code!.ToString();
-        } 
-       
+        }
+
         private string CuitOperacion(string id)
         {
             return _repository.Get(id).Cliente.Cui.ToString();
@@ -241,10 +244,24 @@ namespace Aramis.Api.OperacionesService.Application
         #endregion
 
         #region Presupuestos
-        public BusOperacionesDto NuevaOperacion(BusOperacionesInsert busoperacionesinsert)
+        public BusOperacionesDto NuevaOperacion(string operador)
         {
             SystemIndex? index = _repository.GetIndexs();
-            busoperacionesinsert.Numero = index.Presupuesto += 1;
+            BusOperacionesInsert busoperacionesinsert = new()
+            {
+                Id = Guid.NewGuid(),
+                Operador = operador,
+                CodAut = "",
+                ClienteId = _opClientes.Get().Where(x => x.Cui == "0").First().Id,
+                TipoDocId = _repository.GetTipos().Where(x => x.Name == "PRESUPUESTO").First().Id,
+                EstadoId = _repository.GetEstados().Where(x => x.Name == "ABIERTO").First().Id,
+                Fecha =DateTime.Now,
+                Numero = index.Presupuesto += 1,
+                Pos=0,
+                Vence=DateTime.Now,
+                Razon = _opClientes.Get().Where(x => x.Cui == "0").First().Razon
+            }; 
+          
             _repository.Insert(_mapper.Map<BusOperacionesInsert, BusOperacion>(busoperacionesinsert));
             _repository.UpdateIndexs(index);
             _repository.Save();

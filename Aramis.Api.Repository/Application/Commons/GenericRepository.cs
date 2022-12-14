@@ -34,6 +34,11 @@ namespace Aramis.Api.Repository.Application
             _dbSet.Add(data);
         }
 
+        public void Add(List<TEntity> data)
+        {
+            _dbSet.AddRange(data);
+        }
+
         public bool Save()
         {
             return _context.SaveChanges() > 0;

@@ -157,7 +157,7 @@ namespace Aramis.Api.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult InsertDetalle([FromBody] BusDetalleOperacionesInsert detalle)
+        public IActionResult InsertDetalle([FromBody] List<BusDetalleOperacionesInsert> detalle)
         {
             try
             {

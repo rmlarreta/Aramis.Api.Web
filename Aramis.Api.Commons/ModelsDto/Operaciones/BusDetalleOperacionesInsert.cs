@@ -2,7 +2,7 @@
 {
     public class BusDetalleOperacionesInsert
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid? Id { get; set; } = null;
 
         public Guid OperacionId { get; set; }
 

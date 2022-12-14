@@ -48,14 +48,19 @@ namespace Aramis.Api.OperacionesService.Application
             return dto;
         }
 
-        public BusOperacionesDto InsertDetalle(BusDetalleOperacionesInsert detalle)
+        public BusOperacionesDto InsertDetalle(List<BusDetalleOperacionesInsert> detalle)
         {
-            if (DetalleEstado(detalle.Id.ToString(), "ABIERTO"))
-            {
-                _busOperacionDetalle.Add(_mapper.Map<BusDetalleOperacionesInsert, BusOperacionDetalle>(detalle));
+            detalle.ForEach(
+                x =>
+                {
+                    if (!OperacionEstado(x.OperacionId.ToString()!, "ABIERTO")) throw new Exception("No se pudo completar la operación");
+                    x.Id = Guid.NewGuid();
+                }); 
+          
+                _busOperacionDetalle.Add(_mapper.Map<List<BusDetalleOperacionesInsert>, List<BusOperacionDetalle>>(detalle));
                 _busOperacionDetalle.Save();
-                return GetOperacion(detalle.OperacionId.ToString());
-            }
+                return GetOperacion(detalle.OrderBy(x=>x.Id).First().OperacionId.ToString());
+           
             throw new Exception("No se pudo completar la operación");
         }
 
@@ -73,7 +78,7 @@ namespace Aramis.Api.OperacionesService.Application
 
         public BusOperacionesDto UpdateDetalle(BusDetalleOperacionesInsert detalle)
         {
-            if (DetalleEstado(detalle.Id.ToString(), "ABIERTO"))
+            if (DetalleEstado(detalle.Id.ToString()!, "ABIERTO"))
             {
                 _busOperacionDetalle.Update(_mapper.Map<BusDetalleOperacionesInsert, BusOperacionDetalle>(detalle));
                 _busOperacionDetalle.Save();

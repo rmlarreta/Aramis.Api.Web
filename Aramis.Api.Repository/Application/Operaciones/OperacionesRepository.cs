@@ -29,7 +29,7 @@ namespace Aramis.Api.Repository.Application.Operaciones
 
         public void DeleteOperacion(string operacion)
         {
-            BusOperacion? op = _context.BusOperacions.FirstOrDefault(x => x.Id.Equals(operacion));
+            BusOperacion? op = _context.BusOperacions.FirstOrDefault(x => x.Id.ToString() == operacion);
             _context.BusOperacions.Remove(op!);
         }
 

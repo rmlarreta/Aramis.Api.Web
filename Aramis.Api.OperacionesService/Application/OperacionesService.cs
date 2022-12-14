@@ -91,7 +91,7 @@ namespace Aramis.Api.OperacionesService.Application
         {
             if (OperacionEstado(operacionid, "ABIERTO"))
             {
-                List<BusOperacionDetalle>? dets = _busOperacionDetalle.Get().Where(x => x.OperacionId.Equals(operacionid)).ToList();
+                List<BusOperacionDetalle>? dets = _busOperacionDetalle.Get().Where(x => x.OperacionId.Equals(Guid.Parse(operacionid))).ToList();
 
                 _repository.DeleteDetalles(dets);
                 _repository.DeleteOperacion(operacionid);

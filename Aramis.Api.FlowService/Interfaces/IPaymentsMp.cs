@@ -1,4 +1,5 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Pagos;
+using Aramis.Api.Repository.Models;
 
 namespace Aramis.Api.FlowService.Interfaces
 {

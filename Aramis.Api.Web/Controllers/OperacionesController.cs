@@ -1,5 +1,6 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Operaciones;
 using Aramis.Api.OperacionesService.Interfaces;
+using Aramis.Api.SecurityService.Extensions;
 using Aramis.Api.SecurityService.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -186,6 +187,7 @@ namespace Aramis.Api.Web.Controllers
         }
 
         [HttpPatch]
+        [Authorize(Policy = Policies.Admin)]
         public IActionResult UpdateDetalle([FromBody] BusDetalleOperacionesInsert detalle)
         {
             try

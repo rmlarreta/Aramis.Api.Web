@@ -1,15 +1,19 @@
-﻿using Aramis.Api.FlowService.Interfaces;
+﻿using Aramis.Api.Commons.ModelsDto.Pagos;
+using Aramis.Api.FlowService.Interfaces;
 using Aramis.Api.Repository.Interfaces;
 using Aramis.Api.Repository.Models;
+using AutoMapper;
 
 namespace Aramis.Api.FlowService.Application
 {
     public class CuentasService : ICuentasService
     {
         private readonly IGenericRepository<CobCuentum> _cuentas;
-        public CuentasService(IGenericRepository<CobCuentum> cuentas)
+        private readonly IMapper _mapper;
+        public CuentasService(IGenericRepository<CobCuentum> cuentas, IMapper mapper)
         {
             _cuentas = cuentas;
+            _mapper = mapper;
         }
         public bool Delete(string id)
         {
@@ -17,26 +21,26 @@ namespace Aramis.Api.FlowService.Application
             return _cuentas.Save();
         }
 
-        public List<CobCuentum> GetAll()
+        public List<CobCuentDto> GetAll()
         {
-            return _cuentas.Get().ToList();
+            return _mapper.Map<List<CobCuentum>, List<CobCuentDto>>(_cuentas.Get().OrderBy(x=>x.Name).ToList());
         }
 
-        public CobCuentum GetById(string id)
+        public CobCuentDto GetById(string id)
         {
-            return _cuentas.Get(Guid.Parse(id));
+            return _mapper.Map<CobCuentum, CobCuentDto>(_cuentas.Get(Guid.Parse(id)));
         }
 
-        public CobCuentum Insert(CobCuentum cobCuentum)
+        public CobCuentDto Insert(CobCuentDto cobCuentum)
         {
             cobCuentum.Id = Guid.NewGuid();
-            _cuentas.Add(cobCuentum);
+            _cuentas.Add(_mapper.Map<CobCuentDto, CobCuentum>(cobCuentum));
             return cobCuentum;
         }
 
-        public CobCuentum Update(CobCuentum cobCuentum)
+        public CobCuentDto Update(CobCuentDto cobCuentum)
         {
-            _cuentas.Update(cobCuentum);
+            _cuentas.Update(_mapper.Map<CobCuentDto, CobCuentum>(cobCuentum));
             return cobCuentum;
         }
     }

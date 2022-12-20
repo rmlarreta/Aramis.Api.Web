@@ -40,7 +40,7 @@ namespace Aramis.Api.Repository.Application.Operaciones
                  .Include(x => x.Cliente.RespNavigation)
                  .Include(x => x.TipoDoc)
                  .Include(x => x.Estado)
-                 .Include(x => x.BusOperacionDetalles)
+                 .Include(x => x.BusOperacionDetalles).AsNoTracking()
                  .Include(x => x.BusOperacionObservacions)
                  .Where(x => x.Id.Equals(Guid.Parse(id)))
                  .FirstOrDefault()!;

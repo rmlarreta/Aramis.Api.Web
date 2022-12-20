@@ -86,6 +86,13 @@ namespace Aramis.Api.Commons.Helpers
 
             CreateMap<CobReciboDetalle, ReciboDetallesInsert>()
             .ReverseMap();
+
+            CreateMap<CobCuentum, CobCuentDto>()
+           .ReverseMap();
+            CreateMap<CobTipoPago, CobTipoPagoDto>()
+           .ReverseMap();
+            CreateMap<CobPo, CobPosDto>()
+           .ReverseMap();
             #endregion
         }
     }

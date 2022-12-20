@@ -186,6 +186,6 @@ namespace Aramis.Api.FlowService.Application
             {
                 throw new Exception(ex.InnerException is not null ? ex.InnerException.Message : ex.Message);
             }
-        }
+        } 
     }
 }

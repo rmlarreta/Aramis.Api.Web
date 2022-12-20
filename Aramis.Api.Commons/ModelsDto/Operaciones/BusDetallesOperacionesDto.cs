@@ -35,6 +35,7 @@
         public decimal? TotalIva21 => IvaValue.Equals(21.0m) ? TotalIva : 0.0m;
         public decimal? TotalExento => IvaValue.Equals(0.0m) ? Unitario * CantidadDisponible : 0.0m;
         public decimal? TotalNeto => TotalNeto10 + TotalNeto21;
+        public decimal? UnitarioCimp => Total / Cantidad;
         public string? Operador { get; set; }
 
     }

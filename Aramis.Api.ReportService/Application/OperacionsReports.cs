@@ -953,7 +953,7 @@ namespace Aramis.Api.ReportService.Application
                                 columns.RelativeColumn(2);
                             });
                             table.Cell().ColumnSpan(1)
-                           .Background("#9ca4df") 
+                           .Background("#9ca4df")
                            .Text("Tipo").FontSize(10);
                             table.Cell().ColumnSpan(1)
                            .Background("#9ca4df")
@@ -1045,7 +1045,5 @@ namespace Aramis.Api.ReportService.Application
             byte[] qrCodeAsBitmapByteArr = qrCode.GetGraphic(20);
             return qrCodeAsBitmapByteArr;
         }
-
-
     }
 }

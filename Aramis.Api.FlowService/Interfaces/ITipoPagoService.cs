@@ -1,14 +1,15 @@
-﻿using Aramis.Api.Repository.Models;
+﻿using Aramis.Api.Commons.ModelsDto.Pagos;
+using Aramis.Api.Repository.Models;
 
 namespace Aramis.Api.FlowService.Interfaces
 {
     public interface ITipoPagoService
     {
-        CobTipoPago Insert(CobTipoPago cobTipoPago);
-        CobTipoPago Update(CobTipoPago cobTipoPago);
+        CobTipoPagoDto Insert(CobTipoPagoDto cobTipoPago);
+        CobTipoPagoDto Update(CobTipoPagoDto cobTipoPago);
         bool Delete(string id);
-        CobTipoPago GetById(string id);
-        List<CobTipoPago> GetAll();
-
+        CobTipoPagoDto GetById(string id);
+        List<CobTipoPagoDto> GetAll(); 
+        List<CobPosDto> GetPost(); 
     }
 }

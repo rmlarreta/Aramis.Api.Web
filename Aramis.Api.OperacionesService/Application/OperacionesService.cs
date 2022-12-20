@@ -78,8 +78,8 @@ namespace Aramis.Api.OperacionesService.Application
 
         public BusOperacionesDto UpdateDetalle(BusDetalleOperacionesInsert detalle)
         {
-            if (DetalleEstado(detalle.Id.ToString()!, "ABIERTO"))
-            {
+            if (OperacionEstado(detalle.OperacionId.ToString()!, "ABIERTO"))
+            { 
                 _busOperacionDetalle.Update(_mapper.Map<BusDetalleOperacionesInsert, BusOperacionDetalle>(detalle));
                 _busOperacionDetalle.Save();
                 return GetOperacion(detalle.OperacionId.ToString());
@@ -114,6 +114,9 @@ namespace Aramis.Api.OperacionesService.Application
             {
                 throw new Exception("No se puede asignar este CUI a este tipo de Operaciones");
             }
+
+            var razon = _opClientes.Get(busoperacionesinsert.ClienteId!.Value);
+            busoperacionesinsert.Razon = razon.Razon;
 
             _repository.Update(_mapper.Map<BusOperacionesInsert, BusOperacion>(busoperacionesinsert));
             if (_repository.Save())

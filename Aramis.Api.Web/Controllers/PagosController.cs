@@ -13,11 +13,13 @@ namespace Aramis.Api.Web.Controllers
     {
         private readonly IRecibosService _recibosService;
         private readonly IPagosService _pagosService;
+        private readonly ITipoPagoService _tipoPagoService; 
         private readonly ISecurityService _securityService;
-        public PagosController(IRecibosService recibosService, ISecurityService securityService, IPagosService pagosService)
+        public PagosController(IRecibosService recibosService, ISecurityService securityService, IPagosService pagosService, ITipoPagoService tipoPagoService)
         {
             _recibosService = recibosService;
             _securityService = securityService;
+            _tipoPagoService = tipoPagoService;
             _pagosService = pagosService;
         }
 
@@ -29,6 +31,21 @@ namespace Aramis.Api.Web.Controllers
                 recibo.Operador = _securityService.GetUserAuthenticated();
                 recibo.Fecha = DateTime.Now;
                 return Ok(_recibosService.InsertRecibo(recibo));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [Route("{point}")]
+        public async Task<IActionResult> CobranzaMPAsync([FromBody] PaymentIntentDto intent, string point)
+        {
+            try
+            {
+                PaymentIntentResponseDto? data = await _recibosService.PagoMP(intent, point);
+                return Ok(data);
             }
             catch (Exception ex)
             {
@@ -49,5 +66,21 @@ namespace Aramis.Api.Web.Controllers
             }
         }
 
+        #region Auxiliares
+
+        [HttpGet]
+        public IActionResult TiposPago()
+        {
+            var data = _tipoPagoService.GetAll();
+            return Ok(data);
+        }
+
+        [HttpGet]
+        public IActionResult GetPos()
+        {
+            var data = _tipoPagoService.GetPost();
+            return Ok(data);
+        }
+        #endregion
     }
 }

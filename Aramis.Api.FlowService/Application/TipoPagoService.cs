@@ -1,15 +1,21 @@
-﻿using Aramis.Api.FlowService.Interfaces;
+﻿using Aramis.Api.Commons.ModelsDto.Pagos;
+using Aramis.Api.FlowService.Interfaces;
 using Aramis.Api.Repository.Interfaces;
 using Aramis.Api.Repository.Models;
+using AutoMapper;
 
 namespace Aramis.Api.FlowService.Application
 {
     public class TipoPagoService : ITipoPagoService
     {
         private readonly IGenericRepository<CobTipoPago> _repository;
-        public TipoPagoService(IGenericRepository<CobTipoPago> repository)
+        private readonly IGenericRepository<CobPo> _points;
+        private readonly IMapper _mapper;
+        public TipoPagoService(IGenericRepository<CobTipoPago> repository, IGenericRepository<CobPo> points, IMapper mapper)
         {
             _repository = repository;
+            _points = points;
+            _mapper = mapper;
         }
 
         public bool Delete(string id)
@@ -18,27 +24,31 @@ namespace Aramis.Api.FlowService.Application
             return _repository.Save();
         }
 
-        public List<CobTipoPago> GetAll()
+        public List<CobTipoPagoDto> GetAll()
         {
-            return _repository.Get().ToList();
+            return _mapper.Map<List<CobTipoPago>, List<CobTipoPagoDto>>(_repository.Get().OrderBy(x => x.Cuenta).ToList());
         }
 
-        public CobTipoPago GetById(string id)
+        public CobTipoPagoDto GetById(string id)
         {
-            return _repository.Get(Guid.Parse(id));
+            return _mapper.Map<CobTipoPago, CobTipoPagoDto>(_repository.Get(Guid.Parse(id)));
         }
 
-        public CobTipoPago Insert(CobTipoPago cobTipoPago)
+        public CobTipoPagoDto Insert(CobTipoPagoDto cobTipoPago)
         {
             cobTipoPago.Id = Guid.NewGuid();
-            _repository.Add(cobTipoPago);
+            _repository.Add(_mapper.Map<CobTipoPagoDto, CobTipoPago>(cobTipoPago));
             return cobTipoPago;
         }
 
-        public CobTipoPago Update(CobTipoPago cobTipoPago)
+        public CobTipoPagoDto Update(CobTipoPagoDto cobTipoPago)
         {
-            _repository.Update(cobTipoPago);
+            _repository.Update(_mapper.Map<CobTipoPagoDto, CobTipoPago>(cobTipoPago));
             return cobTipoPago;
+        } 
+        public List<CobPosDto> GetPost()
+        {
+            return _mapper.Map<List<CobPo>, List<CobPosDto>>(_points.Get().OrderBy(x => x.DeviceId).ToList());
         }
     }
 }

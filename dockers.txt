@@ -1,0 +1,2 @@
+docker build -t aramisistemas/aramisback:version_ -f Dockerfile . 
+docker push aramisistemas/aramisback:version_

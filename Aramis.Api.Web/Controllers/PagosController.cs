@@ -28,8 +28,14 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
+                recibo.Id = Guid.NewGuid();
                 recibo.Operador = _securityService.GetUserAuthenticated();
                 recibo.Fecha = DateTime.Now;
+                foreach(var item in recibo.Detalles!)
+                {
+                    item.ReciboId=recibo.Id;
+                    item.Id = Guid.NewGuid();
+                }
                 return Ok(_recibosService.InsertRecibo(recibo));
             }
             catch (Exception ex)
@@ -39,12 +45,12 @@ namespace Aramis.Api.Web.Controllers
         }
 
         [HttpPost]
-        [Route("{point}")]
-        public async Task<IActionResult> CobranzaMPAsync([FromBody] PaymentIntentDto intent, string point)
+        [Route("{PosId}")]
+        public async Task<IActionResult> CobranzaMPAsync([FromBody] PaymentIntentDto intent, string PosId)
         {
             try
             {
-                PaymentIntentResponseDto? data = await _recibosService.PagoMP(intent, point);
+                PaymentIntentResponseDto? data = await _recibosService.PagoMP(intent, PosId);
                 return Ok(data);
             }
             catch (Exception ex)
@@ -54,11 +60,11 @@ namespace Aramis.Api.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult ImputarPago([FromBody] PagoInsert pago)
+        public async Task<IActionResult> ImputarPago([FromBody] PagoInsert pago)
         {
             try
             {
-                return Ok(_pagosService.NuevoPago(pago));
+                return Ok(await _pagosService.NuevoPago(pago));
             }
             catch (Exception ex)
             {

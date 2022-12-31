@@ -17,9 +17,9 @@ namespace Aramis.Api.FlowService.Application
             _repository = repository;
             _mapper = mapper;
         }
-        public bool NuevoPago(PagoInsert pago)
-        {
-            CobRecibo? recibo = _repository.Recibos.Get(pago.ReciboId.ToString());
+        public async Task<bool> NuevoPago(PagoInsert pago)
+        { 
+            CobRecibo? recibo = await Task.FromResult(_repository.Recibos.Get(pago.ReciboId.ToString()));
             if (recibo.CobReciboDetalles.Sum(x => x.Monto) == 0)
             {
                 throw new Exception("No puede insertarse un Recibo en 0");
@@ -48,22 +48,22 @@ namespace Aramis.Api.FlowService.Application
                 ops.Add(op!);
             }
             List<BusOperacionesDto>? operaciones = _mapper.Map<List<BusOperacion>, List<BusOperacionesDto>>(ops);
-            if (!recibo.CobReciboDetalles.Sum(x => x.Monto).Equals(operaciones.Sum(x => x.Total)))
+            if (!recibo.CobReciboDetalles.Sum(x => Math.Round(x.Monto,2)).Equals(operaciones.Sum(x => Math.Round(x.Total,2))))
             {
                 throw new Exception("Existe una diferencia en los pagos ingresados");
-            }
+            } 
 
             foreach (BusOperacion? item in ops)
             {
-                item.EstadoId = _repository.Estados.Get().Where(x => x.Name.Equals("PAGADO")).SingleOrDefault()!.Id;
-                _repository.Operaciones.Update(item);
-                BusOperacionPago op = new()
+                item.Estado = _repository.Estados.Get().Where(x => x.Name.Equals("PAGADO")).SingleOrDefault()!;
+                 _repository.Operaciones.Update(item);
+                BusOperacionPagoDto op = new()
                 {
                     Id = Guid.NewGuid(),
                     OperacionId = item.Id,
-                    ReciboId = pago.ReciboId
+                    ReciboId =pago.ReciboId
                 };
-                _repository.OperacionPagos.Add(op);
+                _repository.OperacionPagos.Add(_mapper.Map<BusOperacionPagoDto, BusOperacionPago>(op));
             }
             return _repository.Save();
         }

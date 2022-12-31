@@ -17,7 +17,7 @@ namespace Aramis.Api.OperacionesService.Interfaces
         List<BusOperacionesDto> Presupuestos();
         #endregion
         #region Remitos
-        BusOperacionesDto NuevoRemito(string id);
+        Task<BusOperacionesDto> NuevoRemito(string id);
         List<BusOperacionesDto> RemitosPendientes();
 
         #endregion

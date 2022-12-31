@@ -171,7 +171,7 @@ namespace Aramis.Api.OperacionesService.Application
 
         #region Remitos
 
-        public BusOperacionesDto NuevoRemito(string id)
+        public async Task<BusOperacionesDto> NuevoRemito(string id)
         {
             if (OperacionEstado(id, "ABIERTO"))
             {
@@ -202,14 +202,14 @@ namespace Aramis.Api.OperacionesService.Application
                     products.Add(product);
                 }
             }
-            operacion.EstadoId = _repository.GetEstados().Where(x => x.Name.Equals("ENTREGADO")).FirstOrDefault()!.Id;
-            operacion.TipoDocId = _repository.GetTipos().Where(x => x.Code!.Equals("X")).FirstOrDefault()!.Id;
+            operacion.Estado = _repository.GetEstados().Where(x => x.Name.Equals("ENTREGADO")).FirstOrDefault()!;
+            operacion.TipoDoc = _repository.GetTipos().Where(x => x.Code!.Equals("X")).FirstOrDefault()!;
             SystemIndex? index = _repository.GetIndexs();
             operacion.Numero = index.Remito += 1;
             _repository.UpdateIndexs(index);
             _repository.Update(operacion);
             _repository.Save();
-            return GetOperacion(operacion.Id.ToString());
+            return await Task.FromResult(GetOperacion(operacion.Id.ToString()));
         }
         public List<BusOperacionesDto> RemitosPendientes()
         {

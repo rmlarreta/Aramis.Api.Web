@@ -63,6 +63,7 @@ namespace Aramis.Api.Commons.Helpers
 
             CreateMap<BusOperacionTipo, BusOperacionTipoDto>().ReverseMap();
             CreateMap<BusEstado, BusEstadoDto>().ReverseMap();
+            CreateMap<BusOperacionPago, BusOperacionPagoDto>().ReverseMap();
             #endregion
 
             #region Ordenes

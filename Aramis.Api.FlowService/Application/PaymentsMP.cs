@@ -15,12 +15,12 @@ namespace Aramis.Api.FlowService.Application
         {
             _points = points;
         }
-        public async Task<PaymentIntentResponseDto> CreatePaymentIntent(PaymentIntentDto PaymentIntent, string id)
+        public async Task<PaymentIntentResponseDto> CreatePaymentIntent(PaymentIntentDto PaymentIntent, string PosId)
         {
             try
             {
-                await Getpaymentintentlist(id);
-                CobPo? point = _points.Get(Guid.Parse(id));
+                await Getpaymentintentlist(PosId);
+                CobPo? point = _points.Get(Guid.Parse(PosId));
                 if (point == null)
                 {
                     throw new Exception("Verifique, no existen dispositivos asociados");

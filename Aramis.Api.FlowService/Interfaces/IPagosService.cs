@@ -4,6 +4,6 @@ namespace Aramis.Api.FlowService.Interfaces
 {
     public interface IPagosService
     {
-        bool NuevoPago(PagoInsert pago);
+        Task<bool> NuevoPago(PagoInsert pago);
     }
 }

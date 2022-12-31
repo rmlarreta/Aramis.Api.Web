@@ -2,14 +2,14 @@
 {
     public class ReciboInsert
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid? Id { get; set; } 
         public int? Numero { get; set; }
         public Guid ClienteId { get; set; }
 
-        public DateTime Fecha { get; set; }
+        public DateTime? Fecha { get; set; }
 
         public string? Operador { get; set; } = null!;
 
-        public List<ReciboDetallesInsert> Detalles { get; set; } = new List<ReciboDetallesInsert>();
+        public List<ReciboDetallesInsert>? Detalles { get; set; } = new List<ReciboDetallesInsert>();
     }
 }

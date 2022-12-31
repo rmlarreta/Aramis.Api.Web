@@ -35,12 +35,12 @@ namespace Aramis.Api.Repository.Application.Operaciones
 
         public BusOperacion Get(string id)
         {
-            return _context.BusOperacions
+            return _context.BusOperacions.AsNoTracking()
                  .Include(x => x.Cliente)
                  .Include(x => x.Cliente.RespNavigation)
                  .Include(x => x.TipoDoc)
-                 .Include(x => x.Estado)
-                 .Include(x => x.BusOperacionDetalles).AsNoTracking()
+                 .Include(x => x.Estado).AsNoTracking()
+                 .Include(x => x.BusOperacionDetalles)
                  .Include(x => x.BusOperacionObservacions)
                  .Where(x => x.Id.Equals(Guid.Parse(id)))
                  .FirstOrDefault()!;
@@ -66,7 +66,8 @@ namespace Aramis.Api.Repository.Application.Operaciones
 
         public void Update(BusOperacion entity)
         {
-            _context.BusOperacions.Update(entity);
+            _context.BusOperacions.Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
         }
 
         public void InsertObservaciones(List<BusOperacionObservacion> observaciones)

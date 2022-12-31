@@ -17,45 +17,45 @@ namespace Aramis.Api.FlowService.Application
             _recibos = recibos;
             _mapper = mapper;
         }
-        public string InsertRecibo(ReciboInsert recibo)
+        public ReciboInsert InsertRecibo(ReciboInsert recibo)
         {
             SystemIndex? index = _recibos.GetIndexs();
-            recibo.Numero = index.Recibo += 1;
-            foreach (ReciboDetallesInsert? det in recibo.Detalles)
-            {
-                det.ReciboId = recibo.Id;
-            }
+            recibo.Numero = index.Recibo += 1; 
             _recibos.UpdateIndexs(index);
             _recibos.Add(_mapper.Map<ReciboInsert, CobRecibo>(recibo));
-            return recibo.Id.ToString();
+            _recibos.Save();
+            return recibo!;
         }
 
-        public async Task<PaymentIntentResponseDto> PagoMP(PaymentIntentDto intent, string point)
+        public async Task<PaymentIntentResponseDto> PagoMP(PaymentIntentDto intent, string PosId)
         {
-            PaymentIntentResponseDto? intento = await _paymentsMP.CreatePaymentIntent(intent, point)!;
+            PaymentIntentResponseDto? intento = await _paymentsMP.CreatePaymentIntent(intent, PosId)!;
             if (intento == null)
             {
                 return null!;
             }
 
-            int intentos = 30;
+            int intentos = 0;
 
             while (intentos <= 30)
             {
-                StateIntentPayDto? estados = await _paymentsMP.StatePaymentIntent(intento!.Id!, point);
+                StateIntentPayDto? estados = await _paymentsMP.StatePaymentIntent(intento!.Id!, PosId!);
                 switch (estados.Status)
                 {
-                    case "OPEN":
+                    case "OPEN" or "PROCESSING" or "ON_TERMINAL" or "PROCESSED":
                         intentos += 1;
-                        Thread.Sleep(2000);
+                        Thread.Sleep(5000);
                         continue;
                     case "CANCELED" or "ERROR":
-                        await _paymentsMP.CancelPaymentIntent(intento!.Id!, point);
-                        intento.Id = string.Empty;
+                        await _paymentsMP.CancelPaymentIntent(intento!.Id!, PosId!);
+                        intento.Status = estados.Status;
                         return intento;
                     case "FINISHED":
+                        intento.Status = estados.Status;
                         return intento;
-                    default: intento.Id = string.Empty; return intento;
+                    default:
+                        intento.Status = estados.Status;
+                        return intento;
                 }
             }
             return intento!;

@@ -5,6 +5,7 @@ using Aramis.Api.Repository.Interfaces.Operaciones;
 using Aramis.Api.Repository.Interfaces.Pagos;
 using Aramis.Api.Repository.Interfaces.Recibos;
 using Aramis.Api.Repository.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Aramis.Api.Repository.Application.Pagos
 {
@@ -20,6 +21,7 @@ namespace Aramis.Api.Repository.Application.Pagos
         public PagosRepository(AramisbdContext context)
         {
             _context = context;
+           _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
         public IRecibosRepository Recibos => _cobRecibosRepository ??= new RecibosRepository(_context);

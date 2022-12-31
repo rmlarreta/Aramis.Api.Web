@@ -35,13 +35,13 @@ namespace Aramis.Api.Web.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("{id}")]
-        public IActionResult NuevoRemito(string id)
+        public async Task<IActionResult> NuevoRemito(string id)
         {
             try
             {
-                BusOperacionesDto? data = _operacionesService.NuevoRemito(id);
+                BusOperacionesDto? data = await _operacionesService.NuevoRemito(id);
                 return Ok(data);
             }
             catch (Exception ex)

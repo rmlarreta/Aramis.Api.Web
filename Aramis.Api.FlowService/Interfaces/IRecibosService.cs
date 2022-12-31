@@ -4,9 +4,9 @@ namespace Aramis.Api.FlowService.Interfaces
 {
     public interface IRecibosService
     {
-        string InsertRecibo(ReciboInsert recibo);
+        ReciboInsert InsertRecibo(ReciboInsert recibo);
 
-        public Task<PaymentIntentResponseDto> PagoMP(PaymentIntentDto intent, string point);
+        public Task<PaymentIntentResponseDto> PagoMP(PaymentIntentDto intent, string PosId);
 
     }
 }

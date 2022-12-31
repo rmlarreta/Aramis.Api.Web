@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aramis.Api.Web", "Aramis.Api.Web\Aramis.Api.Web.csproj", "{A1AFEEEE-FDCB-4497-9D1D-3AAE55401834}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8C5913AA-0353-4142-BEF9-F7D821E0A6A8} = {8C5913AA-0353-4142-BEF9-F7D821E0A6A8}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aramis.Api.Repository", "Aramis.Api.Repository\Aramis.Api.Repository.csproj", "{8C5913AA-0353-4142-BEF9-F7D821E0A6A8}"
 EndProject
@@ -26,7 +29,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aramis.Api.FlowService", "A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aramis.Api.FiscalService", "Aramis.Api.FiscalService\Aramis.Api.FiscalService.csproj", "{B5029309-C5D1-4692-BCA5-84FCAA56FF75}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aramis.Api.ReportService", "Aramis.Api.ReportService\Aramis.Api.ReportService.csproj", "{D573FB27-9C47-49E0-A711-A75C784C8D19}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aramis.Api.ReportService", "Aramis.Api.ReportService\Aramis.Api.ReportService.csproj", "{D573FB27-9C47-49E0-A711-A75C784C8D19}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

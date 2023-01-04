@@ -55,12 +55,12 @@ namespace Aramis.Api.OperacionesService.Application
                 {
                     if (!OperacionEstado(x.OperacionId.ToString()!, "ABIERTO")) throw new Exception("No se pudo completar la operación");
                     x.Id = Guid.NewGuid();
-                }); 
-          
-                _busOperacionDetalle.Add(_mapper.Map<List<BusDetalleOperacionesInsert>, List<BusOperacionDetalle>>(detalle));
-                _busOperacionDetalle.Save();
-                return GetOperacion(detalle.OrderBy(x=>x.Id).First().OperacionId.ToString());
-           
+                });
+
+            _busOperacionDetalle.Add(_mapper.Map<List<BusDetalleOperacionesInsert>, List<BusOperacionDetalle>>(detalle));
+            _busOperacionDetalle.Save();
+            return GetOperacion(detalle.OrderBy(x => x.Id).First().OperacionId.ToString());
+
             throw new Exception("No se pudo completar la operación");
         }
 
@@ -79,7 +79,7 @@ namespace Aramis.Api.OperacionesService.Application
         public BusOperacionesDto UpdateDetalle(BusDetalleOperacionesInsert detalle)
         {
             if (OperacionEstado(detalle.OperacionId.ToString()!, "ABIERTO"))
-            { 
+            {
                 _busOperacionDetalle.Update(_mapper.Map<BusDetalleOperacionesInsert, BusOperacionDetalle>(detalle));
                 _busOperacionDetalle.Save();
                 return GetOperacion(detalle.OperacionId.ToString());
@@ -263,13 +263,13 @@ namespace Aramis.Api.OperacionesService.Application
                 ClienteId = _opClientes.Get().Where(x => x.Cui == "0").First().Id,
                 TipoDocId = _repository.GetTipos().Where(x => x.Name == "PRESUPUESTO").First().Id,
                 EstadoId = _repository.GetEstados().Where(x => x.Name == "ABIERTO").First().Id,
-                Fecha =DateTime.Now,
+                Fecha = DateTime.Now,
                 Numero = index.Presupuesto += 1,
-                Pos=0,
-                Vence=DateTime.Now,
+                Pos = 0,
+                Vence = DateTime.Now,
                 Razon = _opClientes.Get().Where(x => x.Cui == "0").First().Razon
-            }; 
-          
+            };
+
             _repository.Insert(_mapper.Map<BusOperacionesInsert, BusOperacion>(busoperacionesinsert));
             _repository.UpdateIndexs(index);
             _repository.Save();
@@ -309,8 +309,11 @@ namespace Aramis.Api.OperacionesService.Application
                 throw new Exception("Este documento no puede pasar a Orden");
             }
             BusOperacion? operacion = _repository.Get(id);
+            if (operacion.Cliente.Cui.Equals("0")) throw new Exception("No se pueden generar órdenes a las Ventas Minoritas");
             SystemIndex? index = _repository.GetIndexs();
             operacion.Numero = index.Orden += 1;
+            operacion.TipoDoc = _repository.GetTipos().Where(x => x.Code!.Equals("O")).FirstOrDefault()!;
+            operacion.Fecha = DateTime.Now;
             _repository.UpdateIndexs(index);
             _repository.Update(operacion);
             _repository.Save();
@@ -320,7 +323,7 @@ namespace Aramis.Api.OperacionesService.Application
         {
             List<BusOperacion>? ordenes = _repository.Get()
                         .OrderBy(x => x.Cliente.Razon)
-                        .Where(x => x.Estado.Id.Equals(estado))
+                        .Where(x => x.Estado.Id.Equals(Guid.Parse(estado)))
                         .Where(x => x.TipoDoc.Code!.Equals("O"))
                         .ToList();
             List<BusOperacionesDto>? dto = _mapper.Map<List<BusOperacion>, List<BusOperacionesDto>>(ordenes);

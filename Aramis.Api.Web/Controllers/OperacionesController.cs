@@ -1,4 +1,5 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Operaciones;
+using Aramis.Api.Commons.ModelsDto.Ordenes;
 using Aramis.Api.OperacionesService.Interfaces;
 using Aramis.Api.SecurityService.Extensions;
 using Aramis.Api.SecurityService.Interfaces;
@@ -50,13 +51,13 @@ namespace Aramis.Api.Web.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("{id}")]
         public IActionResult NuevaOrden(string id)
         {
             try
             {
-                Commons.ModelsDto.Ordenes.BusOrdenesTicketDto? data = _operacionesService.NuevaOrden(id);
+                BusOrdenesTicketDto? data = _operacionesService.NuevaOrden(id);
                 return Ok(data);
             }
             catch (Exception ex)

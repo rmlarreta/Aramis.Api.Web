@@ -1,12 +1,13 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Stock;
 using Aramis.Api.Repository.Models;
+using Aramis.Api.SecurityService.Extensions;
 using Aramis.Api.StockService.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Aramis.Api.Web.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = Policies.Admin)]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class StockController : ControllerBase

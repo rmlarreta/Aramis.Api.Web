@@ -12,15 +12,15 @@ namespace Aramis.Api.CustomersService.Application
     public class CustomersService : ICustomersService
     {
         private readonly ICustomersRepository _customersRepository;
-        private ICustomersAttributesRepository _attributesRepositor = null!;
+        private ICustomersAttributesRepository _attributesRepositor;
         private readonly IGenericRepository<OpGender> _genderRepository;
         private readonly IGenericRepository<OpPai> _paiRepository;
         private readonly IGenericRepository<OpResp> _respRepository;
         private readonly IMapper _mapper;
 
         public CustomersService(
-            IGenericRepository<OpGender> genderRepository, 
-            IGenericRepository<OpPai> paiRepository, 
+            IGenericRepository<OpGender> genderRepository,
+            IGenericRepository<OpPai> paiRepository,
             IGenericRepository<OpResp> respRepository,
             ICustomersRepository customersRepository,
             IMapper mapper)
@@ -34,7 +34,9 @@ namespace Aramis.Api.CustomersService.Application
 
         public bool Delete(string id)
         {
-            return _customersRepository.Delete(_customersRepository.Get(id));
+            OpCliente? customer = _customersRepository.Get(id);
+            if (customer.Cui == "0") throw new ApplicationException("Este cliente no es eliminable");
+            return _customersRepository.Delete(customer);
         }
 
         public List<OpClienteDto> GetAll()
@@ -57,7 +59,8 @@ namespace Aramis.Api.CustomersService.Application
 
         public OpClienteDto Insert(OpClienteInsert entity)
         {
-            entity.Cui = ExtensionMethods.ConformaCui(entity, _attributesRepositor.GetGender(entity.Gender).Name);
+            var gender = _genderRepository.Get(Guid.Parse(entity.Gender)).Name;
+            entity.Cui = ExtensionMethods.ConformaCui(entity, gender);
             entity.Id = Guid.NewGuid().ToString();
             OpCliente? cliente = _mapper.Map<OpClienteInsert, OpCliente>(entity);
             _customersRepository.Add(cliente);
@@ -66,13 +69,14 @@ namespace Aramis.Api.CustomersService.Application
 
         public OpClienteDto Update(OpClienteInsert entity)
         {
-            entity.Cui = ExtensionMethods.ConformaCui(entity, _attributesRepositor.GetGender(entity.Gender).Name);
+            var gender = _genderRepository.Get(Guid.Parse(entity.Gender)).Name;
+            entity.Cui = ExtensionMethods.ConformaCui(entity, gender);
             OpCliente? cliente = _mapper.Map<OpClienteInsert, OpCliente>(entity);
             _customersRepository.Update(cliente);
             return GetById(entity.Id!);
         }
         #region Atributos
-        public ICustomersAttributesRepository Attributes => _attributesRepositor ??= new CustomersAttributesRepository(_genderRepository,_paiRepository,_respRepository);
+        public ICustomersAttributesRepository Attributes => _attributesRepositor ??= new CustomersAttributesRepository(_genderRepository, _paiRepository, _respRepository);
 
         #endregion Atributos
     }

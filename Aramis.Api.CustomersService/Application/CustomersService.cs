@@ -1,23 +1,37 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Customers;
 using Aramis.Api.CustomersService.Extensions;
 using Aramis.Api.CustomersService.Interfaces;
+using Aramis.Api.Repository.Application.Customers;
+using Aramis.Api.Repository.Interfaces;
 using Aramis.Api.Repository.Interfaces.Customers;
 using Aramis.Api.Repository.Models;
 using AutoMapper;
 
 namespace Aramis.Api.CustomersService.Application
 {
-    public class CustomersService : ICustomersService, ICustomersAttributesRepository
+    public class CustomersService : ICustomersService
     {
         private readonly ICustomersRepository _customersRepository;
-        private readonly ICustomersAttributesRepository _attributesRepository;
+        private ICustomersAttributesRepository _attributesRepositor = null!;
+        private readonly IGenericRepository<OpGender> _genderRepository;
+        private readonly IGenericRepository<OpPai> _paiRepository;
+        private readonly IGenericRepository<OpResp> _respRepository;
         private readonly IMapper _mapper;
-        public CustomersService(ICustomersRepository customersRepository, ICustomersAttributesRepository attributesRepository, IMapper mapper)
+
+        public CustomersService(
+            IGenericRepository<OpGender> genderRepository, 
+            IGenericRepository<OpPai> paiRepository, 
+            IGenericRepository<OpResp> respRepository,
+            ICustomersRepository customersRepository,
+            IMapper mapper)
         {
             _mapper = mapper;
             _customersRepository = customersRepository;
-            _attributesRepository = attributesRepository;
+            _genderRepository = genderRepository;
+            _respRepository = respRepository;
+            _paiRepository = paiRepository;
         }
+
         public bool Delete(string id)
         {
             return _customersRepository.Delete(_customersRepository.Get(id));
@@ -37,13 +51,13 @@ namespace Aramis.Api.CustomersService.Application
 
         public OpClienteDto GetByCui(string cui)
         {
-            OpCliente? entity = _customersRepository.GetAll().Where(x=>x.Cui==cui).FirstOrDefault()!;
+            OpCliente? entity = _customersRepository.GetAll().Where(x => x.Cui == cui).FirstOrDefault()!;
             return _mapper.Map<OpCliente, OpClienteDto>(entity);
         }
 
         public OpClienteDto Insert(OpClienteInsert entity)
         {
-            entity.Cui = ExtensionMethods.ConformaCui(entity, GetGender(entity.Gender).Name);
+            entity.Cui = ExtensionMethods.ConformaCui(entity, _attributesRepositor.GetGender(entity.Gender).Name);
             entity.Id = Guid.NewGuid().ToString();
             OpCliente? cliente = _mapper.Map<OpClienteInsert, OpCliente>(entity);
             _customersRepository.Add(cliente);
@@ -52,41 +66,14 @@ namespace Aramis.Api.CustomersService.Application
 
         public OpClienteDto Update(OpClienteInsert entity)
         {
-            entity.Cui = ExtensionMethods.ConformaCui(entity, GetGender(entity.Gender).Name);
+            entity.Cui = ExtensionMethods.ConformaCui(entity, _attributesRepositor.GetGender(entity.Gender).Name);
             OpCliente? cliente = _mapper.Map<OpClienteInsert, OpCliente>(entity);
             _customersRepository.Update(cliente);
             return GetById(entity.Id!);
         }
         #region Atributos
-        public OpGender GetGender(string id)
-        {
-            return _attributesRepository.GetGender(id);
-        }
+        public ICustomersAttributesRepository Attributes => _attributesRepositor ??= new CustomersAttributesRepository(_genderRepository,_paiRepository,_respRepository);
 
-        public List<OpGender> GetGenderList()
-        {
-            return _attributesRepository.GetGenderList();
-        }
-
-        public OpPai GetPais(string id)
-        {
-            return _attributesRepository.GetPais(id);
-        }
-
-        public List<OpPai> GetPaisList()
-        {
-            return _attributesRepository.GetPaisList();
-        }
-
-        public OpResp GetResp(string id)
-        {
-            return _attributesRepository.GetResp(id);
-        }
-
-        public List<OpResp> GetRespList()
-        {
-            return _attributesRepository.GetRespList();
-        }
         #endregion Atributos
     }
 }

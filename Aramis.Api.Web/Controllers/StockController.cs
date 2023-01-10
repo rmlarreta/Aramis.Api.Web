@@ -1,5 +1,4 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Stock;
-using Aramis.Api.Repository.Models;
 using Aramis.Api.SecurityService.Extensions;
 using Aramis.Api.StockService.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -29,7 +28,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
             }
         }
 
@@ -44,7 +43,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
             }
         }
 
@@ -58,7 +57,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
             }
         }
 
@@ -72,7 +71,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
             }
         }
 
@@ -87,7 +86,9 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+                if (ex.InnerException != null)
+                    Console.WriteLine("Inner exception: {0}", ex.InnerException);
+                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
             }
         }
 
@@ -97,12 +98,12 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                StockRubro? data = _stockService.GetRubro(id);
+                StockRubroDto? data = _stockService.GetRubro(id);
                 return Ok(data);
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
             }
         }
 
@@ -111,17 +112,17 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                List<StockRubro>? data = _stockService.GetRubroList();
+                List<StockRubroDto>? data = _stockService.GetRubroList();
                 return Ok(data);
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
             }
         }
 
         [HttpPost]
-        public IActionResult RubroInsert([FromBody] StockRubro rubro)
+        public IActionResult RubroInsert([FromBody] StockRubroDto rubro)
         {
             try
             {
@@ -130,12 +131,12 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
             }
         }
 
         [HttpPatch]
-        public IActionResult RubroUpdate([FromBody] StockRubro rubro)
+        public IActionResult RubroUpdate([FromBody] StockRubroDto rubro)
         {
             try
             {
@@ -144,7 +145,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
             }
         }
 
@@ -153,12 +154,12 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                List<StockIva>? data = _stockService.GetIvaList();
+                List<StockIvaDto>? data = _stockService.GetIvaList();
                 return Ok(data);
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
             }
         }
 
@@ -168,12 +169,12 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                StockIva? data = _stockService.GetIva(id);
+                StockIvaDto? data = _stockService.GetIva(id);
                 return Ok(data);
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
             }
         }
 

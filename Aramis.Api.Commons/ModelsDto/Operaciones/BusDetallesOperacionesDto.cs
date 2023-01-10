@@ -27,15 +27,14 @@
 
         public decimal? TotalInternos => Internos * CantidadDisponible;
 
-        public decimal? TotalNeto10 => IvaValue.Equals(10.5m) ? Unitario * CantidadDisponible : 0.0m;
-        public decimal? TotalNeto21 => IvaValue.Equals(21.0m) ? Unitario * CantidadDisponible : 0.0m;
+        public decimal? TotalNeto10 => IvaValue.Equals(10.5m) ? (Unitario - Internos) / 1.105m * CantidadDisponible : 0.0m;
+        public decimal? TotalNeto21 => IvaValue.Equals(21.0m) ? (Unitario - Internos) / 1.21m * CantidadDisponible : 0.0m;
+        public decimal? TotalExento => IvaValue.Equals(0.0m) ? (Unitario - Internos) * CantidadDisponible : 0.0m;
         public decimal? TotalIva => (TotalNeto10 + TotalNeto21) * IvaValue / 100;
         public decimal? Total => TotalInternos + (TotalNeto10 + TotalNeto21) + TotalIva + TotalExento;
         public decimal? TotalIva10 => IvaValue.Equals(10.5m) ? TotalIva : 0.0m;
-        public decimal? TotalIva21 => IvaValue.Equals(21.0m) ? TotalIva : 0.0m;
-        public decimal? TotalExento => IvaValue.Equals(0.0m) ? Unitario * CantidadDisponible : 0.0m;
-        public decimal? TotalNeto => TotalNeto10 + TotalNeto21;
-        public decimal? UnitarioCimp => Total / Cantidad;
+        public decimal? TotalIva21 => IvaValue.Equals(21.0m) ? TotalIva : 0.0m;       
+        public decimal? TotalNeto => TotalNeto10 + TotalNeto21; 
         public string? Operador { get; set; }
 
     }

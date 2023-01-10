@@ -21,6 +21,10 @@ namespace Aramis.Api.Commons.Helpers
           .ReverseMap();
 
             CreateMap<OpCliente, OpClienteInsert>().ReverseMap();
+
+            CreateMap<OpResp, OpRespDto>().ReverseMap();
+            CreateMap<OpPai, OpPaiDto>().ReverseMap();
+            CreateMap<OpGender, OpGenderDto>().ReverseMap();
             #endregion
 
             #region Security
@@ -39,6 +43,13 @@ namespace Aramis.Api.Commons.Helpers
 
             CreateMap<StockProduct, StockProductInsert>()
             .ReverseMap();
+
+            CreateMap<StockIva, StockIvaDto>()
+         .ReverseMap();
+
+            CreateMap<StockRubro, StockRubroDto>()
+         .ReverseMap();
+
             #endregion
 
             #region Operaciones

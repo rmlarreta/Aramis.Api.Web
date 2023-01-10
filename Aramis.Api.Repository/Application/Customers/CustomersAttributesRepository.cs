@@ -9,12 +9,13 @@ namespace Aramis.Api.Repository.Application.Customers
         private readonly IGenericRepository<OpGender> _genderRepository;
         private readonly IGenericRepository<OpPai> _paiRepository;
         private readonly IGenericRepository<OpResp> _respRepository;
+
         public CustomersAttributesRepository(IGenericRepository<OpGender> genderRepository, IGenericRepository<OpPai> paiRepository, IGenericRepository<OpResp> respRepository)
         {
             _genderRepository = genderRepository;
             _respRepository = respRepository;
             _paiRepository = paiRepository;
-        }
+        }  
         public OpGender GetGender(string id)
         {
             return _genderRepository.Get(Guid.Parse(id));

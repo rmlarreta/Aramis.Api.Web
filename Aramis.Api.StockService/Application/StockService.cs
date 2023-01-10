@@ -26,14 +26,16 @@ namespace Aramis.Api.StockService.Application
             return _mapper.Map<StockProduct, StockProductDto>(product);
         }
 
-        public StockIva GetIva(string id)
+        public StockIvaDto GetIva(string id)
         {
-            return _stockRepository.GetIva(id);
+            StockIva? iva = _stockRepository.GetIva(id);
+            return _mapper.Map<StockIva, StockIvaDto>(iva);
         }
 
-        public List<StockIva> GetIvaList()
+        public List<StockIvaDto> GetIvaList()
         {
-            return _stockRepository.GetIvas().ToList();
+            List<StockIva>? ivas = _stockRepository.GetIvas().ToList();
+            return _mapper.Map<List<StockIva>, List<StockIvaDto>>(ivas);
         }
 
         public List<StockProductDto> GetList()
@@ -42,36 +44,40 @@ namespace Aramis.Api.StockService.Application
             return _mapper.Map<List<StockProduct>, List<StockProductDto>>(products);
         }
 
-        public StockRubro GetRubro(string id)
+        public StockRubroDto GetRubro(string id)
         {
-            return _stockRepository.GetRubro(id);
+            StockRubro? rubro = _stockRepository.GetRubro(id);
+            return _mapper.Map<StockRubro, StockRubroDto>(rubro);
         }
 
-        public List<StockRubro> GetRubroList()
+        public List<StockRubroDto> GetRubroList()
         {
-            return _stockRepository.GetRubroList().ToList();
+            List<StockRubro>? rubros = _stockRepository.GetRubroList().ToList();
+            return _mapper.Map<List<StockRubro>, List<StockRubroDto>>(rubros);
+
         }
 
         public StockProductDto Insert(StockProductInsert product)
         {
+            product.Id = Guid.NewGuid();
             _stockRepository.Insert(_mapper.Map<StockProductInsert, StockProduct>(product));
-            return GetById(product.Id.ToString());
+            return GetById(product.Id.ToString()!);
         }
 
-        public bool InsertRubro(StockRubro rubro)
+        public bool InsertRubro(StockRubroDto rubro)
         {
-            return _stockRepository.InsertRubro(rubro);
+            return _stockRepository.InsertRubro(_mapper.Map<StockRubroDto, StockRubro>(rubro));
         }
 
         public StockProductDto Update(StockProductInsert product)
         {
             _stockRepository.Update(_mapper.Map<StockProductInsert, StockProduct>(product));
-            return GetById(product.Id.ToString());
+            return GetById(product.Id.ToString()!);
         }
 
-        public bool UpdateRubro(StockRubro rubro)
+        public bool UpdateRubro(StockRubroDto rubro)
         {
-            return UpdateRubro(rubro);
+            return _stockRepository.UpdateRubro(_mapper.Map<StockRubroDto, StockRubro>(rubro));
         }
     }
 }

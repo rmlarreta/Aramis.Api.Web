@@ -1,7 +1,7 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Customers;
 using Aramis.Api.CustomersService.Interfaces;
-using Aramis.Api.Repository.Interfaces.Customers;
 using Aramis.Api.Repository.Models;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,11 +13,11 @@ namespace Aramis.Api.Web.Controllers
     public class CustomersController : ControllerBase
     {
         private readonly ICustomersService _customersService;
-        private readonly ICustomersAttributesRepository _customersAttributesRepository;
-        public CustomersController(ICustomersService customersService, ICustomersAttributesRepository customersAttributesRepository)
+        private readonly IMapper _mapper;
+        public CustomersController(ICustomersService customersService, IMapper mapper)
         {
             _customersService = customersService;
-            _customersAttributesRepository = customersAttributesRepository;
+            _mapper = mapper;
         }
 
         [HttpPost]
@@ -30,7 +30,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
             }
         }
 
@@ -44,7 +44,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
             }
         }
 
@@ -59,7 +59,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.InnerException!.Message.Any() ? ex.InnerException.Message : ex.Message });
+                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
             }
         }
 
@@ -85,42 +85,42 @@ namespace Aramis.Api.Web.Controllers
 
         #region Attributes
         [HttpGet]
-        public IEnumerable<OpResp> GetRespList()
+        public IEnumerable<OpRespDto> GetRespList()
         {
-            return _customersAttributesRepository.GetRespList();
+            return _mapper.Map<List<OpResp>, List<OpRespDto>>(_customersService.Attributes.GetRespList());
         }
 
         [HttpGet]
         [Route("{id}")]
-        public OpResp GetResp(string id)
+        public OpRespDto GetResp(string id)
         {
-            return _customersAttributesRepository.GetResp(id);
+            return _mapper.Map<OpResp, OpRespDto>(_customersService.Attributes.GetResp(id));
         }
 
         [HttpGet]
-        public IEnumerable<OpPai> GetPaisList()
+        public IEnumerable<OpPaiDto> GetPaisList()
         {
-            return _customersAttributesRepository.GetPaisList();
-        }
-
-        [HttpGet]
-        [Route("{id}")]
-        public OpPai GetPais(string id)
-        {
-            return _customersAttributesRepository.GetPais(id);
-        }
-
-        [HttpGet]
-        public IEnumerable<OpGender> GetGenderList()
-        {
-            return _customersAttributesRepository.GetGenderList();
+            return _mapper.Map<List<OpPai>, List<OpPaiDto>>(_customersService.Attributes.GetPaisList());
         }
 
         [HttpGet]
         [Route("{id}")]
-        public OpGender GetGender(string id)
+        public OpPaiDto GetPais(string id)
         {
-            return _customersAttributesRepository.GetGender(id);
+            return _mapper.Map<OpPai, OpPaiDto>(_customersService.Attributes.GetPais(id));
+        }
+
+        [HttpGet]
+        public IEnumerable<OpGenderDto> GetGenderList()
+        {
+            return _mapper.Map<List<OpGender>, List<OpGenderDto>>(_customersService.Attributes.GetGenderList());
+        }
+
+        [HttpGet]
+        [Route("{id}")]
+        public OpGenderDto GetGender(string id)
+        {
+            return _mapper.Map<OpGender, OpGenderDto>(_customersService.Attributes.GetGender(id));
         }
         #endregion Attributes
     }

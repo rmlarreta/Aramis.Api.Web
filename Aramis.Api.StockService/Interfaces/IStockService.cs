@@ -11,12 +11,12 @@ namespace Aramis.Api.StockService.Interfaces
         StockProductDto GetById(string id);
         List<StockProductDto> GetList();
 
-        bool InsertRubro(StockRubro rubro);
-        bool UpdateRubro(StockRubro rubro);
-        StockRubro GetRubro(string id);
-        List<StockRubro> GetRubroList();
+        bool InsertRubro(StockRubroDto rubro);
+        bool UpdateRubro(StockRubroDto rubro);
+        StockRubroDto GetRubro(string id);
+        List<StockRubroDto> GetRubroList();
 
-        StockIva GetIva(string id);
-        List<StockIva> GetIvaList();
+        StockIvaDto GetIva(string id);
+        List<StockIvaDto> GetIvaList();
     }
 }

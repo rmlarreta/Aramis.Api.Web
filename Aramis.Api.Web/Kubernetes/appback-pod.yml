@@ -1,0 +1,20 @@
+﻿apiVersion: v1
+kind: Pod
+metadata:
+  name: appback-pod
+  labels:
+    name: app
+    type: netapi
+spec:
+  containers:
+    - name: app-api
+      image: aramisistemas/aramisback:version1.2
+      resources:
+        limits:
+          memory: "128Mi"
+          cpu: "500m"
+      ports:
+        - containerPort: 5000
+      env:
+        - name: ConnectionStrings__DefaultConnection
+          value: Server=mssql-service;Initial Catalog=AramisBD; User Id=sa;password=Aramis1234@;Encrypt=False

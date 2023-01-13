@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: <Host>
+  - host: aramis.35.188.20.15.nip.io
     http:
       paths:
       - pathType: Prefix

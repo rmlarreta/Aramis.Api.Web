@@ -14,7 +14,7 @@ spec:
       type: netapi
   template:
     metadata:
-      name: appback-pod
+      name: app-pod
       namespace: app
       labels:
         name: app

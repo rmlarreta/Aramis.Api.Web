@@ -1,2 +1,4 @@
 docker build -t aramisistemas/aramisback:version_ -f Dockerfile . 
 docker push aramisistemas/aramisback:version_
+ 
+ docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Aramis1234@" -p 1433:1433 -v c:/sql/data:/var/opt/mssql/data -v c:/sql/log:/var/opt/mssql/log -v c:/sql/log:/var/opt/mssql/secrets -d mcr.microsoft.com/mssql/server:2019-latest

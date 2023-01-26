@@ -8,6 +8,7 @@ namespace Aramis.Api.Repository.Interfaces.Operaciones
         void Update(BusOperacion entity);
         BusOperacion Get(string id);
         List<BusOperacion> Get();
+        List<BusOperacion> GetImpagasByClienteId(string clienteId);
         void DeleteDetalles(List<BusOperacionDetalle> detalles);
         void DeleteOperacion(string operacion);
         void InsertObservaciones(List<BusOperacionObservacion> observaciones);

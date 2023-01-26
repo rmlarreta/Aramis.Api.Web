@@ -22,9 +22,9 @@ namespace Aramis.Api.Web.Controllers
             _tipoPagoService = tipoPagoService;
             _pagosService = pagosService;
         }
-
+  
         [HttpPost]
-        public IActionResult InsertRecibo([FromBody] ReciboInsert recibo)
+        public IActionResult InsertRecibo([FromBody] CobReciboInsert recibo)
         {
             try
             {
@@ -70,6 +70,14 @@ namespace Aramis.Api.Web.Controllers
             {
               return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
             }
+        }
+
+        [HttpGet]
+        [Route("{ClienteId}")]
+        public IActionResult ConciliacionCliente(string ClienteId)
+        {
+            ConciliacionCliente? data = _pagosService.ConciliacionCliente(ClienteId);
+            return Ok(data);
         }
 
         #region Auxiliares

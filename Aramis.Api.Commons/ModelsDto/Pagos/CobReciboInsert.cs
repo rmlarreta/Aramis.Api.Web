@@ -1,6 +1,6 @@
 ﻿namespace Aramis.Api.Commons.ModelsDto.Pagos
 {
-    public class ReciboInsert
+    public class CobReciboInsert
     {
         public Guid? Id { get; set; } 
         public int? Numero { get; set; }
@@ -10,6 +10,6 @@
 
         public string? Operador { get; set; } = null!;
 
-        public List<ReciboDetallesInsert>? Detalles { get; set; } = new List<ReciboDetallesInsert>();
+        public List<CobReciboDetallesInsert>? Detalles { get; set; } = new List<CobReciboDetallesInsert>();
     }
 }

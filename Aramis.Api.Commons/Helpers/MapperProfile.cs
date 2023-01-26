@@ -92,13 +92,21 @@ namespace Aramis.Api.Commons.Helpers
             #endregion
 
             #region Recibos
-            CreateMap<CobRecibo, ReciboInsert>()
+            CreateMap<CobRecibo, CobReciboInsert>()
+            .ForMember(dest => dest.Detalles, opt => opt.MapFrom(src => src.CobReciboDetalles))
+            .ReverseMap(); 
+            
+            CreateMap<CobRecibo, CobReciboDto>()
             .ForMember(dest => dest.Detalles, opt => opt.MapFrom(src => src.CobReciboDetalles))
             .ReverseMap();
 
-            CreateMap<CobReciboDetalle, ReciboDetallesInsert>()
+            CreateMap<CobReciboDetalle, CobReciboDetallesInsert>()
             .ReverseMap();
+            CreateMap<CobReciboDetalle, CobReciboDetalleDto>()
+            .ReverseMap();
+            #endregion
 
+            #region Cuentas
             CreateMap<CobCuentum, CobCuentDto>()
            .ReverseMap();
             CreateMap<CobTipoPago, CobTipoPagoDto>()

@@ -17,6 +17,31 @@ namespace Aramis.Api.FlowService.Application
             _repository = repository;
             _mapper = mapper;
         }
+
+        public ConciliacionCliente ConciliacionCliente(string clienteId)
+        {
+            try
+            {
+
+         
+            List <BusOperacion> op = _repository.Operaciones.GetImpagasByClienteId(clienteId);
+            List <CobReciboDetalle> dets = _repository.Recibos.GetCuentaCorrientesByCliente(clienteId);
+            List<CobRecibo> rec = _repository.Recibos.GetSinImputarByCLiente(clienteId);
+            ConciliacionCliente conciliacionCliente = new()
+            {
+                OperacionesImpagas = _mapper.Map<List<BusOperacionesDto>>(op),
+                DetallesCuentaCorriente = _mapper.Map<List<CobReciboDetalleDto>>(dets),
+                RecibosSinImputar = _mapper.Map<List<CobReciboDto>>(rec)
+            };
+            return conciliacionCliente;
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception(ex.Message.ToString());
+            }
+        }
+
         public async Task<bool> NuevoPago(PagoInsert pago)
         { 
             CobRecibo? recibo = await Task.FromResult(_repository.Recibos.Get(pago.ReciboId.ToString()));

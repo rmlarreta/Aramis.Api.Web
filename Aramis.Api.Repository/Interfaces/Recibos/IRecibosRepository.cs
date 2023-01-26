@@ -5,7 +5,9 @@ namespace Aramis.Api.Repository.Interfaces.Recibos
     {
         void Add(CobRecibo recibo);
         CobRecibo Get(string id);
-        IEnumerable<CobRecibo> GetAll();
+        List<CobRecibo> GetAll();
+        List<CobRecibo> GetSinImputarByCLiente(string clienteId);
+        List<CobReciboDetalle> GetCuentaCorrientesByCliente(string clienteId);
         void Update(CobRecibo recibo);
         void Delete(string id);
         SystemIndex GetIndexs();

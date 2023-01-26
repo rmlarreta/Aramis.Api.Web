@@ -109,5 +109,24 @@ namespace Aramis.Api.Repository.Application.Operaciones
         {
             _context.SystemIndices.Update(indexs);
         }
+
+        public List<BusOperacion> GetImpagasByClienteId(string clienteId)
+        {
+            var query = from op in _context.BusOperacions
+                              join pagos in _context.BusOperacionPagos on op.Id equals pagos.OperacionId
+                              join recibos in _context.CobRecibos on pagos.ReciboId equals recibos.Id
+                              join detalles in _context.CobReciboDetalles on recibos.Id equals detalles.ReciboId
+                              join tipospago in _context.CobTipoPagos on detalles.Tipo equals tipospago.Id
+                              where op.ClienteId.ToString() == clienteId && tipospago.Name == "CUENTA CORRIENTE"
+                              select op.Id.ToString();
+            List<BusOperacion> operaciones = new();
+            foreach(var op in query)
+            {
+                var data = Get(op);
+               if(data!=null) operaciones.Add(data);
+            }
+
+            return operaciones;
+        }
     }
 }

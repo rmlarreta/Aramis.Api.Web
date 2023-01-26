@@ -13,7 +13,7 @@ namespace Aramis.Api.Web.Controllers
     {
         private readonly IRecibosService _recibosService;
         private readonly IPagosService _pagosService;
-        private readonly ITipoPagoService _tipoPagoService; 
+        private readonly ITipoPagoService _tipoPagoService;
         private readonly ISecurityService _securityService;
         public PagosController(IRecibosService recibosService, ISecurityService securityService, IPagosService pagosService, ITipoPagoService tipoPagoService)
         {
@@ -22,7 +22,7 @@ namespace Aramis.Api.Web.Controllers
             _tipoPagoService = tipoPagoService;
             _pagosService = pagosService;
         }
-  
+
         [HttpPost]
         public IActionResult InsertRecibo([FromBody] CobReciboInsert recibo)
         {
@@ -31,16 +31,16 @@ namespace Aramis.Api.Web.Controllers
                 recibo.Id = Guid.NewGuid();
                 recibo.Operador = _securityService.GetUserAuthenticated();
                 recibo.Fecha = DateTime.Now;
-                foreach(var item in recibo.Detalles!)
+                foreach (var item in recibo.Detalles!)
                 {
-                    item.ReciboId=recibo.Id;
+                    item.ReciboId = recibo.Id;
                     item.Id = Guid.NewGuid();
                 }
                 return Ok(_recibosService.InsertRecibo(recibo));
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
             }
         }
 
@@ -55,7 +55,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
             }
         }
 
@@ -68,8 +68,15 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
             }
+        }
+
+        [HttpGet]
+        [Route("{ReciboId}")]
+        public IActionResult ImputarRecibo(string ReciboId)
+        {
+            return Ok(_pagosService.ImputarRecibo(ReciboId));
         }
 
         [HttpGet]

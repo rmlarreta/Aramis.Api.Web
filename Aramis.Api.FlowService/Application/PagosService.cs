@@ -42,6 +42,25 @@ namespace Aramis.Api.FlowService.Application
             }
         }
 
+        public bool ImputarRecibo(string reciboId)
+        {
+            IsImputado(reciboId);
+            var recibo = _mapper.Map<CobReciboDto>(_repository.Recibos.Get(reciboId));
+            var total = recibo.Detalles!.Sum(x => x.Monto);
+
+            var consaldos = _repository.Operaciones.GetImpagasByClienteId(recibo.ClienteId.ToString()).OrderBy(x=>x.Fecha);
+            
+            foreach(var rem in consaldos)
+            {
+             var data =   rem.BusOperacionPagos.Select(x => x.Recibo.CobReciboDetalles.Where(x => x.TipoNavigation.Name == "CUENTA CORRIENTE")).FirstOrDefault();  
+                if(data != null)
+                {
+
+                }
+            }
+            return true;
+        }
+
         public async Task<bool> NuevoPago(PagoInsert pago)
         { 
             CobRecibo? recibo = await Task.FromResult(_repository.Recibos.Get(pago.ReciboId.ToString()));
@@ -61,10 +80,9 @@ namespace Aramis.Api.FlowService.Application
                 cuenta.Saldo += item.Monto;
                 _repository.Cuentas.Update(cuenta);
             }
-            if (_repository.OperacionPagos.Get().Where(x => x.ReciboId.Equals(pago.ReciboId)).Any())
-            {
-                throw new Exception("Ese Recibo ya ha sido imputado");
-            }
+
+            IsImputado(pago.ReciboId.ToString());
+          
 
             List<BusOperacion> ops = new();
             foreach (string? id in pago.Operaciones)
@@ -91,6 +109,14 @@ namespace Aramis.Api.FlowService.Application
                 _repository.OperacionPagos.Add(_mapper.Map<BusOperacionPagoDto, BusOperacionPago>(op));
             }
             return _repository.Save();
+        }
+
+        private void IsImputado(string reciboId)
+        {
+            if (_repository.OperacionPagos.Get().Where(x => x.ReciboId.Equals(reciboId)).Any())
+            {
+                throw new Exception("Ese Recibo ya ha sido imputado");
+            }
         }
     }
 }

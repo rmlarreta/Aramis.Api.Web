@@ -42,6 +42,10 @@ namespace Aramis.Api.Repository.Application.Operaciones
                  .Include(x => x.Estado).AsNoTracking()
                  .Include(x => x.BusOperacionDetalles)
                  .Include(x => x.BusOperacionObservacions)
+                 .Include(x => x.BusOperacionPagos)
+                 .ThenInclude(x=>x.Recibo)
+                 .ThenInclude(x=>x.CobReciboDetalles)
+                 .ThenInclude(x=>x.TipoNavigation)
                  .Where(x => x.Id.Equals(Guid.Parse(id)))
                  .FirstOrDefault()!;
         }
@@ -56,6 +60,10 @@ namespace Aramis.Api.Repository.Application.Operaciones
                  .Include(x => x.Estado)
                  .Include(x => x.BusOperacionDetalles)
                  .Include(x => x.BusOperacionObservacions)
+                 .Include(x => x.BusOperacionPagos)
+                 .ThenInclude(x => x.Recibo)
+                 .ThenInclude(x => x.CobReciboDetalles)
+                 .ThenInclude(x => x.TipoNavigation)
                  .ToList()!;
         }
 
@@ -113,17 +121,17 @@ namespace Aramis.Api.Repository.Application.Operaciones
         public List<BusOperacion> GetImpagasByClienteId(string clienteId)
         {
             var query = from op in _context.BusOperacions
-                              join pagos in _context.BusOperacionPagos on op.Id equals pagos.OperacionId
-                              join recibos in _context.CobRecibos on pagos.ReciboId equals recibos.Id
-                              join detalles in _context.CobReciboDetalles on recibos.Id equals detalles.ReciboId
-                              join tipospago in _context.CobTipoPagos on detalles.Tipo equals tipospago.Id
-                              where op.ClienteId.ToString() == clienteId && tipospago.Name == "CUENTA CORRIENTE"
-                              select op.Id.ToString();
+                        join pagos in _context.BusOperacionPagos on op.Id equals pagos.OperacionId
+                        join recibos in _context.CobRecibos on pagos.ReciboId equals recibos.Id
+                        join detalles in _context.CobReciboDetalles on recibos.Id equals detalles.ReciboId
+                        join tipospago in _context.CobTipoPagos on detalles.Tipo equals tipospago.Id
+                        where op.ClienteId.ToString() == clienteId && tipospago.Name == "CUENTA CORRIENTE"
+                        select op.Id.ToString();
             List<BusOperacion> operaciones = new();
-            foreach(var op in query)
+            foreach (var op in query)
             {
                 var data = Get(op);
-               if(data!=null) operaciones.Add(data);
+                if (data != null) operaciones.Add(data);
             }
 
             return operaciones;

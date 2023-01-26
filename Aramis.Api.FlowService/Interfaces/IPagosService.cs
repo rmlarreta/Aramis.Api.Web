@@ -7,5 +7,6 @@ namespace Aramis.Api.FlowService.Interfaces
         Task<bool> NuevoPago(PagoInsert pago);
 
         ConciliacionCliente ConciliacionCliente(string clienteId);
+        bool ImputarRecibo(string reciboId);
     }
 }

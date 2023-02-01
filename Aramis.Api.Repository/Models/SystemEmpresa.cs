@@ -1,4 +1,7 @@
-﻿namespace Aramis.Api.Repository.Models;
+﻿using System;
+using System.Collections.Generic;
+
+namespace Aramis.Api.Repository.Models;
 
 public partial class SystemEmpresa
 {
@@ -17,5 +20,6 @@ public partial class SystemEmpresa
     public DateTime Inicio { get; set; }
 
     public string Respo { get; set; } = null!;
-    public int PtoVenta { get; set; } = 0!;
+
+    public int PtoVenta { get; set; }
 }

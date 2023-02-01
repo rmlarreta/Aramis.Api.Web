@@ -43,9 +43,9 @@ namespace Aramis.Api.Repository.Application.Operaciones
                  .Include(x => x.BusOperacionDetalles)
                  .Include(x => x.BusOperacionObservacions)
                  .Include(x => x.BusOperacionPagos)
-                 .ThenInclude(x=>x.Recibo)
-                 .ThenInclude(x=>x.CobReciboDetalles)
-                 .ThenInclude(x=>x.TipoNavigation)
+                 .ThenInclude(x => x.Recibo)
+                 .ThenInclude(x => x.CobReciboDetalles)
+                 .ThenInclude(x => x.TipoNavigation)
                  .Where(x => x.Id.Equals(Guid.Parse(id)))
                  .FirstOrDefault()!;
         }
@@ -125,7 +125,7 @@ namespace Aramis.Api.Repository.Application.Operaciones
                         join recibos in _context.CobRecibos on pagos.ReciboId equals recibos.Id
                         join detalles in _context.CobReciboDetalles on recibos.Id equals detalles.ReciboId
                         join tipospago in _context.CobTipoPagos on detalles.Tipo equals tipospago.Id
-                        where op.ClienteId.ToString() == clienteId && tipospago.Name == "CUENTA CORRIENTE"
+                        where op.ClienteId.ToString() == clienteId && tipospago.Name == "CUENTA CORRIENTE" && detalles.Cancelado == false
                         select op.Id.ToString();
             List<BusOperacion> operaciones = new();
             foreach (var op in query)

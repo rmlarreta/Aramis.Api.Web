@@ -16,12 +16,19 @@ namespace Aramis.Api.FlowService.Application
             _paymentsMP = paymentsMP;
             _recibos = recibos;
             _mapper = mapper;
-        } 
+        }
         public CobReciboInsert InsertRecibo(CobReciboInsert recibo)
         {
             SystemIndex? index = _recibos.GetIndexs();
-            recibo.Numero = index.Recibo += 1; 
+            recibo.Numero = index.Recibo += 1;
             _recibos.UpdateIndexs(index);
+            foreach (var det in recibo.Detalles!)
+            {
+                if (det.Observacion == "CUENTA CORRIENTE")
+                {
+                    det.Cancelado = false;
+                }
+            }
             _recibos.Add(_mapper.Map<CobReciboInsert, CobRecibo>(recibo));
             _recibos.Save();
             return recibo!;

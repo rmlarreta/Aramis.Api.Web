@@ -23,17 +23,17 @@ namespace Aramis.Api.FlowService.Application
             try
             {
 
-         
-            List <BusOperacion> op = _repository.Operaciones.GetImpagasByClienteId(clienteId);
-            List <CobReciboDetalle> dets = _repository.Recibos.GetCuentaCorrientesByCliente(clienteId);
-            List<CobRecibo> rec = _repository.Recibos.GetSinImputarByCLiente(clienteId);
-            ConciliacionCliente conciliacionCliente = new()
-            {
-                OperacionesImpagas = _mapper.Map<List<BusOperacionesDto>>(op),
-                DetallesCuentaCorriente = _mapper.Map<List<CobReciboDetalleDto>>(dets),
-                RecibosSinImputar = _mapper.Map<List<CobReciboDto>>(rec)
-            };
-            return conciliacionCliente;
+
+                List<BusOperacion> op = _repository.Operaciones.GetImpagasByClienteId(clienteId);
+                List<CobReciboDetalle> dets = _repository.Recibos.GetCuentaCorrientesByCliente(clienteId);
+                List<CobRecibo> rec = _repository.Recibos.GetSinImputarByCLiente(clienteId);
+                ConciliacionCliente conciliacionCliente = new()
+                {
+                    OperacionesImpagas = _mapper.Map<List<BusOperacionesDto>>(op),
+                    DetallesCuentaCorriente = _mapper.Map<List<CobReciboDetalleDto>>(dets),
+                    RecibosSinImputar = _mapper.Map<List<CobReciboDto>>(rec)
+                };
+                return conciliacionCliente;
             }
             catch (Exception ex)
             {
@@ -46,23 +46,42 @@ namespace Aramis.Api.FlowService.Application
         {
             IsImputado(reciboId);
             var recibo = _mapper.Map<CobReciboDto>(_repository.Recibos.Get(reciboId));
-            var total = recibo.Detalles!.Sum(x => x.Monto);
+            var disponible = recibo.Detalles!.Sum(x => x.Monto);
 
-            var consaldos = _repository.Operaciones.GetImpagasByClienteId(recibo.ClienteId.ToString()).OrderBy(x=>x.Fecha);
-            
-            foreach(var rem in consaldos)
+            var consaldos = _repository.Operaciones.GetImpagasByClienteId(recibo.ClienteId.ToString()).OrderBy(x => x.Fecha);
+
+            foreach (var rem in consaldos)
             {
-             var data =   rem.BusOperacionPagos.Select(x => x.Recibo.CobReciboDetalles.Where(x => x.TipoNavigation.Name == "CUENTA CORRIENTE")).FirstOrDefault();  
-                if(data != null)
+                var data = rem.BusOperacionPagos.Select(x => x.Recibo.CobReciboDetalles.Where(x => x.TipoNavigation.Name == "CUENTA CORRIENTE" && x.Cancelado == false)).FirstOrDefault();
+                if (data != null)
                 {
-
+                    foreach (var det in data)
+                    {
+                        if (disponible >= det.Monto)
+                        {
+                            det.Cancelado = true;
+                            disponible -= det.Monto;  
+                        }
+                        _repository.Recibos.Update(det);
+                    }                  
                 }
+            }
+            if (disponible >= 0)
+            {
+                recibo.Detalles!.Where(x => x.Monto >= disponible).First().Monto -= disponible;
+                _repository.Recibos.Update(_mapper.Map<CobRecibo>(recibo));
+                var indexs = _repository.Recibos.GetIndexs(); 
+                indexs.Recibo+=1;
+                var nronuevorecibo = indexs.Recibo;
+                _repository.Recibos.UpdateIndexs(indexs); 
+
+                
             }
             return true;
         }
 
         public async Task<bool> NuevoPago(PagoInsert pago)
-        { 
+        {
             CobRecibo? recibo = await Task.FromResult(_repository.Recibos.Get(pago.ReciboId.ToString()));
             if (recibo.CobReciboDetalles.Sum(x => x.Monto) == 0)
             {
@@ -82,7 +101,7 @@ namespace Aramis.Api.FlowService.Application
             }
 
             IsImputado(pago.ReciboId.ToString());
-          
+
 
             List<BusOperacion> ops = new();
             foreach (string? id in pago.Operaciones)
@@ -91,20 +110,20 @@ namespace Aramis.Api.FlowService.Application
                 ops.Add(op!);
             }
             List<BusOperacionesDto>? operaciones = _mapper.Map<List<BusOperacion>, List<BusOperacionesDto>>(ops);
-            if (!recibo.CobReciboDetalles.Sum(x => Math.Round(x.Monto,2)).Equals(operaciones.Sum(x => Math.Round(x.Total,2))))
+            if (!recibo.CobReciboDetalles.Sum(x => Math.Round(x.Monto, 2)).Equals(operaciones.Sum(x => Math.Round(x.Total, 2))))
             {
                 throw new Exception("Existe una diferencia en los pagos ingresados");
-            } 
+            }
 
             foreach (BusOperacion? item in ops)
             {
                 item.Estado = _repository.Estados.Get().Where(x => x.Name.Equals("PAGADO")).SingleOrDefault()!;
-                 _repository.Operaciones.Update(item);
+                _repository.Operaciones.Update(item);
                 BusOperacionPagoDto op = new()
                 {
                     Id = Guid.NewGuid(),
                     OperacionId = item.Id,
-                    ReciboId =pago.ReciboId
+                    ReciboId = pago.ReciboId
                 };
                 _repository.OperacionPagos.Add(_mapper.Map<BusOperacionPagoDto, BusOperacionPago>(op));
             }

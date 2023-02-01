@@ -48,10 +48,10 @@ namespace Aramis.Api.Repository.Application.Recibos
         public List<CobRecibo> GetSinImputarByCLiente(string clienteId)
         {
             var query = from r in _context.CobRecibos
-                          where r.ClienteId.ToString() == clienteId
-                          && !(from op in _context.BusOperacionPagos
-                               select op.ReciboId).Contains(r.Id)
-                          select r.Id.ToString();
+                        where r.ClienteId.ToString() == clienteId
+                        && !(from op in _context.BusOperacionPagos
+                             select op.ReciboId).Contains(r.Id)
+                        select r.Id.ToString();
             List<CobRecibo> recibos = new();
             foreach (var op in query)
             {
@@ -66,7 +66,7 @@ namespace Aramis.Api.Repository.Application.Recibos
             var dets = from detalles in _context.CobReciboDetalles
                        join recibos in _context.CobRecibos on detalles.ReciboId equals recibos.Id
                        join tipos in _context.CobTipoPagos on detalles.Tipo equals tipos.Id
-                       where recibos.ClienteId.ToString() == clienteId && tipos.Name == "CUENTA CORRIENTE"
+                       where recibos.ClienteId.ToString() == clienteId && tipos.Name == "CUENTA CORRIENTE" && detalles.Cancelado == false
                        select detalles;
             return dets.ToList();
         }
@@ -78,6 +78,11 @@ namespace Aramis.Api.Repository.Application.Recibos
         public void Update(CobRecibo recibo)
         {
             _context.CobRecibos.Update(recibo);
+        }
+
+        public void Update(CobReciboDetalle detalle)
+        {
+            _context.CobReciboDetalles.Update(detalle);
         }
 
         public SystemIndex GetIndexs()

@@ -14,5 +14,6 @@
         public Guid? PosId { get; set; }
 
         public string? CodAut { get; set; }
+        public bool? Cancelado { get;set; }
     }
 }

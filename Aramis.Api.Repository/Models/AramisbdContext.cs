@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace Aramis.Api.Repository.Models;
 
@@ -56,7 +58,7 @@ public partial class AramisbdContext : DbContext
     public virtual DbSet<SystemEmpresa> SystemEmpresas { get; set; }
 
     public virtual DbSet<SystemIndex> SystemIndices { get; set; }
-
+ 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<BusEstado>(entity =>
@@ -196,8 +198,6 @@ public partial class AramisbdContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.TipoAfip)
-            .HasColumnType("int");
         });
 
         modelBuilder.Entity<CobCuentum>(entity =>
@@ -254,6 +254,9 @@ public partial class AramisbdContext : DbContext
             entity.ToTable("Cob_Recibo_Detalles");
 
             entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Cancelado)
+                .IsRequired()
+                .HasDefaultValueSql("((1))");
             entity.Property(e => e.CodAut)
                 .HasMaxLength(254)
                 .IsUnicode(false);
@@ -485,14 +488,16 @@ public partial class AramisbdContext : DbContext
             entity.Property(e => e.Respo)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.PtoVenta).HasColumnType("int");
-
         });
 
         modelBuilder.Entity<SystemIndex>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK_System_Index_Id");
+
             entity.ToTable("System_Index");
+
+            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Interes).HasColumnType("decimal(18, 0)");
         });
 
         OnModelCreatingPartial(modelBuilder);

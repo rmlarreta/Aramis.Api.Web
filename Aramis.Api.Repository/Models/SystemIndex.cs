@@ -1,4 +1,7 @@
-﻿namespace Aramis.Api.Repository.Models;
+﻿using System;
+using System.Collections.Generic;
+
+namespace Aramis.Api.Repository.Models;
 
 public partial class SystemIndex
 {
@@ -13,4 +16,6 @@ public partial class SystemIndex
     public int Orden { get; set; }
 
     public bool Production { get; set; }
+
+    public decimal Interes { get; set; }
 }

@@ -30,34 +30,46 @@ namespace Aramis.Api.FiscalService.Application
                     throw new Exception($"El documento {docs} no puede ser Facturado en el estado actual");
                 }
             }
-
+            IEnumerable<SystemEmpresa>? emp = _empresa.Get().Take(1);
             BusOperacion? firstOp = _repository.Get(busDetalles.First().OperacionId.ToString());
 
             DocumentoFiscal documentoFiscal = new();
-            documentoFiscal.TipoComprobante = firstOp.Cliente.RespNavigation.Name!.Equals("MONOTRIBUTO") || firstOp.Cliente.RespNavigation.Name.Equals("RESPONSABLE INSCRIPTO") ? 1 : 6;
+            if (emp.OrderBy(x => x.Id).First().Respo == "MONOTRIBUTO")
+            {
+                documentoFiscal.TipoComprobante = 11;
+            }
+            else
+            {
+                documentoFiscal.TipoComprobante = firstOp.Cliente.RespNavigation.Name!.Equals("MONOTRIBUTO") || firstOp.Cliente.RespNavigation.Name.Equals("RESPONSABLE INSCRIPTO") ? 1 : 6;
+            }
             documentoFiscal.TipoDocumento = firstOp.Cliente.Cui!.Equals("0") ? 99 : 80;
             documentoFiscal.DocumentoCliente = Convert.ToInt64(firstOp.Cliente.Cui);
             documentoFiscal.Exento = (decimal)busDetalles.Sum(x => x.TotalExento)!;
-            documentoFiscal.Neto = (decimal)busDetalles.Sum(x => x.TotalNeto)!;
+            documentoFiscal.Neto = documentoFiscal.TipoComprobante == 11 ? (decimal)busDetalles.Sum(x => x.TotalNeto)! + (decimal)busDetalles.Sum(x => x.TotalIva)! : (decimal)busDetalles.Sum(x => x.TotalNeto)!;
             documentoFiscal.Internos = (decimal)busDetalles.Sum(x => x.TotalInternos)!;
-            documentoFiscal.Neto10 = (decimal)busDetalles.Sum(x => x.TotalNeto10)!;
-            documentoFiscal.Iva10 = (decimal)busDetalles.Sum(x => x.TotalIva10)!;
-            documentoFiscal.Neto21 = (decimal)busDetalles.Sum(x => x.TotalNeto21)!;
-            documentoFiscal.Iva21 = (decimal)busDetalles.Sum(x => x.TotalIva21)!;
-            documentoFiscal.IvaTotal = (decimal)busDetalles.Sum(x => x.TotalIva)!;
+            documentoFiscal.Neto10 = documentoFiscal.TipoComprobante == 11 ? (decimal)busDetalles.Sum(x => x.TotalNeto10)! + (decimal)busDetalles.Sum(x => x.TotalIva10)! : (decimal)busDetalles.Sum(x => x.TotalNeto10)!;
+            documentoFiscal.Iva10 = documentoFiscal.TipoComprobante == 11 ? 0.0M : (decimal)busDetalles.Sum(x => x.TotalIva10)!;
+            documentoFiscal.Neto21 = documentoFiscal.TipoComprobante == 11 ? (decimal)busDetalles.Sum(x => x.TotalNeto21)! + (decimal)busDetalles.Sum(x => x.TotalIva21)! : (decimal)busDetalles.Sum(x => x.TotalNeto21)!;
+            documentoFiscal.Iva21 = documentoFiscal.TipoComprobante == 11 ? 0.0M : (decimal)busDetalles.Sum(x => x.TotalIva21)!;
+            documentoFiscal.IvaTotal = documentoFiscal.TipoComprobante == 11 ? 0.0M : (decimal)busDetalles.Sum(x => x.TotalIva)!;
             documentoFiscal.TotalComprobante = (decimal)busDetalles.Sum(x => x.Total)!;
-            List<AlicIva> alicIvas = new();
-
-            if (documentoFiscal.Iva10 > 0)
+            if (documentoFiscal.TipoComprobante != 11)
             {
-                alicIvas.Add(new() { Id = 4, BaseImp = (double)documentoFiscal.Neto10, Importe = (double)documentoFiscal.Iva10 });
-            }
+                List<AlicIva> alicIvas = new();
 
-            if (documentoFiscal.Iva21 > 0)
-            {
-                alicIvas.Add(new() { Id = 5, BaseImp = (double)documentoFiscal.Neto21, Importe = (double)documentoFiscal.Iva21 });
+                if (documentoFiscal.Iva10 > 0)
+                {
+                    alicIvas.Add(new() { Id = 4, BaseImp = (double)documentoFiscal.Neto10, Importe = (double)documentoFiscal.Iva10 });
+                }
+
+
+                if (documentoFiscal.Iva21 > 0)
+                {
+                    alicIvas.Add(new() { Id = 5, BaseImp = (double)documentoFiscal.Neto21, Importe = (double)documentoFiscal.Iva21 });
+                }
+                documentoFiscal.Alicuotas = alicIvas;
+
             }
-            documentoFiscal.Alicuotas = alicIvas;
 
             if (documentoFiscal.Internos > 0)
             {
@@ -143,7 +155,7 @@ namespace Aramis.Api.FiscalService.Application
                 _repository.InsertObservaciones(_mapper.Map<List<BusObservacionesDto>, List<BusOperacionObservacion>>(busObservaciones));
                 _repository.Save();
                 BusOperacionesDto? dto = _mapper.Map<BusOperacion, BusOperacionesDto>(_repository.Get(factura.Id.ToString()));
-                IEnumerable<SystemEmpresa>? emp = _empresa.Get().Take(1);
+
                 dto.CuitEmpresa = emp.OrderBy(x => x.Id).First().Cuit;
                 dto.DomicilioEmpresa = emp.OrderBy(x => x.Id).First().Domicilio;
                 dto.RazonEmpresa = emp.OrderBy(x => x.Id).First().Razon;
@@ -167,7 +179,7 @@ namespace Aramis.Api.FiscalService.Application
                                                              "Certificados/certificado.p12",
                                                              "1234",
                                                              true);
-                #endregion 
+                #endregion
                 #region wsfeClient
 
                 WsfeClient? wsfeClient = new()

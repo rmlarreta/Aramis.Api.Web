@@ -77,23 +77,23 @@ builder.Services.AddSwaggerGen(setup =>
 
 });
 
+builder.Services.AddCors(p => p.AddPolicy("PolicyCors", build =>
+  {
+      build.WithOrigins("*").AllowAnyHeader().AllowAnyMethod();
+  }));
+
 IoC.AddServices(builder.Services);
 
-WebApplication? app = builder.Build();
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+WebApplication? app = builder.Build(); 
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseCors(x => x
-    .AllowAnyOrigin()
-    .AllowAnyMethod()
-    .AllowAnyHeader());
+app.UseCors("PolicyCors");
 
 app.UseAuthentication();
 app.UseAuthorization();

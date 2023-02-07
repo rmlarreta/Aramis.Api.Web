@@ -1,7 +1,7 @@
 ﻿namespace Aramis.Api.Commons.ModelsDto.Pagos
 {
     public class CobReciboDetallesInsert
-    {
+    { 
         public Guid? Id { get; set; } 
         public Guid? ReciboId { get; set; }
 

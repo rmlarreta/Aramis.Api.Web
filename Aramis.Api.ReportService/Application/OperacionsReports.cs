@@ -201,7 +201,7 @@ namespace Aramis.Api.ReportService.Application
                            .Text("Unitario");
                             table.Cell().ColumnSpan(1)
                              .Background("#9ca4df")
-                           .Text("Iva");
+                           .Text(dto.RespoEmpresa == "MONOTRIBUTO" ? "Bonif." : "Iva");
                             table.Cell().ColumnSpan(1)
                              .Background("#9ca4df")
                            .Text("Sub Total");
@@ -211,8 +211,8 @@ namespace Aramis.Api.ReportService.Application
                                 table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(c.Codigo);
                                 table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignLeft().Text(c.Detalle);
                                 table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(c.Cantidad);
-                                table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text("$ " + c.Unitario);
-                                table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text("% " + c.IvaValue);
+                                table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text("$ " + dto.RespoEmpresa == "MONOTRIBUTO" ? Math.Round((decimal)(c.Total! / c.Cantidad), 2) : c.Unitario);
+                                table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(dto.RespoEmpresa == "MONOTRIBUTO" ? "% 0" : "% " + c.IvaValue);
                                 table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignRight().Text("$ " + Math.Round((decimal)c.Total!, 2));
                             }
                             table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(" ");
@@ -244,12 +244,17 @@ namespace Aramis.Api.ReportService.Application
                                r.RelativeItem()
                              .DefaultTextStyle(t => t.FontSize(10))
                              .DefaultTextStyle(x => x.Bold())
-                             .Text("Neto Gravado: $ " + Math.Round((decimal)dto.TotalNeto!, 2)
+                             .Text(dto.RespoEmpresa != "MONOTRIBUTO" ?
+                               "Neto Gravado: $ " + Math.Round((decimal)dto.TotalNeto!, 2)
                              + "\n" + "Excento: $ " + Math.Round((decimal)dto.TotalExento!, 2)
                              + "\n" + "IVA 10.5%: $ " + Math.Round((decimal)dto.TotalIva10!, 2)
                              + "\n" + "IVA 21.0%: $ " + Math.Round((decimal)dto.TotalIva21!, 2)
                              + "\n" + "Imp.Internos: $ " + Math.Round((decimal)dto.TotalInternos!, 2)
-                             + "\n" + "\n" + "Ud. fue atendido por " + dto.Operador);
+                             + "\n" + "\n" + "Ud. fue atendido por " + dto.Operador :
+                             "Subtotal: $ " + Math.Round((decimal)(dto.TotalNeto! + dto.TotalIva!), 2)
+                             + "\n" + "Imp.Internos: $ " + Math.Round((decimal)dto.TotalInternos!, 2)
+                             + "\n" + "\n" + "Ud. fue atendido por " + dto.Operador
+                             );
                                r.RelativeItem(2)
                               .DefaultTextStyle(t => t.FontSize(12))
                               .DefaultTextStyle(x => x.Bold())
@@ -450,7 +455,7 @@ namespace Aramis.Api.ReportService.Application
                            .Text("Unitario");
                             table.Cell().ColumnSpan(1)
                              .Background("#9ca4df")
-                           .Text("Iva");
+                          .Text(dto.RespoEmpresa == "MONOTRIBUTO" ? "Bonif." : "Iva");
                             table.Cell().ColumnSpan(1)
                              .Background("#9ca4df")
                            .Text("Sub Total");
@@ -460,8 +465,8 @@ namespace Aramis.Api.ReportService.Application
                                 table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(c.Codigo);
                                 table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignLeft().Text(c.Detalle);
                                 table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(c.Cantidad);
-                                table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text("$ " + c.Unitario);
-                                table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text("% " + c.IvaValue);
+                                table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text("$ " + dto.RespoEmpresa == "MONOTRIBUTO" ? Math.Round((decimal)(c.Total! / c.Cantidad), 2) : c.Unitario);
+                                table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(dto.RespoEmpresa == "MONOTRIBUTO" ? "% 0" : "% " + c.IvaValue);
                                 table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignRight().Text("$ " + Math.Round((decimal)c.Total!, 2));
                             }
                             table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(" ");
@@ -491,12 +496,17 @@ namespace Aramis.Api.ReportService.Application
                                r.RelativeItem()
                              .DefaultTextStyle(t => t.FontSize(10))
                              .DefaultTextStyle(x => x.Bold())
-                             .Text("Neto Gravado: $ " + Math.Round((decimal)dto.TotalNeto!, 2)
+                             .Text(dto.RespoEmpresa != "MONOTRIBUTO" ?
+                               "Neto Gravado: $ " + Math.Round((decimal)dto.TotalNeto!, 2)
                              + "\n" + "Excento: $ " + Math.Round((decimal)dto.TotalExento!, 2)
                              + "\n" + "IVA 10.5%: $ " + Math.Round((decimal)dto.TotalIva10!, 2)
                              + "\n" + "IVA 21.0%: $ " + Math.Round((decimal)dto.TotalIva21!, 2)
                              + "\n" + "Imp.Internos: $ " + Math.Round((decimal)dto.TotalInternos!, 2)
-                             + "\n" + "\n" + "Ud. fue atendido por " + dto.Operador);
+                             + "\n" + "\n" + "Ud. fue atendido por " + dto.Operador :
+                             "Subtotal: $ " + Math.Round((decimal)(dto.TotalNeto! + dto.TotalIva!), 2)
+                             + "\n" + "Imp.Internos: $ " + Math.Round((decimal)dto.TotalInternos!, 2)
+                             + "\n" + "\n" + "Ud. fue atendido por " + dto.Operador
+                             );
                                r.RelativeItem(2)
                               .DefaultTextStyle(t => t.FontSize(12))
                               .DefaultTextStyle(x => x.Bold())
@@ -693,7 +703,7 @@ namespace Aramis.Api.ReportService.Application
                            .Text("Unitario");
                             table.Cell().ColumnSpan(1)
                              .Background("#9ca4df")
-                           .Text("Iva");
+                           .Text(dto.RespoEmpresa == "MONOTRIBUTO" ? "Bonif." : "Iva");
                             table.Cell().ColumnSpan(1)
                              .Background("#9ca4df")
                            .Text("Sub Total");
@@ -703,8 +713,8 @@ namespace Aramis.Api.ReportService.Application
                                 table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(c.Codigo);
                                 table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignLeft().Text(c.Detalle);
                                 table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(c.Cantidad);
-                                table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text("$ " + c.Unitario);
-                                table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text("% " + c.IvaValue);
+                                table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text("$ " + dto.RespoEmpresa == "MONOTRIBUTO" ? Math.Round((decimal)(c.Total! / c.Cantidad), 2) : c.Unitario);
+                                table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(dto.RespoEmpresa == "MONOTRIBUTO" ? "% 0" : "% " + c.IvaValue);
                                 table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignRight().Text("$ " + Math.Round((decimal)c.Total!, 2));
                             }
                             table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(" ");
@@ -734,12 +744,17 @@ namespace Aramis.Api.ReportService.Application
                                r.RelativeItem()
                              .DefaultTextStyle(t => t.FontSize(10))
                              .DefaultTextStyle(x => x.Bold())
-                             .Text("Neto Gravado: $ " + Math.Round((decimal)dto.TotalNeto!, 2)
+                           .Text(dto.RespoEmpresa != "MONOTRIBUTO" ?
+                               "Neto Gravado: $ " + Math.Round((decimal)dto.TotalNeto!, 2)
                              + "\n" + "Excento: $ " + Math.Round((decimal)dto.TotalExento!, 2)
                              + "\n" + "IVA 10.5%: $ " + Math.Round((decimal)dto.TotalIva10!, 2)
                              + "\n" + "IVA 21.0%: $ " + Math.Round((decimal)dto.TotalIva21!, 2)
                              + "\n" + "Imp.Internos: $ " + Math.Round((decimal)dto.TotalInternos!, 2)
-                             + "\n" + "\n" + "Ud. fue atendido por " + dto.Operador);
+                             + "\n" + "\n" + "Ud. fue atendido por " + dto.Operador :
+                             "Subtotal: $ " + Math.Round((decimal)(dto.TotalNeto! + dto.TotalIva!), 2)
+                             + "\n" + "Imp.Internos: $ " + Math.Round((decimal)dto.TotalInternos!, 2)
+                             + "\n" + "\n" + "Ud. fue atendido por " + dto.Operador
+                             );
                                r.RelativeItem(2)
                               .DefaultTextStyle(t => t.FontSize(12))
                               .DefaultTextStyle(x => x.Bold())

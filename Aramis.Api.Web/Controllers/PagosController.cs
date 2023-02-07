@@ -76,7 +76,14 @@ namespace Aramis.Api.Web.Controllers
         [Route("{ReciboId}")]
         public IActionResult ImputarRecibo(string ReciboId)
         {
-            return Ok(_pagosService.ImputarRecibo(ReciboId));
+            try
+            {
+                return Ok(_pagosService.ImputarRecibo(ReciboId));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
+            }
         }
 
         [HttpGet]

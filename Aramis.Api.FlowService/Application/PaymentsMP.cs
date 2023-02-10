@@ -11,9 +11,11 @@ namespace Aramis.Api.FlowService.Application
     public class PaymentsMP : IPaymentsMp
     {
         private readonly IGenericRepository<CobPo> _points;
-        public PaymentsMP(IGenericRepository<CobPo> points)
+        private readonly IGenericRepository<SystemIndex> _indexs;
+        public PaymentsMP(IGenericRepository<CobPo> points, IGenericRepository<SystemIndex> indexs)
         {
             _points = points;
+            _indexs = indexs;
         }
         public async Task<PaymentIntentResponseDto> CreatePaymentIntent(PaymentIntentDto PaymentIntent, string PosId)
         {
@@ -29,7 +31,7 @@ namespace Aramis.Api.FlowService.Application
                 {
                     using HttpRequestMessage? request = new(new HttpMethod("POST"), $"https://api.mercadopago.com/point/integration-api/devices/{point.DeviceId}/payment-intents");
                     request.Headers.TryAddWithoutValidation("Authorization", $"Bearer {point.Token}");
-                    //request.Headers.TryAddWithoutValidation("x-test-scope", "sandbox"); //borrar en produccion
+                    if (!_indexs.Get().First().Production) request.Headers.TryAddWithoutValidation("x-test-scope", "sandbox"); //borrar en produccion
                     request.Content = JsonContent.Create(PaymentIntent);
                     request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
 
@@ -73,7 +75,7 @@ namespace Aramis.Api.FlowService.Application
                 using HttpClient? httpClient = new();
                 using HttpRequestMessage? request = new(new HttpMethod("GET"), $"https://api.mercadopago.com/point/integration-api/payment-intents/events?startDate={DateTime.Today:yyyy-MM-dd}&endDate={DateTime.Today:yyyy-MM-dd}");
                 request.Headers.TryAddWithoutValidation("Authorization", $"Bearer {point.Token}");
-                //request.Headers.TryAddWithoutValidation("x-test-scope", "sandbox"); //borrar en produccion
+                if (!_indexs.Get().First().Production) request.Headers.TryAddWithoutValidation("x-test-scope", "sandbox"); //borrar en produccion
                 using HttpResponseMessage? response = await httpClient.SendAsync(request);
                 if (response.IsSuccessStatusCode)
                 {
@@ -118,7 +120,7 @@ namespace Aramis.Api.FlowService.Application
                 {
                     using HttpRequestMessage? request = new(new HttpMethod("DELETE"), $"https://api.mercadopago.com/point/integration-api/devices/{point.DeviceId}/payment-intents/{paymentIntent}");
                     request.Headers.TryAddWithoutValidation("Authorization", $"Bearer {point.Token}");
-                   // request.Headers.TryAddWithoutValidation("x-test-scope", "sandbox"); //borrar en produccion
+                    if (!_indexs.Get().First().Production) request.Headers.TryAddWithoutValidation("x-test-scope", "sandbox"); //borrar en produccion
                     using HttpResponseMessage? response = await httpClient.SendAsync(request);
                     if (response.IsSuccessStatusCode)
                     {
@@ -159,7 +161,7 @@ namespace Aramis.Api.FlowService.Application
                 {
                     using HttpRequestMessage? request = new(new HttpMethod("GET"), $"https://api.mercadopago.com/point/integration-api/payment-intents/{paymentIntentId}/events");
                     request.Headers.TryAddWithoutValidation("Authorization", $"Bearer {point.Token}");
-                    //request.Headers.TryAddWithoutValidation("x-test-scope", "sandbox"); //borrar en produccion
+                    if (!_indexs.Get().First().Production) request.Headers.TryAddWithoutValidation("x-test-scope", "sandbox"); //borrar en produccion
                     using HttpResponseMessage? response = await httpClient.SendAsync(request);
                     if (response.IsSuccessStatusCode)
                     {
@@ -186,6 +188,6 @@ namespace Aramis.Api.FlowService.Application
             {
                 throw new Exception(ex.InnerException is not null ? ex.InnerException.Message : ex.Message);
             }
-        } 
+        }
     }
 }

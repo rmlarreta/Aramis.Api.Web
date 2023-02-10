@@ -201,7 +201,7 @@ namespace Aramis.Api.ReportService.Application
                            .Text("Unitario");
                             table.Cell().ColumnSpan(1)
                              .Background("#9ca4df")
-                           .Text(dto.RespoEmpresa == "MONOTRIBUTO" ? "Bonif." : "Iva");
+                           .Text(dto.RespoEmpresa == "MONOTRIBUTO" ? "Bon" : "Iva");
                             table.Cell().ColumnSpan(1)
                              .Background("#9ca4df")
                            .Text("Sub Total");
@@ -703,7 +703,7 @@ namespace Aramis.Api.ReportService.Application
                            .Text("Unitario");
                             table.Cell().ColumnSpan(1)
                              .Background("#9ca4df")
-                           .Text(dto.RespoEmpresa == "MONOTRIBUTO" ? "Bonif." : "Iva");
+                           .Text(dto.RespoEmpresa == "MONOTRIBUTO" ? "Bon" : "Iva");
                             table.Cell().ColumnSpan(1)
                              .Background("#9ca4df")
                            .Text("Sub Total");

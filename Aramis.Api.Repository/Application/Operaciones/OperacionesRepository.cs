@@ -35,17 +35,17 @@ namespace Aramis.Api.Repository.Application.Operaciones
 
         public BusOperacion Get(string id)
         {
-            return _context.BusOperacions.AsNoTracking()
+            return _context.BusOperacions
                  .Include(x => x.Cliente)
                  .Include(x => x.Cliente.RespNavigation)
                  .Include(x => x.TipoDoc)
-                 .Include(x => x.Estado).AsNoTracking()
+                 .Include(x => x.Estado)
                  .Include(x => x.BusOperacionDetalles)
                  .Include(x => x.BusOperacionObservacions)
                  .Include(x => x.BusOperacionPagos)
                  .ThenInclude(x => x.Recibo)
                  .ThenInclude(x => x.CobReciboDetalles)
-                 .ThenInclude(x => x.TipoNavigation)
+                 .ThenInclude(x => x.TipoNavigation).AsNoTracking()
                  .Where(x => x.Id.Equals(Guid.Parse(id)))
                  .FirstOrDefault()!;
         }
@@ -122,19 +122,44 @@ namespace Aramis.Api.Repository.Application.Operaciones
         {
             var query = from op in _context.BusOperacions
                         join pagos in _context.BusOperacionPagos on op.Id equals pagos.OperacionId
-                        join recibos in _context.CobRecibos on pagos.ReciboId equals recibos.Id
-                        join detalles in _context.CobReciboDetalles on recibos.Id equals detalles.ReciboId
+                        join recibos in _context.CobRecibos.AsNoTrackingWithIdentityResolution() on pagos.ReciboId equals recibos.Id
+                        join detalles in _context.CobReciboDetalles.AsNoTrackingWithIdentityResolution() on recibos.Id equals detalles.ReciboId
                         join tipospago in _context.CobTipoPagos on detalles.Tipo equals tipospago.Id
                         where op.ClienteId.ToString() == clienteId && tipospago.Name == "CUENTA CORRIENTE" && detalles.Cancelado == false
                         select op.Id.ToString();
-            List<BusOperacion> operaciones = new();
-            foreach (var op in query)
-            {
-                var data = Get(op);
-                if (data != null) operaciones.Add(data);
-            }
+             
+            List<BusOperacion> operaciones = this.Get(query.Distinct().ToList());
 
             return operaciones;
+        }
+
+        public List<BusOperacion> Get(List<string> ops)
+        {
+
+            List<BusOperacion> operaciones = new();
+            foreach (var op in ops)
+            {
+                var data = _context.BusOperacions.AsNoTracking()
+                    .Include(x => x.BusOperacionDetalles)
+                    .Where(x => x.Id.ToString() == op)
+                    .FirstOrDefault();
+                if (data != null)
+                {
+                    operaciones.Add(data);
+                }
+            }
+            return operaciones;
+        }
+
+        public void PagarOperaciones(List<string> ops)
+        {
+            Guid estado = _context.BusEstados.Where(x => x.Name.Equals("PAGADO")).SingleOrDefault()!.Id;
+            foreach (var op in ops)
+            {
+                BusOperacion? optoupdate = _context.BusOperacions.Where(x=>x.Id==Guid.Parse(op)).FirstOrDefault();
+                optoupdate!.EstadoId = estado;
+                _context.BusOperacions.Update(optoupdate);
+            }
         }
     }
 }

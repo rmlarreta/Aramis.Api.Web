@@ -16,6 +16,10 @@ namespace Aramis.Api.Repository.Application.Recibos
             _context.CobRecibos.Add(recibo);
         }
 
+        public void Add(CobReciboDetalle detalle)
+        {
+            _context.CobReciboDetalles.Add(detalle);
+        }
         public void Delete(string id)
         {
             CobRecibo? data = _context.CobRecibos.FirstOrDefault(x => x.Id == Guid.Parse(id));
@@ -70,13 +74,14 @@ namespace Aramis.Api.Repository.Application.Recibos
                        select detalles;
             return dets.ToList();
         }
+ 
         public bool Save()
         {
             return _context.SaveChanges() > 0;
         }
 
         public void Update(CobRecibo recibo)
-        {
+        { 
             _context.CobRecibos.Update(recibo);
         }
 
@@ -93,6 +98,21 @@ namespace Aramis.Api.Repository.Application.Recibos
         public void UpdateIndexs(SystemIndex indexs)
         {
             _context.SystemIndices.Update(indexs);
+        }
+
+        public decimal GetTotal(string reciboId)
+        {
+            var dets = from r in _context.CobReciboDetalles
+                       where r.ReciboId == Guid.Parse(reciboId)
+                       select r;
+
+            decimal total = dets.Sum(x => x.Monto);
+            return total;
+        }
+
+        public CobReciboDetalle GetDetalle(string id)
+        {
+           return _context.CobReciboDetalles.Where(x=>x.Id==Guid.Parse(id)).FirstOrDefault()!;
         }
     }
 }

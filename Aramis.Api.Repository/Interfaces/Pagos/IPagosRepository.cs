@@ -11,7 +11,7 @@ namespace Aramis.Api.Repository.Interfaces.Pagos
         public IGenericRepository<CobTipoPago> TipoPagos { get; }
         public IOperacionesRepository Operaciones { get; }
         public IGenericRepository<BusEstado> Estados { get; }
-        public IGenericRepository<BusOperacionPago> OperacionPagos { get; }
+        public IOperacionPagosRepository OperacionPagos { get; }
         public bool Save();
     }
 }

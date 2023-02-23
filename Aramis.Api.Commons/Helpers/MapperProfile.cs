@@ -105,6 +105,8 @@ namespace Aramis.Api.Commons.Helpers
             .ReverseMap();
             CreateMap<CobReciboDetalle, CobReciboDetalleDto>()
             .ReverseMap();
+            CreateMap<CobReciboDetallesInsert, CobReciboDetalleDto>()
+                      .ReverseMap();
             #endregion
 
             #region Cuentas

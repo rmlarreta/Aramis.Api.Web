@@ -8,7 +8,7 @@ namespace Aramis.Api.Repository.Interfaces.Operaciones
         void Update(BusOperacion entity);
         BusOperacion Get(string id);
         List<BusOperacion> Get();
-        List<BusOperacion> GetImpagasByClienteId(string clienteId);
+        List<BusOperacion> GetImpagasByClienteId(string clienteId); 
         void DeleteDetalles(List<BusOperacionDetalle> detalles);
         void DeleteOperacion(string operacion);
         void InsertObservaciones(List<BusOperacionObservacion> observaciones);
@@ -20,6 +20,8 @@ namespace Aramis.Api.Repository.Interfaces.Operaciones
         void UpdateProducts(List<StockProduct> products);
         SystemIndex GetIndexs();
         void UpdateIndexs(SystemIndex indexs);
+        List<BusOperacion> Get(List<string> ops);
+        void PagarOperaciones(List<string> ops);
         bool Save();
     }
 }

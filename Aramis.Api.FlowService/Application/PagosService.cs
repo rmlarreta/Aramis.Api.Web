@@ -1,5 +1,4 @@
-﻿
-using Aramis.Api.Commons.ModelsDto.Operaciones;
+﻿using Aramis.Api.Commons.ModelsDto.Operaciones;
 using Aramis.Api.Commons.ModelsDto.Pagos;
 using Aramis.Api.FlowService.Interfaces;
 using Aramis.Api.Repository.Interfaces.Pagos;
@@ -11,12 +10,11 @@ namespace Aramis.Api.FlowService.Application
     public class PagosService : IPagosService
     {
         private readonly IPagosRepository _repository;
-        private readonly IRecibosService _recibosService;
         private readonly IMapper _mapper;
-        public PagosService(IPagosRepository repository, IMapper mapper, IRecibosService recibosService)
+
+        public PagosService(IPagosRepository repository, IMapper mapper)
         {
             _repository = repository;
-            _recibosService = recibosService;
             _mapper = mapper;
         }
 
@@ -24,8 +22,6 @@ namespace Aramis.Api.FlowService.Application
         {
             try
             {
-
-
                 List<BusOperacion> op = _repository.Operaciones.GetImpagasByClienteId(clienteId);
                 List<CobReciboDetalle> dets = _repository.Recibos.GetCuentaCorrientesByCliente(clienteId);
                 List<CobRecibo> rec = _repository.Recibos.GetSinImputarByCLiente(clienteId);
@@ -47,140 +43,161 @@ namespace Aramis.Api.FlowService.Application
         public bool ImputarRecibo(string reciboId)
         {
             IsImputado(reciboId);
-            CobReciboDto recibo = _mapper.Map<CobReciboDto>(_repository.Recibos.Get(reciboId));
-            decimal disponible = recibo.Detalles!.Sum(x => x.Monto);
 
-            List<BusOperacion>? consaldos = _repository.Operaciones.GetImpagasByClienteId(recibo.ClienteId.ToString()).OrderBy(x => x.Fecha).ToList();
+            var reciboimputar = _repository.Recibos.Get(reciboId);
+            decimal disponible = reciboimputar.CobReciboDetalles.Sum(x => x.Monto);
+
+            List<BusOperacion>? consaldos = _repository.Operaciones.GetImpagasByClienteId(reciboimputar.ClienteId.ToString()).OrderBy(x => x.Fecha).ToList();
             if (!consaldos.Any()) throw new Exception("No hay documentos para imputar");
+
             foreach (BusOperacion consaldo in consaldos)
             {
-                List<CobReciboDetalle>? data = consaldo.BusOperacionPagos.Select(x => x.Recibo.CobReciboDetalles.Where(x => x.TipoNavigation.Name == "CUENTA CORRIENTE" && x.Cancelado == false)).FirstOrDefault()!.OrderByDescending(x => x.Monto).ToList();
-                if (data != null)
+                List<CobReciboDetalle>? detallescc = _repository.Recibos.GetCuentaCorrientesByCliente(consaldo.ClienteId.ToString());
+
+                if (detallescc != null && disponible > 0)
                 {
-                    foreach (CobReciboDetalle detallecc in data.ToList())
+                    foreach (CobReciboDetalle detallecc in detallescc!)
                     {
                         if (disponible >= detallecc.Monto)
                         {
                             detallecc.Cancelado = true;
                             disponible -= detallecc.Monto;
+
+                            CobCuentum? cuenta = _repository.Cuentas.Get().FirstOrDefault(x => x.Id.Equals(_repository.TipoPagos.Get().FirstOrDefault(x => x.Id.Equals(detallecc.Tipo))!.CuentaId));
+                            if (cuenta is null)
+                            {
+                                throw new Exception("Existe un error en las cuentas");
+                            }
+
+                            cuenta.Saldo -= detallecc.Monto;
+                            _repository.Cuentas.Update(cuenta);
+                            _repository.Recibos.Update(detallecc);
+                            BusOperacionPagoDto pagoDto = new()
+                            {
+                                Id = Guid.NewGuid(),
+                                OperacionId = consaldo.Id,
+                                ReciboId = Guid.Parse(reciboId)
+                            };
+                            _repository.OperacionPagos.Add(_mapper.Map<BusOperacionPago>(pagoDto));
+
+                            if (disponible == 0)
+                            { 
+                                return _repository.Save();
+                            }
                         }
                         else
-                        {
-                            detallecc.Monto -= disponible;
-                            detallecc.Cancelado = true;
-                            data.Add(new CobReciboDetalle()
+                        { 
+                            detallecc.Monto -=disponible; 
+                            CobCuentum? cuenta = _repository.Cuentas.Get().FirstOrDefault(x => x.Id.Equals(_repository.TipoPagos.Get().FirstOrDefault(x => x.Id.Equals(detallecc.Tipo))!.CuentaId));
+                            if (cuenta is null)
                             {
-                                Cancelado = false,
-                                CodAut = detallecc.CodAut,
-                                Id = Guid.NewGuid(),
-                                Observacion = detallecc.Observacion,
-                                PosId = detallecc.PosId,
-                                ReciboId = detallecc.ReciboId,
-                                Tipo = detallecc.Tipo,
-                                Monto = disponible
-                            });
+                                throw new Exception("Existe un error en las cuentas");
+                            }
+
+                            cuenta.Saldo -= disponible;
+                            _repository.Cuentas.Update(cuenta); 
+                             
+                            CobReciboDetallesInsert detallecctoinsert = _mapper.Map<CobReciboDetallesInsert>(detallecc);
+                            detallecctoinsert.Cancelado = true;
+                            detallecctoinsert.Id = Guid.NewGuid();
+                            detallecctoinsert.Monto = disponible;
                             disponible = 0;
-                        }
-                        _repository.Recibos.Update(detallecc);
-                    }
-                    _repository.OperacionPagos.Add(new BusOperacionPago()
-                    {
-                        Id = Guid.NewGuid(),
-                        OperacionId = consaldo.Id,
-                        ReciboId = Guid.Parse(reciboId)
-                    });
-                }
-
-                if (disponible > 0)
-                {
-                    CobReciboInsert reciboSaldo = new()
-                    {
-                        ClienteId = recibo.ClienteId,
-                        Fecha = recibo.Fecha,
-                        Operador = recibo.Operador,
-                        Id = Guid.NewGuid()
-                    };
-
-                    List<CobReciboDetalleDto>? pendientes = recibo.Detalles!.OrderByDescending(x => x.Monto).ToList();
-                    foreach (CobReciboDetalleDto detPendiente in pendientes.ToList())
-                    {
-                        if (disponible > detPendiente.Monto)
-                        {
-                            disponible -= detPendiente.Monto;
-                        }
-                        else
-                        {
-                            detPendiente.Monto -= disponible;
-                            _repository.Recibos.Update(_mapper.Map<CobReciboDetalle>(detPendiente));
-                            reciboSaldo.Detalles!.Add(new CobReciboDetallesInsert()
+                            _repository.Recibos.Update(detallecc);
+                            _repository.Recibos.Add(_mapper.Map<CobReciboDetalle>(detallecctoinsert));
+                            BusOperacionPagoDto pagoDto = new()
                             {
-                                ReciboId = reciboSaldo.Id,
                                 Id = Guid.NewGuid(),
-                                Cancelado = true,
-                                CodAut = detPendiente.CodAut,
-                                Monto = disponible,
-                                Observacion = detPendiente.Observacion,
-                                PosId = detPendiente.PosId,
-                                Tipo = detPendiente.Tipo
-                            });
+                                OperacionId = consaldo.Id,
+                                ReciboId = Guid.Parse(reciboId)
+                            };
+                            _repository.OperacionPagos.Add(_mapper.Map<BusOperacionPago>(pagoDto));
+                            return _repository.Recibos.Save();
                         }
                     }
-                    _recibosService.InsertRecibo(reciboSaldo);
                 }
             }
-            return _repository.Save();
+
+            if (disponible > 0)
+            {
+                CobReciboInsert reciboSaldo = new()
+                {
+                    ClienteId = reciboimputar.ClienteId,
+                    Fecha = reciboimputar.Fecha,
+                    Operador = reciboimputar.Operador,
+                    Id = Guid.NewGuid()
+                };
+
+                List<CobReciboDetalle>? pendientes = reciboimputar.CobReciboDetalles!.OrderByDescending(x => x.Monto).ToList();
+                foreach (CobReciboDetalle detPendiente in pendientes.ToList())
+                {
+                    if (disponible > detPendiente.Monto)
+                    {
+                        disponible -= detPendiente.Monto;
+                    }
+                    else
+                    {
+                        detPendiente.Monto -= disponible;
+                        _repository.Recibos.Update(_mapper.Map<CobReciboDetalle>(detPendiente));
+                        reciboSaldo.Detalles!.Add(new CobReciboDetallesInsert()
+                        {
+                            ReciboId = reciboSaldo.Id,
+                            Id = Guid.NewGuid(),
+                            Cancelado = true,
+                            CodAut = detPendiente.CodAut,
+                            Monto = disponible,
+                            Observacion = detPendiente.Observacion,
+                            PosId = detPendiente.PosId,
+                            Tipo = detPendiente.Tipo
+                        });
+                    }
+                }
+                _repository.Recibos.Add(_mapper.Map<CobRecibo>(reciboSaldo));
+                return _repository.Save();
+            }
+            return true;
         }
 
         public async Task<bool> NuevoPago(PagoInsert pago)
         {
-            CobRecibo? recibo = await Task.FromResult(_repository.Recibos.Get(pago.ReciboId.ToString()));
-            if (recibo.CobReciboDetalles.Sum(x => x.Monto) == 0)
-            {
-                throw new Exception("No puede insertarse un Recibo en 0");
-            }
-
-            foreach (CobReciboDetalle? item in recibo!.CobReciboDetalles)
-            {
-                CobCuentum? cuenta = _repository.Cuentas.Get().FirstOrDefault(x => x.Id.Equals(_repository.TipoPagos.Get().FirstOrDefault(x => x.Id.Equals(item.Tipo))!.CuentaId));
-                if (cuenta is null)
-                {
-                    throw new Exception("Existe un error en las cuentas");
-                }
-
-                cuenta.Saldo += item.Monto;
-                _repository.Cuentas.Update(cuenta);
-            }
+            ValidReciboNotCero(pago.ReciboId.ToString());
 
             IsImputado(pago.ReciboId.ToString());
 
+            ValidReciboNotEqualPagos(pago.ReciboId.ToString(), pago.Operaciones);
 
-            List<BusOperacion> ops = new();
-            foreach (string? id in pago.Operaciones)
+            _repository.Operaciones.PagarOperaciones(pago.Operaciones);
+
+            foreach (var item in pago.Operaciones)
             {
-                BusOperacion? op = _repository.Operaciones.Get(id);
-                ops.Add(op!);
+                BusOperacionPagoDto op = new()
+                {
+                    Id = Guid.NewGuid(),
+                    OperacionId = Guid.Parse(item),
+                    ReciboId = pago.ReciboId
+                };
+                _repository.OperacionPagos.Add(_mapper.Map<BusOperacionPago>(op));
             }
-            List<BusOperacionesDto>? operaciones = _mapper.Map<List<BusOperacion>, List<BusOperacionesDto>>(ops);
-            if (!recibo.CobReciboDetalles.Sum(x => Math.Round(x.Monto, 2)).Equals(operaciones.Sum(x => Math.Round(x.Total, 2))))
+            return await Task.FromResult(_repository.Save());
+        }
+
+        private void ValidReciboNotEqualPagos(string reciboId, List<string> ops)
+        {
+            List<BusOperacionesDto> operaciones = _mapper.Map<List<BusOperacionesDto>>(_repository.Operaciones.Get(ops));
+
+            if (!_repository.Recibos.Get(reciboId).CobReciboDetalles.Sum(x => Math.Round(x.Monto, 2)).Equals(operaciones.Sum(x => Math.Round(x.Total, 2))))
             {
                 throw new Exception("Existe una diferencia en los pagos ingresados");
             }
 
-            foreach (BusOperacion? item in ops)
-            {
-                item.Estado = _repository.Estados.Get().Where(x => x.Name.Equals("PAGADO")).SingleOrDefault()!;
-                _repository.Operaciones.Update(item);
-                BusOperacionPagoDto op = new()
-                {
-                    Id = Guid.NewGuid(),
-                    OperacionId = item.Id,
-                    ReciboId = pago.ReciboId
-                };
-                _repository.OperacionPagos.Add(_mapper.Map<BusOperacionPagoDto, BusOperacionPago>(op));
-            }
-            return _repository.Save();
         }
 
+        private void ValidReciboNotCero(string reciboId)
+        {
+            if (_repository.Recibos.Get(reciboId).CobReciboDetalles.Sum(x => x.Monto) == 0)
+            {
+                throw new Exception("No puede insertarse un Recibo en 0");
+            }
+        }
         private void IsImputado(string reciboId)
         {
             if (_repository.OperacionPagos.Get().Where(x => x.ReciboId.Equals(reciboId)).Any())

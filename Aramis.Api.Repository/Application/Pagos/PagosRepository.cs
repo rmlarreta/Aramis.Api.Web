@@ -17,11 +17,10 @@ namespace Aramis.Api.Repository.Application.Pagos
         private IGenericRepository<CobTipoPago> _cobTipoPagoRepository = null!;
         private IOperacionesRepository _busOperacionRepository = null!;
         private IGenericRepository<BusEstado> _busEstadosRepository = null!;
-        private IGenericRepository<BusOperacionPago> _operacionPagosRepository = null!;
+        private IOperacionPagosRepository _operacionPagosRepository = null!;
         public PagosRepository(AramisbdContext context)
         {
-            _context = context;
-           _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            _context = context; 
         }
 
         public IRecibosRepository Recibos => _cobRecibosRepository ??= new RecibosRepository(_context);
@@ -33,7 +32,7 @@ namespace Aramis.Api.Repository.Application.Pagos
         public IOperacionesRepository Operaciones => _busOperacionRepository ??= new OperacionesRepository(_context);
 
         public IGenericRepository<BusEstado> Estados => _busEstadosRepository ??= new GenericRepository<BusEstado>(_context);
-        public IGenericRepository<BusOperacionPago> OperacionPagos => _operacionPagosRepository ??= new GenericRepository<BusOperacionPago>(_context);
+        public IOperacionPagosRepository OperacionPagos => _operacionPagosRepository ??= new OperacionPagosRepository(_context); 
 
         public bool Save()
         {

@@ -24,19 +24,19 @@ namespace Aramis.Api.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult InsertRecibo([FromBody] CobReciboInsert recibo)
+        public async Task<IActionResult> InsertRecibo([FromBody] CobReciboInsert recibo)
         {
             try
             {
                 recibo.Id = Guid.NewGuid();
-                recibo.Operador = _securityService.GetUserAuthenticated();
+                recibo.Operador = await Task.FromResult(_securityService.GetUserAuthenticated());
                 recibo.Fecha = DateTime.Now;
                 foreach (var item in recibo.Detalles!)
                 {
                     item.ReciboId = recibo.Id;
                     item.Id = Guid.NewGuid();
                 }
-                return Ok(_recibosService.InsertRecibo(recibo));
+                return Ok(await Task.FromResult(_recibosService.InsertRecibo(recibo)));
             }
             catch (Exception ex)
             {
@@ -74,11 +74,11 @@ namespace Aramis.Api.Web.Controllers
 
         [HttpGet]
         [Route("{ReciboId}")]
-        public IActionResult ImputarRecibo(string ReciboId)
+        public async Task<IActionResult> ImputarReciboAsync(string ReciboId)
         {
             try
             {
-                return Ok(_pagosService.ImputarRecibo(ReciboId));
+                return Ok(await Task.FromResult(_pagosService.ImputarRecibo(ReciboId)));
             }
             catch (Exception ex)
             {

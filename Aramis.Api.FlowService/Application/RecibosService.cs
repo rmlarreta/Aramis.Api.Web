@@ -1,5 +1,6 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Pagos;
 using Aramis.Api.FlowService.Interfaces;
+using Aramis.Api.Repository.Interfaces.Pagos;
 using Aramis.Api.Repository.Interfaces.Recibos;
 using Aramis.Api.Repository.Models;
 using AutoMapper;
@@ -9,14 +10,18 @@ namespace Aramis.Api.FlowService.Application
     public class RecibosService : IRecibosService
     {
         private readonly IPaymentsMp _paymentsMP;
+        private readonly IPagosRepository _repository;
         private readonly IRecibosRepository _recibos;
         private readonly IMapper _mapper;
-        public RecibosService(IPaymentsMp paymentsMP, IRecibosRepository recibos, IMapper mapper)
+
+        public RecibosService(IPaymentsMp paymentsMP, IPagosRepository repository, IRecibosRepository recibos, IMapper mapper)
         {
             _paymentsMP = paymentsMP;
+            _repository = repository;
             _recibos = recibos;
             _mapper = mapper;
         }
+
         public CobReciboInsert InsertRecibo(CobReciboInsert recibo)
         {
             SystemIndex? index = _recibos.GetIndexs();
@@ -28,6 +33,14 @@ namespace Aramis.Api.FlowService.Application
                 {
                     det.Cancelado = false;
                 }
+                CobCuentum? cuenta = _repository.Cuentas.Get().FirstOrDefault(x => x.Id.Equals(_repository.TipoPagos.Get().FirstOrDefault(x => x.Id.Equals(det.Tipo))!.CuentaId));
+                if (cuenta is null)
+                {
+                    throw new Exception("Existe un error en las cuentas");
+                }
+
+                cuenta.Saldo += det.Monto;
+                _repository.Cuentas.Update(cuenta);
             }
             _recibos.Add(_mapper.Map<CobReciboInsert, CobRecibo>(recibo));
             _recibos.Save();

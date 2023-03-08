@@ -66,6 +66,7 @@ namespace Aramis.Api.StockService.Application
 
         public bool InsertRubro(StockRubroDto rubro)
         {
+            rubro.Id = Guid.NewGuid();
             return _stockRepository.InsertRubro(_mapper.Map<StockRubroDto, StockRubro>(rubro));
         }
 
@@ -73,6 +74,11 @@ namespace Aramis.Api.StockService.Application
         {
             _stockRepository.Update(_mapper.Map<StockProductInsert, StockProduct>(product));
             return GetById(product.Id.ToString()!);
+        }
+
+        public void UpdateRange(List<StockProductInsert> products)
+        {
+            _stockRepository.Update(_mapper.Map<List<StockProductInsert>, List<StockProduct>>(products));
         }
 
         public bool UpdateRubro(StockRubroDto rubro)

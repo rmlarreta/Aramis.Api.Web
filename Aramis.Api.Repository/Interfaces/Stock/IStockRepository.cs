@@ -7,6 +7,7 @@ namespace Aramis.Api.Repository.Interfaces.Stock
         StockProduct GetProduct(string id);
         IEnumerable<StockProduct> GetProducts();
         bool Update(StockProduct product);
+        bool Update(List<StockProduct> products);
         bool Delete(string id);
         bool Insert(StockProduct product);
 

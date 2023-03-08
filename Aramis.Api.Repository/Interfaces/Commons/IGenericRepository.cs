@@ -8,6 +8,7 @@
         void Add(List<TEntity> data);
         void Delete(Guid id);
         void Update(TEntity data);
+        void UpdateRange(List<TEntity> data);
         bool Save();
     }
 }

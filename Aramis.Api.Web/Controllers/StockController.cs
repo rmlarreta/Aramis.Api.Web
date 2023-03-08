@@ -75,6 +75,20 @@ namespace Aramis.Api.Web.Controllers
             }
         }
 
+        [HttpPatch]
+        public IActionResult ProductsUpdate([FromBody] List<StockProductInsert> productDto)
+        {
+            try
+            {
+               _stockService.UpdateRange(productDto);
+                return Ok("Operación Correcta");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
+            }
+        }
+
         [HttpDelete]
         [Route("{id}")]
         public IActionResult ProductDelete(string id)

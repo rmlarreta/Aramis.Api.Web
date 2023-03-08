@@ -33,7 +33,7 @@ namespace Aramis.Api.Repository.Application.Customers
 
         public List<OpPai> GetPaisList()
         {
-            return _paiRepository.Get().ToList();
+            return _paiRepository.Get().OrderBy(x=>x.Name).ToList();
         }
 
         public OpResp GetResp(string id)

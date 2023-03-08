@@ -37,6 +37,12 @@ namespace Aramis.Api.Repository.Application.Stock
             return _repository.Save();
         }
 
+        public bool Update(List<StockProduct> data)
+        {
+            _context.StockProducts.UpdateRange(data);
+            return _repository.Save();
+        }
+
         public IEnumerable<StockProduct> GetProducts()
         {
             return _context.StockProducts.Include(x => x.IvaNavigation)

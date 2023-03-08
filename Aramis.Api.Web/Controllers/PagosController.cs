@@ -88,9 +88,9 @@ namespace Aramis.Api.Web.Controllers
 
         [HttpGet]
         [Route("{ClienteId}")]
-        public IActionResult ConciliacionCliente(string ClienteId)
+        public async Task<IActionResult> ConciliacionCliente(string ClienteId)
         {
-            ConciliacionCliente? data = _pagosService.ConciliacionCliente(ClienteId);
+            ConciliacionCliente? data = await _pagosService.ConciliacionClienteAsync(ClienteId);
             return Ok(data);
         }
 

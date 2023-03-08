@@ -8,6 +8,7 @@ namespace Aramis.Api.StockService.Interfaces
         StockProductDto Insert(StockProductInsert product);
         bool Delete(string id);
         StockProductDto Update(StockProductInsert product);
+        void UpdateRange(List<StockProductInsert> products);
         StockProductDto GetById(string id);
         List<StockProductDto> GetList();
 

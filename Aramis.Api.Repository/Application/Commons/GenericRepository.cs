@@ -49,5 +49,10 @@ namespace Aramis.Api.Repository.Application
             _dbSet.Attach(data);
             _context.Entry(data).State = EntityState.Modified;
         }
+         
+        public void UpdateRange(List<TEntity> data)
+        {
+            _dbSet.UpdateRange(data); 
+        }
     }
 }

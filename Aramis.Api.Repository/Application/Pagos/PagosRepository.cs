@@ -14,6 +14,7 @@ namespace Aramis.Api.Repository.Application.Pagos
         private readonly AramisbdContext _context;
         private IRecibosRepository _cobRecibosRepository = null!;
         private IGenericRepository<CobCuentum> _cobCuentumRepository = null!;
+        private IGenericRepository<CobCuentaMovimiento> _cobCuentaMovimientoRepository = null!;
         private IGenericRepository<CobTipoPago> _cobTipoPagoRepository = null!;
         private IOperacionesRepository _busOperacionRepository = null!;
         private IGenericRepository<BusEstado> _busEstadosRepository = null!;
@@ -32,7 +33,9 @@ namespace Aramis.Api.Repository.Application.Pagos
         public IOperacionesRepository Operaciones => _busOperacionRepository ??= new OperacionesRepository(_context);
 
         public IGenericRepository<BusEstado> Estados => _busEstadosRepository ??= new GenericRepository<BusEstado>(_context);
-        public IOperacionPagosRepository OperacionPagos => _operacionPagosRepository ??= new OperacionPagosRepository(_context); 
+        public IOperacionPagosRepository OperacionPagos => _operacionPagosRepository ??= new OperacionPagosRepository(_context);
+
+        public IGenericRepository<CobCuentaMovimiento> CuentasMovimiento => _cobCuentaMovimientoRepository ??= new GenericRepository<CobCuentaMovimiento>(_context);
 
         public bool Save()
         {

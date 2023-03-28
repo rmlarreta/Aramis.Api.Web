@@ -16,4 +16,6 @@ public partial class BusOperacionTipo
     public int? TipoAfip { get; set; }
 
     public virtual ICollection<BusOperacion> BusOperacions { get; } = new List<BusOperacion>();
+
+    public virtual ICollection<OpDocumentoProveedor> OpDocumentoProveedors { get; } = new List<OpDocumentoProveedor>();
 }

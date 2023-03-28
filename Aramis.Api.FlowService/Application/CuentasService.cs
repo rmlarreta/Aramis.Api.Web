@@ -9,12 +9,16 @@ namespace Aramis.Api.FlowService.Application
     public class CuentasService : ICuentasService
     {
         private readonly IGenericRepository<CobCuentum> _cuentas;
+        private readonly IGenericRepository<CobCuentaMovimiento> _cuentasMovimientos;
         private readonly IMapper _mapper;
-        public CuentasService(IGenericRepository<CobCuentum> cuentas, IMapper mapper)
+
+        public CuentasService(IGenericRepository<CobCuentum> cuentas, IGenericRepository<CobCuentaMovimiento> cuentasMovimientos, IMapper mapper)
         {
             _cuentas = cuentas;
+            _cuentasMovimientos = cuentasMovimientos;
             _mapper = mapper;
         }
+
         public bool Delete(string id)
         {
             _cuentas.Delete(Guid.Parse(id));
@@ -38,9 +42,21 @@ namespace Aramis.Api.FlowService.Application
             return cobCuentum;
         }
 
+        public CobCuentDto Insert(CobCuentaMovimientoDto cobCuentaMovimiento)
+        {
+            cobCuentaMovimiento.Id = Guid.NewGuid().ToString();
+            _cuentasMovimientos.Add(_mapper.Map<CobCuentaMovimiento>(cobCuentaMovimiento)); 
+            CobCuentum cuenta = _cuentas.Get(Guid.Parse(cobCuentaMovimiento.Cuenta!));
+            cuenta.Saldo = cobCuentaMovimiento.Debito ? cuenta.Saldo - cobCuentaMovimiento.Monto : cuenta.Saldo + cobCuentaMovimiento.Monto;
+            _cuentas.Update(cuenta);
+            _cuentas.Save();
+            return _mapper.Map<CobCuentDto>(cuenta);
+        }
+
         public CobCuentDto Update(CobCuentDto cobCuentum)
         {
             _cuentas.Update(_mapper.Map<CobCuentDto, CobCuentum>(cobCuentum));
+            _cuentas.Save();
             return cobCuentum;
         }
     }

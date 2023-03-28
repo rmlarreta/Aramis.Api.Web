@@ -29,6 +29,8 @@ public partial class OpCliente
 
     public virtual OpGender GenderNavigation { get; set; } = null!;
 
+    public virtual ICollection<OpDocumentoProveedor> OpDocumentoProveedors { get; } = new List<OpDocumentoProveedor>();
+
     public virtual OpPai PaisNavigation { get; set; } = null!;
 
     public virtual OpResp RespNavigation { get; set; } = null!;

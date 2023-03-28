@@ -7,6 +7,7 @@ namespace Aramis.Api.FlowService.Interfaces
     {
         CobCuentDto Insert(CobCuentDto cobCuentum);
         CobCuentDto Update(CobCuentDto cobCuentum);
+        CobCuentDto Insert(CobCuentaMovimientoDto cobCuentaMovimiento);
         bool Delete(string id);
         List<CobCuentDto> GetAll();
         CobCuentDto GetById(string id);

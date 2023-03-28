@@ -11,5 +11,7 @@ public partial class CobCuentum
 
     public decimal Saldo { get; set; }
 
+    public virtual ICollection<CobCuentaMovimiento> CobCuentaMovimientos { get; } = new List<CobCuentaMovimiento>();
+
     public virtual ICollection<CobTipoPago> CobTipoPagos { get; } = new List<CobTipoPago>();
 }

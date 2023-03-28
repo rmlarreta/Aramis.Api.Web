@@ -116,6 +116,8 @@ namespace Aramis.Api.Commons.Helpers
            .ReverseMap();
             CreateMap<CobPo, CobPosDto>()
            .ReverseMap();
+            CreateMap<CobCuentaMovimiento, CobCuentaMovimientoDto>()
+         .ReverseMap();
             #endregion
         }
     }

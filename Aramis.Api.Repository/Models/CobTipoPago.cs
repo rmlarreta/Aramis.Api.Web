@@ -14,4 +14,6 @@ public partial class CobTipoPago
     public virtual ICollection<CobReciboDetalle> CobReciboDetalles { get; } = new List<CobReciboDetalle>();
 
     public virtual CobCuentum? Cuenta { get; set; }
+
+    public virtual ICollection<OpPago> OpPagos { get; } = new List<OpPago>();
 }

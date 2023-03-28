@@ -8,6 +8,8 @@ namespace Aramis.Api.Repository.Interfaces.Pagos
     {
         public IRecibosRepository Recibos { get; }
         public IGenericRepository<CobCuentum> Cuentas { get; }
+
+        public IGenericRepository<CobCuentaMovimiento> CuentasMovimiento { get; }
         public IGenericRepository<CobTipoPago> TipoPagos { get; }
         public IOperacionesRepository Operaciones { get; }
         public IGenericRepository<BusEstado> Estados { get; }

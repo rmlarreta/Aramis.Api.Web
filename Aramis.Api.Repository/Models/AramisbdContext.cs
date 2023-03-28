@@ -27,6 +27,8 @@ public partial class AramisbdContext : DbContext
 
     public virtual DbSet<BusOperacionTipo> BusOperacionTipos { get; set; }
 
+    public virtual DbSet<CobCuentaMovimiento> CobCuentaMovimientos { get; set; }
+
     public virtual DbSet<CobCuentum> CobCuenta { get; set; }
 
     public virtual DbSet<CobPo> CobPos { get; set; }
@@ -39,7 +41,11 @@ public partial class AramisbdContext : DbContext
 
     public virtual DbSet<OpCliente> OpClientes { get; set; }
 
+    public virtual DbSet<OpDocumentoProveedor> OpDocumentoProveedors { get; set; }
+
     public virtual DbSet<OpGender> OpGenders { get; set; }
+
+    public virtual DbSet<OpPago> OpPagos { get; set; }
 
     public virtual DbSet<OpPai> OpPais { get; set; }
 
@@ -58,7 +64,7 @@ public partial class AramisbdContext : DbContext
     public virtual DbSet<SystemEmpresa> SystemEmpresas { get; set; }
 
     public virtual DbSet<SystemIndex> SystemIndices { get; set; }
- 
+     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<BusEstado>(entity =>
@@ -200,6 +206,28 @@ public partial class AramisbdContext : DbContext
                 .IsUnicode(false);
         });
 
+        modelBuilder.Entity<CobCuentaMovimiento>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_Cob_Cuenta_Movimiento_id");
+
+            entity.ToTable("Cob_Cuenta_Movimiento");
+
+            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Detalle)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Fecha).HasColumnType("datetime");
+            entity.Property(e => e.Monto).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.Operador)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.CuentaNavigation).WithMany(p => p.CobCuentaMovimientos)
+                .HasForeignKey(d => d.Cuenta)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Cob_Cuenta_Movimiento_Cuenta");
+        });
+
         modelBuilder.Entity<CobCuentum>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK_Cob_Cuenta_Id");
@@ -337,6 +365,35 @@ public partial class AramisbdContext : DbContext
                 .HasConstraintName("FK_Op_Clientes_Resp");
         });
 
+        modelBuilder.Entity<OpDocumentoProveedor>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_Op_Documento_Proveedor_Id");
+
+            entity.ToTable("Op_Documento_Proveedor");
+
+            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Fecha).HasColumnType("datetime");
+            entity.Property(e => e.Monto).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.Razon)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.Estado).WithMany(p => p.OpDocumentoProveedors)
+                .HasForeignKey(d => d.EstadoId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Op_Documento_Proveedor_EstadoId");
+
+            entity.HasOne(d => d.Proveedor).WithMany(p => p.OpDocumentoProveedors)
+                .HasForeignKey(d => d.ProveedorId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Op_Documento_Proveedor_ProveedorId");
+
+            entity.HasOne(d => d.TipoDoc).WithMany(p => p.OpDocumentoProveedors)
+                .HasForeignKey(d => d.TipoDocId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Op_Documento_Proveedor_TipoDocId");
+        });
+
         modelBuilder.Entity<OpGender>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK_Op_Gender_Id");
@@ -347,6 +404,29 @@ public partial class AramisbdContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<OpPago>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_Op_Pago_Id");
+
+            entity.ToTable("Op_Pago");
+
+            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Fecha).HasColumnType("datetime");
+            entity.Property(e => e.Operador)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.DocumentoNavigation).WithMany(p => p.OpPagos)
+                .HasForeignKey(d => d.Documento)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Op_Pago_Documento");
+
+            entity.HasOne(d => d.TipoNavigation).WithMany(p => p.OpPagos)
+                .HasForeignKey(d => d.Tipo)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Op_Pago_Tipo");
         });
 
         modelBuilder.Entity<OpPai>(entity =>

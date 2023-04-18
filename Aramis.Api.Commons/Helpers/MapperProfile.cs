@@ -4,6 +4,7 @@ using Aramis.Api.Commons.ModelsDto.Ordenes;
 using Aramis.Api.Commons.ModelsDto.Pagos;
 using Aramis.Api.Commons.ModelsDto.Security;
 using Aramis.Api.Commons.ModelsDto.Stock;
+using Aramis.Api.Commons.ModelsDto.Suppliers;
 using Aramis.Api.Repository.Models;
 using AutoMapper;
 
@@ -118,6 +119,10 @@ namespace Aramis.Api.Commons.Helpers
            .ReverseMap();
             CreateMap<CobCuentaMovimiento, CobCuentaMovimientoDto>()
          .ReverseMap();
+            #endregion
+
+            #region Proveedores
+            CreateMap<OpDocumentoProveedor, OpDocumentoProveedorDto>().ReverseMap();
             #endregion
         }
     }

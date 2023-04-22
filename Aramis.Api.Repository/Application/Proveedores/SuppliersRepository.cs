@@ -20,9 +20,21 @@ namespace Aramis.Api.Repository.Application.Proveedores
 
         public List<OpDocumentoProveedor> GetAll()
         {
-            return _opDocumento.Get().ToList();
+            var data = _opDocumento.Get().ToList();
+            return data;
+        }
+
+        public OpDocumentoProveedor GetById(Guid id)
+        {
+            return _opDocumento.Get().Where(x=>x.Id.Equals(id)).FirstOrDefault()!;
+            
         }
 
         public bool Save() => _opDocumento.Save();
+
+        public void Update(OpDocumentoProveedor documento)
+        {
+            _opDocumento.Update(documento);
+        }
     }
 }

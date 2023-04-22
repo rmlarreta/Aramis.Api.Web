@@ -24,7 +24,7 @@ namespace Aramis.Api.FlowService.Application
             {
                 List<BusOperacion> op = await Task.FromResult(_repository.Operaciones.GetImpagasByClienteId(clienteId)); 
                 List<CobReciboDetalle> dets = await Task.FromResult(_repository.Recibos.GetCuentaCorrientesByCliente(clienteId));
-                List<CobRecibo> rec = await Task.FromResult(_repository.Recibos.GetSinImputarByCLiente(clienteId));
+                List<CobRecibo> rec = await Task.FromResult(_repository.Recibos.GetSinImputarByCLiente(clienteId)); 
                 ConciliacionCliente conciliacionCliente = new()
                 {
                     OperacionesImpagas = _mapper.Map<List<BusOperacionesDto>>(op),

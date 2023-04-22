@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Aramis.Api.Commons\Aramis.Api.Commons.csproj" />
+    <ProjectReference Include="..\Aramis.Api.FlowService\Aramis.Api.FlowService.csproj" />
     <ProjectReference Include="..\Aramis.Api.OperacionesService\Aramis.Api.OperacionesService.csproj" />
   </ItemGroup>
 

@@ -1,4 +1,5 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Suppliers;
+using Aramis.Api.SecurityService.Interfaces;
 using Aramis.Api.SupplierService.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,10 +13,12 @@ namespace Aramis.Api.Web.Controllers
     public class ProveedoresController : ControllerBase
     {
         private readonly ISuppliers _suppliers;
+        private readonly ISecurityService _securityService;
 
-        public ProveedoresController(ISuppliers suppliers)
+        public ProveedoresController(ISuppliers suppliers, ISecurityService securityService)
         {
             _suppliers = suppliers;
+            _securityService = securityService;
         }
 
         [HttpPost]
@@ -24,6 +27,20 @@ namespace Aramis.Api.Web.Controllers
             try
             {
                 return Ok(_suppliers.InsertDocument(documento));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
+            }
+        }
+
+        [HttpPatch]
+        public IActionResult PagarDocumento([FromBody] OpDocumentProveedorPago documento)
+        {
+            try
+            {
+                documento.Operador = _securityService.GetUserAuthenticated();
+                return Ok(_suppliers.PagarDocumento(documento));
             }
             catch (Exception ex)
             {
@@ -74,7 +91,7 @@ namespace Aramis.Api.Web.Controllers
             {
                 return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
             }
-        } 
+        }
 
     }
 }

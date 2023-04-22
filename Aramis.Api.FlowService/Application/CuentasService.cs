@@ -1,4 +1,5 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Pagos;
+using Aramis.Api.Commons.ModelsDto.Suppliers;
 using Aramis.Api.FlowService.Interfaces;
 using Aramis.Api.Repository.Interfaces;
 using Aramis.Api.Repository.Models;
@@ -17,6 +18,14 @@ namespace Aramis.Api.FlowService.Application
             _cuentas = cuentas;
             _cuentasMovimientos = cuentasMovimientos;
             _mapper = mapper;
+        }
+
+        public bool DebitarPago(OpDocumentProveedorPago documentProveedorPago)
+        {
+            var cuenta = _cuentas.Get(Guid.Parse(documentProveedorPago.Cuenta!));
+            cuenta.Saldo -= documentProveedorPago.Documento!.Monto;
+            _cuentas.Update(cuenta);
+            return _cuentas.Save();
         }
 
         public bool Delete(string id)

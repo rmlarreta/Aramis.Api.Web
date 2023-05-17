@@ -214,7 +214,7 @@ public partial class AramisbdContext : DbContext
 
             entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Detalle)
-                .HasMaxLength(50)
+                .HasMaxLength(250)
                 .IsUnicode(false);
             entity.Property(e => e.Fecha).HasColumnType("datetime");
             entity.Property(e => e.Monto).HasColumnType("decimal(18, 2)");

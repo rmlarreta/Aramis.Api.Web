@@ -1,5 +1,6 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Operaciones;
 using Aramis.Api.Commons.ModelsDto.Pagos;
+using Aramis.Api.Commons.ModelsDto.Suppliers;
 using Aramis.Api.FlowService.Interfaces;
 using Aramis.Api.Repository.Interfaces.Pagos;
 using Aramis.Api.Repository.Models;
@@ -10,6 +11,7 @@ namespace Aramis.Api.FlowService.Application
     public class PagosService : IPagosService
     {
         private readonly IPagosRepository _repository;
+        
         private readonly IMapper _mapper;
 
         public PagosService(IPagosRepository repository, IMapper mapper)
@@ -24,12 +26,15 @@ namespace Aramis.Api.FlowService.Application
             {
                 List<BusOperacion> op = await Task.FromResult(_repository.Operaciones.GetImpagasByClienteId(clienteId)); 
                 List<CobReciboDetalle> dets = await Task.FromResult(_repository.Recibos.GetCuentaCorrientesByCliente(clienteId));
-                List<CobRecibo> rec = await Task.FromResult(_repository.Recibos.GetSinImputarByCLiente(clienteId)); 
+                List<CobRecibo> rec = await Task.FromResult(_repository.Recibos.GetSinImputarByCLiente(clienteId));
+                List<OpDocumentoProveedor> fac = await Task.FromResult(_repository.Facturas.Get().Where(x => x.ProveedorId.Equals(Guid.Parse(clienteId)) && x.EstadoId.Equals(_repository.Estados.Get().Where(x=>x.Name=="ABIERTO").First().Id)).ToList());
                 ConciliacionCliente conciliacionCliente = new()
                 {
                     OperacionesImpagas = _mapper.Map<List<BusOperacionesDto>>(op),
                     DetallesCuentaCorriente = _mapper.Map<List<CobReciboDetalleDto>>(dets),
-                    RecibosSinImputar = _mapper.Map<List<CobReciboDto>>(rec)
+                    RecibosSinImputar = _mapper.Map<List<CobReciboDto>>(rec),
+                    FacturasImpagas = _mapper.Map<List<OpDocumentoProveedorDto>>(fac)
+                    
                 };
                 return conciliacionCliente;
             }

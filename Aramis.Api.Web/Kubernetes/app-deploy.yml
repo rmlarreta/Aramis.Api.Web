@@ -31,4 +31,4 @@ spec:
             - containerPort: 5000
           env:
             - name: ConnectionStrings__DefaultConnection
-              value: Server=DockerLocal;Initial Catalog=AramisBD; User Id=sa;password=Aramis1234@;Encrypt=False
+              value: Server=DockerLocal;Initial Catalog=AramisBD; User Id=sa;password=Aramis1234@;Encrypt=False 

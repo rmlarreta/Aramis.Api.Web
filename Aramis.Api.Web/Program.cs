@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using QuestPDF.Infrastructure;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+QuestPDF.Settings.License = LicenseType.Community;
 builder.Services.AddControllers();
 
 IServiceCollection serviceCollection = builder.Services.AddDbContext<AramisbdContext>(Options => Options.UseSqlServer(

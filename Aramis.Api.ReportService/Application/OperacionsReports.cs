@@ -45,7 +45,7 @@ namespace Aramis.Api.ReportService.Application
             dto.Inicio = empresa.Inicio;
             dto.RespoEmpresa = empresa.Respo;
             dto.Fantasia = empresa.Fantasia;
-
+            dto.Iibb = empresa.Iibb;
             MemoryStream? stream = new();
             QrJson? QrJsonModel = new()
             {
@@ -251,7 +251,7 @@ namespace Aramis.Api.ReportService.Application
                              + "\n" + "IVA 21.0%: $ " + Math.Round((decimal)dto.TotalIva21!, 2)
                              + "\n" + "Imp.Internos: $ " + Math.Round((decimal)dto.TotalInternos!, 2)
                              + "\n" + "\n" + "Ud. fue atendido por " + dto.Operador :
-                             "Subtotal: $ " + Math.Round((decimal)(dto.TotalNeto! + dto.TotalIva!), 2)
+                             "Subtotal: $ " + Math.Round((decimal)(dto.TotalNeto! + dto.TotalIva! + dto.TotalExento!), 2)
                              + "\n" + "Imp.Internos: $ " + Math.Round((decimal)dto.TotalInternos!, 2)
                              + "\n" + "\n" + "Ud. fue atendido por " + dto.Operador
                              );
@@ -319,6 +319,7 @@ namespace Aramis.Api.ReportService.Application
             dto.Inicio = empresa.Inicio;
             dto.RespoEmpresa = empresa.Respo;
             dto.Fantasia = empresa.Fantasia;
+            dto.Iibb = empresa.Iibb;
             MemoryStream? stream = new();
             Document.Create(container =>
             {
@@ -464,7 +465,7 @@ namespace Aramis.Api.ReportService.Application
                             {
                                 table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(c.Codigo);
                                 table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignLeft().Text(c.Detalle);
-                                table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(c.Cantidad);
+                                table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(c.CantidadDisponible);
                                 table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text("$ " + dto.RespoEmpresa == "MONOTRIBUTO" ? Math.Round((decimal)(c.Total! / c.Cantidad), 2) : c.Unitario);
                                 table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(dto.RespoEmpresa == "MONOTRIBUTO" ? "% 0" : "% " + c.IvaValue);
                                 table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignRight().Text("$ " + Math.Round((decimal)c.Total!, 2));
@@ -503,7 +504,7 @@ namespace Aramis.Api.ReportService.Application
                              + "\n" + "IVA 21.0%: $ " + Math.Round((decimal)dto.TotalIva21!, 2)
                              + "\n" + "Imp.Internos: $ " + Math.Round((decimal)dto.TotalInternos!, 2)
                              + "\n" + "\n" + "Ud. fue atendido por " + dto.Operador :
-                             "Subtotal: $ " + Math.Round((decimal)(dto.TotalNeto! + dto.TotalIva!), 2)
+                             "Subtotal: $ " + Math.Round((decimal)(dto.TotalNeto! + dto.TotalIva! + dto.TotalExento!), 2)
                              + "\n" + "Imp.Internos: $ " + Math.Round((decimal)dto.TotalInternos!, 2)
                              + "\n" + "\n" + "Ud. fue atendido por " + dto.Operador
                              );
@@ -550,72 +551,59 @@ namespace Aramis.Api.ReportService.Application
         }
         public FileStreamResult PresupuestoReport(string id)
         {
-            if (!_repository.Operacions.Get(id).TipoDoc.Code!.Equals("P"))
+            try
             {
-                throw new Exception("Operación no permitida");
-            }
 
-            BusOperacionesDto? dto = _mapper.Map<BusOperacion, BusOperacionesDto>(_repository.Operacions.Get(id));
-            if (dto == null)
-            {
-                return null!;
-            }
-            SystemEmpresa? empresa = _repository.Empresa.Get().First();
-            dto.CuitEmpresa = empresa.Cuit;
-            dto.DomicilioEmpresa = empresa.Domicilio;
-            dto.RazonEmpresa = empresa.Razon;
-            dto.Inicio = empresa.Inicio;
-            dto.RespoEmpresa = empresa.Respo;
-            dto.Fantasia = empresa.Fantasia;
-            MemoryStream? stream = new();
-            Document.Create(container =>
-            {
-                container.Page(page =>
+
+                if (!_repository.Operacions.Get(id).TipoDoc.Code!.Equals("P"))
                 {
-                    //seteamos la página
-                    page.Size(PageSizes.A4);
-                    page.Margin(5, Unit.Millimetre);
-                    page.PageColor(Colors.White);
-                    page.DefaultTextStyle(x => x.FontSize(20));
-                    page.DefaultTextStyle(x => x.FontFamily("Arial"));
+                    throw new Exception("Operación no permitida");
+                }
 
-                    //seteamos el encabezado 
-                    page.Header()
-                    .Column(column =>
+                BusOperacionesDto? dto = _mapper.Map<BusOperacion, BusOperacionesDto>(_repository.Operacions.Get(id));
+                if (dto == null)
+                {
+                    return null!;
+                }
+                SystemEmpresa? empresa = _repository.Empresa.Get().First();
+                dto.CuitEmpresa = empresa.Cuit;
+                dto.DomicilioEmpresa = empresa.Domicilio;
+                dto.RazonEmpresa = empresa.Razon;
+                dto.Inicio = empresa.Inicio;
+                dto.RespoEmpresa = empresa.Respo;
+                dto.Fantasia = empresa.Fantasia;
+                dto.Iibb = empresa.Iibb;
+                MemoryStream? stream = new();
+                Document.Create(container =>
+                {
+                    container.Page(page =>
                     {
-                        column.Item().Height(35, Unit.Millimetre).Row(row =>
-                        {
-                            row.RelativeItem(1).Image("Images/logo.jpg");
-                            row.RelativeItem(1).DefaultTextStyle(x => x.FontSize(12))
-                                    .DefaultTextStyle(f => f.Bold())
-                                    .AlignCenter()
-                                    .Text(text =>
-                                    {
-                                        text.Span("Página ");
-                                        text.CurrentPageNumber();
-                                        text.Span(" de ");
-                                        text.TotalPages();
-                                    });
+                        //seteamos la página
+                        page.Size(PageSizes.A4);
+                        page.Margin(5, Unit.Millimetre);
+                        page.PageColor(Colors.White);
+                        page.DefaultTextStyle(x => x.FontSize(20));
+                        page.DefaultTextStyle(x => x.FontFamily("Arial"));
 
-                            row.RelativeItem(1).Border(1, Unit.Point)
-                            .Column(c =>
+                        //seteamos el encabezado 
+                        page.Header()
+                            .Column(column =>
                             {
-                                c.Item().Row(r =>
+                                column.Item().Height(35, Unit.Millimetre).Row(row =>
                                 {
-                                    r.RelativeItem()
-                                    .Text(t =>
-                                    {
-                                        t.AlignCenter();
-                                        t.Line(_repository.Operacions.Get(id).TipoDoc.Code).FontSize(35).Bold();
-                                        t.Span(_repository.Operacions.Get(id).TipoDoc.CodeExt).FontSize(10).Bold();
-                                    });
-                                });
-                            });
-                            row.Spacing(10);
-                            row.RelativeItem(2).Border(1, Unit.Point)
-                                    .Padding(5, Unit.Millimetre)
-                                    .DefaultTextStyle(x => x.FontSize(12))
-                                    .DefaultTextStyle(f => f.Bold())
+                                    row.RelativeItem(1).Image("Images/logo.jpg");
+                                    row.RelativeItem(1).DefaultTextStyle(x => x.FontSize(12))
+                                            .DefaultTextStyle(f => f.Bold())
+                                            .AlignCenter()
+                                            .Text(text =>
+                                            {
+                                                text.Span("Página ");
+                                                text.CurrentPageNumber();
+                                                text.Span(" de ");
+                                                text.TotalPages();
+                                            });
+
+                                    row.RelativeItem(1).Border(1, Unit.Point)
                                     .Column(c =>
                                     {
                                         c.Item().Row(r =>
@@ -623,178 +611,204 @@ namespace Aramis.Api.ReportService.Application
                                             r.RelativeItem()
                                             .Text(t =>
                                             {
-                                                t.AlignRight();
-                                                t.Span(_repository.Operacions.Get(id).TipoDoc.Name).NormalWeight().NormalPosition();
-                                                t.Line("\n FC: " + dto.Numero.ToString()!.PadLeft(8, '0')).Bold();
-                                                t.Line("FECHA: " + dto.Fecha.ToShortDateString()).NormalWeight().FontSize(10);
+                                                t.AlignCenter();
+                                                t.Line(_repository.Operacions.Get(id).TipoDoc.Code).FontSize(35).Bold();
+                                                t.Span(_repository.Operacions.Get(id).TipoDoc.CodeExt).FontSize(10).Bold();
                                             });
                                         });
                                     });
-                        });
-                        column.Item().Row(row =>
-                        {
-                            row.RelativeItem(1)
-                            .PaddingVertical(3, Unit.Millimetre)
-                            .DefaultTextStyle(f => f.FontSize(10))
-                            .DefaultTextStyle(t => t.FontColor("#1f66ff"))
-                            .Text("Razón Social: " + dto.RazonEmpresa
-                            + "\n" + dto.Fantasia
-                            + "\n" + dto.DomicilioEmpresa
-                            + "\n" + dto.RespoEmpresa
-                            );
+                                    row.Spacing(10);
+                                    row.RelativeItem(2).Border(1, Unit.Point)
+                                            .Padding(5, Unit.Millimetre)
+                                            .DefaultTextStyle(x => x.FontSize(12))
+                                            .DefaultTextStyle(f => f.Bold())
+                                            .Column(c =>
+                                            {
+                                                c.Item().Row(r =>
+                                                {
+                                                    r.RelativeItem()
+                                                    .Text(t =>
+                                                    {
+                                                        t.AlignRight();
+                                                        t.Span(_repository.Operacions.Get(id).TipoDoc.Name).NormalWeight().NormalPosition();
+                                                        t.Line("\n FC: " + dto.Numero.ToString()!.PadLeft(8, '0')).Bold();
+                                                        t.Line("FECHA: " + dto.Fecha.ToShortDateString()).NormalWeight().FontSize(10);
+                                                    });
+                                                });
+                                            });
+                                });
+                                column.Item().Row(row =>
+                                {
+                                    row.RelativeItem(1)
+                                    .PaddingVertical(3, Unit.Millimetre)
+                                    .DefaultTextStyle(f => f.FontSize(10))
+                                    .DefaultTextStyle(t => t.FontColor("#1f66ff"))
+                                    .Text("Razón Social: " + dto.RazonEmpresa
+                                    + "\n" + dto.Fantasia
+                                    + "\n" + dto.DomicilioEmpresa
+                                    + "\n" + dto.RespoEmpresa
+                                    );
 
-                            row.RelativeItem(1)
-                           .PaddingVertical(3, Unit.Millimetre)
-                           .DefaultTextStyle(f => f.FontSize(10))
-                           .DefaultTextStyle(t => t.FontColor("#1f66ff"))
-                           .Text("Cuit: " + dto.CuitEmpresa
-                           + "\n" + "IIBB: " + dto.Iibb
-                           + "\n" + "I. Actividades: " + dto.Inicio.ToShortDateString()
-                           );
-                        });
+                                    row.RelativeItem(1)
+                                   .PaddingVertical(3, Unit.Millimetre)
+                                   .DefaultTextStyle(f => f.FontSize(10))
+                                   .DefaultTextStyle(t => t.FontColor("#1f66ff"))
+                                   .Text("Cuit: " + dto.CuitEmpresa
+                                   + "\n" + "IIBB: " + dto.Iibb
+                                   + "\n" + "I. Actividades: " + dto.Inicio.ToShortDateString()
+                                   );
+                                });
 
-                        column.Item().Row(row =>
-                        {
-                            row.RelativeItem(1)
-                           .DefaultTextStyle(f => f.FontSize(10))
-                           .BorderTop(1, Unit.Millimetre).BorderColor("#858796")
-                           .PaddingVertical(2, Unit.Millimetre)
-                           .DefaultTextStyle(t => t.SemiBold())
-                           .Text("Cliente: " + dto.Razon
-                           + "\n" + dto.Domicilio
-                           );
+                                column.Item().Row(row =>
+                                {
+                                    row.RelativeItem(1)
+                                   .DefaultTextStyle(f => f.FontSize(10))
+                                   .BorderTop(1, Unit.Millimetre).BorderColor("#858796")
+                                   .PaddingVertical(2, Unit.Millimetre)
+                                   .DefaultTextStyle(t => t.SemiBold())
+                                   .Text("Cliente: " + dto.Razon
+                                   + "\n" + dto.Domicilio
+                                   );
 
-                            row.RelativeItem(1)
-                            .DefaultTextStyle(f => f.FontSize(10))
-                            .BorderTop(1, Unit.Millimetre).BorderColor("#858796")
-                            .PaddingVertical(2, Unit.Millimetre)
-                            .DefaultTextStyle(t => t.SemiBold())
-                            .Text("Cuit: " + dto.Cui
-                            + "\n" + "RESPONSABLE " + dto.Resp
-                            );
-                        });
+                                    row.RelativeItem(1)
+                                    .DefaultTextStyle(f => f.FontSize(10))
+                                    .BorderTop(1, Unit.Millimetre).BorderColor("#858796")
+                                    .PaddingVertical(2, Unit.Millimetre)
+                                    .DefaultTextStyle(t => t.SemiBold())
+                                    .Text("Cuit: " + dto.Cui
+                                    + "\n" + "RESPONSABLE " + dto.Resp
+                                    );
+                                });
+                            });
+
+                        //setemaos los detalles
+                        page.Content()
+                                .PaddingVertical(1, Unit.Millimetre)
+                                .Table(table =>
+                                {
+                                    table.ColumnsDefinition(columns =>
+                                    {
+                                        columns.RelativeColumn(2);
+                                        columns.RelativeColumn(10);
+                                        columns.RelativeColumn(2);
+                                        columns.RelativeColumn(2);
+                                        columns.RelativeColumn(1);
+                                        columns.RelativeColumn(2);
+                                    });
+                                    table.Cell().ColumnSpan(1)
+                                   .Background("#9ca4df")
+                                   .Text("Código");
+                                    table.Cell().ColumnSpan(1)
+                                     .Background("#9ca4df")
+                                   .Text("Detalle");
+                                    table.Cell().ColumnSpan(1)
+                                     .Background("#9ca4df")
+                                   .Text("Cantidad");
+                                    table.Cell().ColumnSpan(1)
+                                     .Background("#9ca4df")
+                                   .Text("Unitario");
+                                    table.Cell().ColumnSpan(1)
+                                     .Background("#9ca4df")
+                                   .Text(dto.RespoEmpresa == "MONOTRIBUTO" ? "Bon" : "Iva");
+                                    table.Cell().ColumnSpan(1)
+                                     .Background("#9ca4df")
+                                   .Text("Sub Total");
+
+                                    foreach (BusDetallesOperacionesDto? c in dto.Detalles!)
+                                    {
+                                        table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(c.Codigo);
+                                        table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignLeft().Text(c.Detalle);
+                                        table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(c.Cantidad);
+                                        table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text("$ " + dto.RespoEmpresa == "MONOTRIBUTO" ? Math.Round((decimal)(c.Total! / c.Cantidad), 2) : c.Unitario);
+                                        table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(dto.RespoEmpresa == "MONOTRIBUTO" ? "% 0" : "% " + c.IvaValue);
+                                        table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignRight().Text("$ " + Math.Round((decimal)c.Total!, 2));
+                                    }
+                                    table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(" ");
+                                    table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text("OBSERVACIONES   (VÁLIDO POR 7 DÍAS)");
+                                    table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(" ");
+                                    table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(" ");
+                                    table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(" ");
+                                    table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(" ");
+                                    foreach (BusObservacionesDto? o in dto.Observaciones)
+                                    {
+                                        table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text("*");
+                                        table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignLeft().Text(o.Observacion);
+                                        table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(" ");
+                                        table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(" ");
+                                        table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(" ");
+                                        table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(" ");
+                                    }
+                                });
+                        //seteamos los footer                            
+                        page.Footer()
+                               .BorderTop(1, Unit.Point)
+                               .Column(c =>
+                               {
+                                   c.Item().BorderTop(1, Unit.Point);
+                                   c.Item().Row(r =>
+                                   {
+                                       r.RelativeItem()
+                                     .DefaultTextStyle(t => t.FontSize(10))
+                                     .DefaultTextStyle(x => x.Bold())
+                                   .Text(dto.RespoEmpresa != "MONOTRIBUTO" ?
+                                       "Neto Gravado: $ " + Math.Round((decimal)dto.TotalNeto!, 2)
+                                     + "\n" + "Excento: $ " + Math.Round((decimal)dto.TotalExento!, 2)
+                                     + "\n" + "IVA 10.5%: $ " + Math.Round((decimal)dto.TotalIva10!, 2)
+                                     + "\n" + "IVA 21.0%: $ " + Math.Round((decimal)dto.TotalIva21!, 2)
+                                     + "\n" + "Imp.Internos: $ " + Math.Round((decimal)dto.TotalInternos!, 2)
+                                     + "\n" + "\n" + "Ud. fue atendido por " + dto.Operador :
+                                     "Subtotal: $ " + Math.Round((decimal)(dto.TotalNeto! + dto.TotalIva! + dto.TotalExento!), 2)
+                                     + "\n" + "Imp.Internos: $ " + Math.Round((decimal)dto.TotalInternos!, 2)
+                                     + "\n" + "\n" + "Ud. fue atendido por " + dto.Operador
+                                     );
+                                       r.RelativeItem(2)
+                                      .DefaultTextStyle(t => t.FontSize(12))
+                                      .DefaultTextStyle(x => x.Bold())
+                                      .AlignRight()
+                                      .Text(text =>
+                                      {
+                                          text.Line("TOTAL $: " + Math.Round(dto.Total!, 2));
+                                          text.Line(dto.TotalLetras!).FontSize(8);
+                                      });
+                                   });
+                                   c.Item().BorderTop(1, Unit.Point);
+                                   c.Item()
+                                   .Row(r =>
+                                   {
+                                       r.RelativeItem()
+                                      .DefaultTextStyle(t => t.FontSize(10))
+                                      .DefaultTextStyle(x => x.Bold())
+                                      .AlignLeft()
+                                      .Text(text =>
+                                      {
+                                          text.Span("2022 © Desarrollado por Aramis Sistemas");
+                                      });
+                                       r.RelativeItem()
+                                    .DefaultTextStyle(t => t.FontSize(10))
+                                    .DefaultTextStyle(x => x.Bold())
+                                    .AlignLeft()
+                                    .Text(text =>
+                                    {
+                                        text.Span("Página ");
+                                        text.CurrentPageNumber();
+                                        text.Span(" de ");
+                                        text.TotalPages();
+                                    });
+                                   });
+                               });
                     });
-
-                    //setemaos los detalles
-                    page.Content()
-                        .PaddingVertical(1, Unit.Millimetre)
-                        .Table(table =>
-                        {
-                            table.ColumnsDefinition(columns =>
-                            {
-                                columns.RelativeColumn(2);
-                                columns.RelativeColumn(10);
-                                columns.RelativeColumn(2);
-                                columns.RelativeColumn(2);
-                                columns.RelativeColumn(1);
-                                columns.RelativeColumn(2);
-                            });
-                            table.Cell().ColumnSpan(1)
-                           .Background("#9ca4df")
-                           .Text("Código");
-                            table.Cell().ColumnSpan(1)
-                             .Background("#9ca4df")
-                           .Text("Detalle");
-                            table.Cell().ColumnSpan(1)
-                             .Background("#9ca4df")
-                           .Text("Cantidad");
-                            table.Cell().ColumnSpan(1)
-                             .Background("#9ca4df")
-                           .Text("Unitario");
-                            table.Cell().ColumnSpan(1)
-                             .Background("#9ca4df")
-                           .Text(dto.RespoEmpresa == "MONOTRIBUTO" ? "Bon" : "Iva");
-                            table.Cell().ColumnSpan(1)
-                             .Background("#9ca4df")
-                           .Text("Sub Total");
-
-                            foreach (BusDetallesOperacionesDto? c in dto.Detalles!)
-                            {
-                                table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(c.Codigo);
-                                table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignLeft().Text(c.Detalle);
-                                table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(c.Cantidad);
-                                table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text("$ " + dto.RespoEmpresa == "MONOTRIBUTO" ? Math.Round((decimal)(c.Total! / c.Cantidad), 2) : c.Unitario);
-                                table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(dto.RespoEmpresa == "MONOTRIBUTO" ? "% 0" : "% " + c.IvaValue);
-                                table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignRight().Text("$ " + Math.Round((decimal)c.Total!, 2));
-                            }
-                            table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(" ");
-                            table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text("OBSERVACIONES   (VÁLIDO POR 7 DÍAS)");
-                            table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(" ");
-                            table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(" ");
-                            table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(" ");
-                            table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(" ");
-                            foreach (BusObservacionesDto? o in dto.Observaciones)
-                            {
-                                table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text("*");
-                                table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignLeft().Text(o.Observacion);
-                                table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(" ");
-                                table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(" ");
-                                table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(" ");
-                                table.Cell().Padding(0).DefaultTextStyle(x => x.FontSize(8)).DefaultTextStyle(x => x.NormalWeight()).AlignCenter().Text(" ");
-                            }
-                        });
-                    //seteamos los footer                            
-                    page.Footer()
-                       .BorderTop(1, Unit.Point)
-                       .Column(c =>
-                       {
-                           c.Item().BorderTop(1, Unit.Point);
-                           c.Item().Row(r =>
-                           {
-                               r.RelativeItem()
-                             .DefaultTextStyle(t => t.FontSize(10))
-                             .DefaultTextStyle(x => x.Bold())
-                           .Text(dto.RespoEmpresa != "MONOTRIBUTO" ?
-                               "Neto Gravado: $ " + Math.Round((decimal)dto.TotalNeto!, 2)
-                             + "\n" + "Excento: $ " + Math.Round((decimal)dto.TotalExento!, 2)
-                             + "\n" + "IVA 10.5%: $ " + Math.Round((decimal)dto.TotalIva10!, 2)
-                             + "\n" + "IVA 21.0%: $ " + Math.Round((decimal)dto.TotalIva21!, 2)
-                             + "\n" + "Imp.Internos: $ " + Math.Round((decimal)dto.TotalInternos!, 2)
-                             + "\n" + "\n" + "Ud. fue atendido por " + dto.Operador :
-                             "Subtotal: $ " + Math.Round((decimal)(dto.TotalNeto! + dto.TotalIva!), 2)
-                             + "\n" + "Imp.Internos: $ " + Math.Round((decimal)dto.TotalInternos!, 2)
-                             + "\n" + "\n" + "Ud. fue atendido por " + dto.Operador
-                             );
-                               r.RelativeItem(2)
-                              .DefaultTextStyle(t => t.FontSize(12))
-                              .DefaultTextStyle(x => x.Bold())
-                              .AlignRight()
-                              .Text(text =>
-                              {
-                                  text.Line("TOTAL $: " + Math.Round(dto.Total!, 2));
-                                  text.Line(dto.TotalLetras!).FontSize(8);
-                              });
-                           });
-                           c.Item().BorderTop(1, Unit.Point);
-                           c.Item()
-                           .Row(r =>
-                           {
-                               r.RelativeItem()
-                              .DefaultTextStyle(t => t.FontSize(10))
-                              .DefaultTextStyle(x => x.Bold())
-                              .AlignLeft()
-                              .Text(text =>
-                              {
-                                  text.Span("2022 © Desarrollado por Aramis Sistemas");
-                              });
-                               r.RelativeItem()
-                            .DefaultTextStyle(t => t.FontSize(10))
-                            .DefaultTextStyle(x => x.Bold())
-                            .AlignLeft()
-                            .Text(text =>
-                            {
-                                text.Span("Página ");
-                                text.CurrentPageNumber();
-                                text.Span(" de ");
-                                text.TotalPages();
-                            });
-                           });
-                       });
-                });
-            })
-          .GeneratePdf(stream);
-            stream.Seek(0, SeekOrigin.Begin);
-            return new FileStreamResult(stream, "application/pdf");
+                })
+              .GeneratePdf(stream);
+                stream.Seek(0, SeekOrigin.Begin);
+                return new FileStreamResult(stream, "application/pdf");
+            }
+            catch (Exception ex)
+            {
+              
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.InnerException.Message);
+                return null;
+            }
         }
         public FileStreamResult TicketOrdenReport(string id)
         {

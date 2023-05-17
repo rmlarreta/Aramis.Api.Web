@@ -9,7 +9,7 @@
 
         public decimal Cantidad { get; set; }
 
-        public decimal CantidadDisponible => Cantidad - Facturado;
+        public decimal CantidadDisponible => Cantidad - Facturado;  
 
         public string Codigo { get; set; } = null!;
 

@@ -44,8 +44,8 @@ namespace Aramis.Api.FiscalService.Application
             }
             documentoFiscal.TipoDocumento = firstOp.Cliente.Cui!.Equals("0") ? 99 : 80;
             documentoFiscal.DocumentoCliente = Convert.ToInt64(firstOp.Cliente.Cui);
-            documentoFiscal.Exento = (decimal)busDetalles.Sum(x => x.TotalExento)!;
-            documentoFiscal.Neto = documentoFiscal.TipoComprobante == 11 ? (decimal)busDetalles.Sum(x => x.TotalNeto)! + (decimal)busDetalles.Sum(x => x.TotalIva)! : (decimal)busDetalles.Sum(x => x.TotalNeto)!;
+            documentoFiscal.Exento = documentoFiscal.TipoComprobante == 11 ? 0.0M  :  (decimal)busDetalles.Sum(x => x.TotalExento)!;
+            documentoFiscal.Neto = documentoFiscal.TipoComprobante == 11 ? (decimal)busDetalles.Sum(x => x.TotalNeto)! + (decimal)busDetalles.Sum(x => x.TotalIva)! + (decimal)busDetalles.Sum(x => x.TotalExento)! : (decimal)busDetalles.Sum(x => x.TotalNeto)!;
             documentoFiscal.Internos = (decimal)busDetalles.Sum(x => x.TotalInternos)!;
             documentoFiscal.Neto10 = documentoFiscal.TipoComprobante == 11 ? (decimal)busDetalles.Sum(x => x.TotalNeto10)! + (decimal)busDetalles.Sum(x => x.TotalIva10)! : (decimal)busDetalles.Sum(x => x.TotalNeto10)!;
             documentoFiscal.Iva10 = documentoFiscal.TipoComprobante == 11 ? 0.0M : (decimal)busDetalles.Sum(x => x.TotalIva10)!;

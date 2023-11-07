@@ -1,83 +1,80 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Customers;
 using Aramis.Api.CustomersService.Extensions;
 using Aramis.Api.CustomersService.Interfaces;
-using Aramis.Api.Repository.Application.Customers;
-using Aramis.Api.Repository.Interfaces;
-using Aramis.Api.Repository.Interfaces.Customers;
+using Aramis.Api.Repository.Application;
+using Aramis.Api.Repository.Interfaces.Commons;
 using Aramis.Api.Repository.Models;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Aramis.Api.CustomersService.Application
 {
-    public class CustomersService : ICustomersService
+    public class CustomersService : Service<OpCliente>, ICustomersService
     {
-        private readonly ICustomersRepository _customersRepository;
-        private ICustomersAttributesRepository _attributesRepositor;
-        private readonly IGenericRepository<OpGender> _genderRepository;
-        private readonly IGenericRepository<OpPai> _paiRepository;
-        private readonly IGenericRepository<OpResp> _respRepository;
-        private readonly IMapper _mapper;
 
-        public CustomersService(
-            IGenericRepository<OpGender> genderRepository,
-            IGenericRepository<OpPai> paiRepository,
-            IGenericRepository<OpResp> respRepository,
-            ICustomersRepository customersRepository,
-            IMapper mapper)
+        private readonly IMapper _mapper;
+        private readonly ICustomersAttributes _attributes;
+        public CustomersService(IUnitOfWork unitOfWork, IMapper mapper, ICustomersAttributes attributes) : base(unitOfWork)
         {
             _mapper = mapper;
-            _customersRepository = customersRepository;
-            _genderRepository = genderRepository;
-            _respRepository = respRepository;
-            _paiRepository = paiRepository;
+            _attributes = attributes;
         }
 
-        public bool Delete(string id)
+        public async Task<List<OpClienteDto>> GetAllClientes()
         {
-            OpCliente? customer = _customersRepository.Get(id);
-            if (customer.Cui == "0") throw new ApplicationException("Este cliente no es eliminable");
-            return _customersRepository.Delete(customer);
+            List<OpCliente>? list = await base.GetAll().ToListAsync();
+            return _mapper.Map<List<OpClienteDto>>(list);
         }
 
-        public List<OpClienteDto> GetAll()
+        public async Task<OpClienteDto> GetById(Guid id)
         {
-            List<OpCliente>? list = _customersRepository.GetAll();
-            return _mapper.Map<List<OpCliente>, List<OpClienteDto>>(list);
+            Expression<Func<OpCliente, object>>[] includeProperties = new Expression<Func<OpCliente, object>>[]
+        {
+            c => c.RespNavigation,
+            c => c.GenderNavigation,
+            c => c.PaisNavigation
+        };
+            OpCliente cliente = await base.Get(id, includeProperties);
+            return _mapper.Map<OpClienteDto>(cliente);
         }
 
-        public OpClienteDto GetById(string id)
+        public async Task<OpClienteDto> GetByCui(string cui)
         {
-            OpCliente? entity = _customersRepository.Get(id);
-            return _mapper.Map<OpCliente, OpClienteDto>(entity);
+            Expression<Func<OpCliente, bool>> expression = c => c.Cui == cui;
+            Expression<Func<OpCliente, object>>[] includeProperties = new Expression<Func<OpCliente, object>>[]
+            {
+            c => c.RespNavigation,
+            c => c.GenderNavigation,
+            c => c.PaisNavigation
+           };
+            OpCliente cliente = await base.Get(expression, includeProperties);
+            return _mapper.Map<OpClienteDto>(cliente);
         }
 
-        public OpClienteDto GetByCui(string cui)
+        public async Task<int> DeleteCliente(Guid id)
         {
-            OpCliente? entity = _customersRepository.GetAll().Where(x => x.Cui == cui).FirstOrDefault()!;
-            return _mapper.Map<OpCliente, OpClienteDto>(entity);
+            OpCliente cliente = await base.Get(id);
+            if (cliente.Cui == "0") throw new ApplicationException("Este cliente no es eliminable");
+            return await base.Delete(cliente);
         }
 
-        public OpClienteDto Insert(OpClienteInsert entity)
+        public async Task Update(OpClienteBase entity)
         {
-            var gender = _genderRepository.Get(Guid.Parse(entity.Gender)).Name;
+            if (await CheckIfMostradorAsync(entity)) throw new ApplicationException("Este cliente no es editable");
+            var gender = _attributes.GetGender(entity.Gender).Name;
             entity.Cui = ExtensionMethods.ConformaCui(entity, gender);
-            entity.Id = Guid.NewGuid().ToString();
-            OpCliente? cliente = _mapper.Map<OpClienteInsert, OpCliente>(entity);
-            _customersRepository.Add(cliente);
-            return GetById(entity.Id);
-        }
-
-        public OpClienteDto Update(OpClienteInsert entity)
+            await base.Update(_mapper.Map<OpCliente>(entity));
+        } 
+        public async Task Insert(OpClienteBase entity)
         {
-            var gender = _genderRepository.Get(Guid.Parse(entity.Gender)).Name;
-            entity.Cui = ExtensionMethods.ConformaCui(entity, gender);
-            OpCliente? cliente = _mapper.Map<OpClienteInsert, OpCliente>(entity);
-            _customersRepository.Update(cliente);
-            return GetById(entity.Id!);
+            OpCliente cliente = _mapper.Map<OpCliente>(entity);
+            await base.Add(cliente);
+        } 
+        private async Task<bool> CheckIfMostradorAsync(OpClienteBase entity)
+        {
+            OpCliente cliente = await base.Get(entity.Id);
+            return cliente.Cui == "0";
         }
-        #region Atributos
-        public ICustomersAttributesRepository Attributes => _attributesRepositor ??= new CustomersAttributesRepository(_genderRepository, _paiRepository, _respRepository);
-
-        #endregion Atributos
     }
 }

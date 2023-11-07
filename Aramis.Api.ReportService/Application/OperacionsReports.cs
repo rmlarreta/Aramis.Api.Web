@@ -302,7 +302,8 @@ namespace Aramis.Api.ReportService.Application
         }
         public FileStreamResult RemitoReport(string id)
         {
-            if (!_repository.Operacions.Get(id).TipoDoc.Code!.Equals("X"))
+            string tipo = _repository.Operacions.Get(id).TipoDoc.Code!;
+            if (tipo != "X" && tipo != "D")
             {
                 throw new Exception("Operación no permitida");
             }

@@ -1,30 +1,29 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Operaciones;
+using Aramis.Api.ExceptionService.Interfaces;
 using Aramis.Api.FiscalService.Interfaces;
 using Aramis.Api.SecurityService.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Aramis.Api.Web.Controllers
 {
-    [Authorize]
-    [Route("api/[controller]/[action]")]
-    [ApiController]
-    public class FiscalController : ControllerBase
+
+    public class FiscalController : CommonController
     {
         private readonly IFiscalService _fiscalService;
         private readonly ISecurityService _securityService;
-        public FiscalController(IFiscalService fiscalService, ISecurityService securityService)
+
+        public FiscalController(IExceptionService exceptionService, IFiscalService fiscalService, ISecurityService securityService) : base(exceptionService)
         {
             _securityService = securityService;
             _fiscalService = fiscalService;
         }
 
         [HttpPost]
-        public async Task<IActionResult> GenerarFacturaAsync([FromBody] List<BusDetallesOperacionesDto> busDetalles)
+        public async Task<IActionResult> GenerarFacturaAsync([FromBody] List<BusDetalleOperacionesInsert> busDetalles)
         {
             try
             {
-                foreach (BusDetallesOperacionesDto? det in busDetalles)
+                foreach (BusDetalleOperacionesInsert? det in busDetalles)
                 {
                     det.Operador = _securityService.GetUserAuthenticated();
                 }
@@ -34,7 +33,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
         }
     }

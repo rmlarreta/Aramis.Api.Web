@@ -1,5 +1,6 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Operaciones;
 using Aramis.Api.Commons.ModelsDto.Ordenes;
+using Aramis.Api.ExceptionService.Interfaces;
 using Aramis.Api.OperacionesService.Interfaces;
 using Aramis.Api.SecurityService.Extensions;
 using Aramis.Api.SecurityService.Interfaces;
@@ -8,31 +9,29 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Aramis.Api.Web.Controllers
 {
-    [Authorize]
-    [Route("api/[controller]/[action]")]
-    [ApiController]
-    public class OperacionesController : ControllerBase
+   
+    public class OperacionesController : CommonController
     {
         private readonly IOperacionesService _operacionesService;
-        private readonly ISecurityService _securityService;
-        public OperacionesController(IOperacionesService operacionesService, ISecurityService securityService)
+        private readonly ISecurityService _securityService;       
+        public OperacionesController(IExceptionService exceptionService, IOperacionesService operacionesService, ISecurityService securityService) : base(exceptionService)
         {
             _operacionesService = operacionesService;
             _securityService = securityService;
         }
 
         [HttpGet]
-        public IActionResult NuevaOperacion()
+        public async Task<IActionResult> NuevaOperacion()
         {
             try
-            { 
-                var operador = _securityService.GetUserAuthenticated(); 
-                BusOperacionesDto data = _operacionesService.NuevaOperacion(operador);
+            {
+                var operador = _securityService.GetUserAuthenticated();
+                BusOperacionesDto data = await _operacionesService.NuevaOperacion(null,operador);
                 return Ok(data);
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
         }
 
@@ -47,7 +46,25 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
+            }
+        }
+
+        [HttpPost] 
+        public async Task<IActionResult> NuevaDevolucion(List<BusDetalleDevolucion> devolucion)
+        {
+            try
+            {
+                foreach(var item in devolucion)
+                {
+                    item.Operador = _securityService.GetUserAuthenticated();
+                }
+                BusOperacionesDto? data = await _operacionesService.NuevaDevolucion(devolucion);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return _exceptionService.ReturnResult(ex);
             }
         }
 
@@ -62,7 +79,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
         }
 
@@ -77,7 +94,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
 
         }
@@ -93,7 +110,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
         }
 
@@ -107,7 +124,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
 
         }
@@ -123,7 +140,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
 
         }
@@ -138,7 +155,22 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
+            }
+
+        }
+
+        [HttpGet]
+        public IActionResult Devoluciones()
+        {
+            try
+            {
+                List<BusDevolucionesDto>? data = _operacionesService.Devoluciones();
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return _exceptionService.ReturnResult(ex);
             }
 
         }
@@ -153,7 +185,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
 
         }
@@ -168,7 +200,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
         }
 
@@ -183,7 +215,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
         }
 
@@ -198,7 +230,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
         }
 
@@ -213,7 +245,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
         }
 
@@ -227,7 +259,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
         }
 
@@ -242,7 +274,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
         }
 
@@ -258,7 +290,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
         }
 
@@ -272,7 +304,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
         }
 

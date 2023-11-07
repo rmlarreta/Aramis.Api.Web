@@ -1,50 +1,46 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Customers;
 using Aramis.Api.CustomersService.Interfaces;
-using Aramis.Api.Repository.Models;
-using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
+using Aramis.Api.ExceptionService.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Aramis.Api.Web.Controllers
 {
-    [Authorize]
-    [Route("api/[controller]/[action]")]
-    [ApiController]
-    public class CustomersController : ControllerBase
+
+    public class CustomersController : CommonController
     {
         private readonly ICustomersService _customersService;
-        private readonly IMapper _mapper;
-        public CustomersController(ICustomersService customersService, IMapper mapper)
+        private readonly ICustomersAttributes _customersAttributes;
+        public CustomersController(IExceptionService exceptionService, ICustomersService customersService, ICustomersAttributes customersAttributes) : base(exceptionService)
         {
             _customersService = customersService;
-            _mapper = mapper;
+            _customersAttributes = customersAttributes;
         }
 
         [HttpPost]
-        public IActionResult Insert([FromBody] OpClienteInsert opclientedto)
+        public async Task<IActionResult> Insert([FromBody] OpClienteBase opclientedto)
         {
             try
             {
-                OpClienteDto data = _customersService.Insert(opclientedto);
-                return Ok(data);
+                await _customersService.Insert(opclientedto);
+                return Ok("Correcto");
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
         }
 
         [HttpPatch]
-        public IActionResult Update([FromBody] OpClienteInsert opclientedto)
+        public async Task<IActionResult> Update([FromBody] OpClienteBase opclientedto)
         {
             try
             {
-                OpClienteDto data = _customersService.Update(opclientedto);
-                return Ok(data);
+                await _customersService.Update(opclientedto);
+                return Ok("Correcto");
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
         }
 
@@ -54,73 +50,141 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                _customersService.Delete(id);
+                _customersService.DeleteCliente(Guid.Parse(id));
                 return Ok("Cliente ELiminado Correctamente");
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
         }
 
         [HttpGet]
-        public IEnumerable<OpClienteDto> GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            return _customersService.GetAll();
+            try
+            {
+                IEnumerable<OpClienteDto>? customers = await _customersService.GetAllClientes();
+                return Ok(customers);
+            }
+            catch (Exception ex)
+            {
+                return _exceptionService.ReturnResult(ex);
+            }
+
         }
 
         [HttpGet]
         [Route("{id}")]
-        public OpClienteDto Get(string id)
+        public async Task<IActionResult> Get(string id)
         {
-            return _customersService.GetById(id);
+            try
+            {
+                OpClienteDto? customer = await _customersService.GetById(Guid.Parse(id));
+                return Ok(customer);
+            }
+            catch (Exception ex)
+            {
+                return _exceptionService.ReturnResult(ex);
+            }
         }
 
         [HttpGet]
         [Route("{cui}")]
-        public OpClienteDto GetByCui(string cui)
+        public async Task<IActionResult> GetByCui(string cui)
         {
-            return _customersService.GetByCui(cui);
+            try
+            {
+                OpClienteDto? customer = await _customersService.GetByCui(cui);
+                return Ok(customer);
+            }
+            catch (Exception ex)
+            {
+                return _exceptionService.ReturnResult(ex);
+            }
         }
 
         #region Attributes
         [HttpGet]
-        public IEnumerable<OpRespDto> GetRespList()
+        public IActionResult GetRespList()
         {
-            return _mapper.Map<List<OpResp>, List<OpRespDto>>(_customersService.Attributes.GetRespList());
+
+            try
+            {
+                return Ok(_customersAttributes.GetRespList());
+            }
+            catch (Exception ex)
+            {
+                return _exceptionService.ReturnResult(ex);
+            }
         }
 
         [HttpGet]
         [Route("{id}")]
-        public OpRespDto GetResp(string id)
+        public IActionResult GetResp(string id)
         {
-            return _mapper.Map<OpResp, OpRespDto>(_customersService.Attributes.GetResp(id));
+            try
+            {
+                return Ok(_customersAttributes.GetResp(Guid.Parse(id)));
+            }
+            catch (Exception ex)
+            {
+                return _exceptionService.ReturnResult(ex);
+            }
         }
 
         [HttpGet]
-        public IEnumerable<OpPaiDto> GetPaisList()
+        public IActionResult GetPaisList()
         {
-            return _mapper.Map<List<OpPai>, List<OpPaiDto>>(_customersService.Attributes.GetPaisList());
+            try
+            {
+                return Ok(_customersAttributes.GetPaisList());
+            }
+            catch (Exception ex)
+            {
+                return _exceptionService.ReturnResult(ex);
+            }
         }
 
         [HttpGet]
         [Route("{id}")]
-        public OpPaiDto GetPais(string id)
+        public IActionResult GetPais(string id)
         {
-            return _mapper.Map<OpPai, OpPaiDto>(_customersService.Attributes.GetPais(id));
+            try
+            {
+                return Ok(_customersAttributes.GetPais(Guid.Parse(id)));
+            }
+            catch (Exception ex)
+            {
+                return _exceptionService.ReturnResult(ex);
+            }
         }
 
         [HttpGet]
-        public IEnumerable<OpGenderDto> GetGenderList()
+        public IActionResult GetGenderList()
         {
-            return _mapper.Map<List<OpGender>, List<OpGenderDto>>(_customersService.Attributes.GetGenderList());
+            try
+            {
+                return Ok(_customersAttributes.GetGenderList());
+            }
+            catch (Exception ex)
+            {
+                return _exceptionService.ReturnResult(ex);
+            }
         }
 
         [HttpGet]
         [Route("{id}")]
-        public OpGenderDto GetGender(string id)
+        public IActionResult GetGender(string id)
         {
-            return _mapper.Map<OpGender, OpGenderDto>(_customersService.Attributes.GetGender(id));
+            try
+            {
+                return Ok(_customersAttributes.GetGender(Guid.Parse(id)));
+            }
+            catch (Exception ex)
+            {
+                return _exceptionService.ReturnResult(ex);
+            }
         }
         #endregion Attributes
     }

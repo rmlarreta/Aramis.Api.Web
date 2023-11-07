@@ -8,10 +8,10 @@ namespace Aramis.Api.FlowService.Application
 {
     public class TipoPagoService : ITipoPagoService
     {
-        private readonly IGenericRepository<CobTipoPago> _repository;
-        private readonly IGenericRepository<CobPo> _points;
+        private readonly IService<CobTipoPago> _repository;
+        private readonly IService<CobPo> _points;
         private readonly IMapper _mapper;
-        public TipoPagoService(IGenericRepository<CobTipoPago> repository, IGenericRepository<CobPo> points, IMapper mapper)
+        public TipoPagoService(IService<CobTipoPago> repository, IService<CobPo> points, IMapper mapper)
         {
             _repository = repository;
             _points = points;

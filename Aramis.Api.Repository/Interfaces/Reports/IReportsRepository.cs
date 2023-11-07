@@ -8,6 +8,6 @@ namespace Aramis.Api.Repository.Interfaces.Reports
     {
         IOperacionesRepository Operacions { get; }
         IRecibosRepository Cobranzas { get; }
-        IGenericRepository<SystemEmpresa> Empresa { get; }
+        IService<SystemEmpresa> Empresa { get; }
     }
 }

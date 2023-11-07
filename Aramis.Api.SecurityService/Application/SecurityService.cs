@@ -1,6 +1,6 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Security;
-using Aramis.Api.Repository.Interfaces;
-using Aramis.Api.Repository.Interfaces.Security;
+using Aramis.Api.Repository.Application;
+using Aramis.Api.Repository.Interfaces.Commons;
 using Aramis.Api.Repository.Models;
 using Aramis.Api.SecurityService.Extensions;
 using Aramis.Api.SecurityService.Helpers;
@@ -8,22 +8,20 @@ using Aramis.Api.SecurityService.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using System.Linq.Expressions;
 using System.Security.Claims;
 
 namespace Aramis.Api.SecurityService.Application
 {
-    public class SecurityService : ISecurityService
+    public class SecurityService : Service<SecUser>, ISecurityService
     {
-        private readonly IUsersRepository _usersRepository;
-        private readonly IRoleRepository _rolesRepository;
         private readonly IMapper _mapper;
         private readonly AppSettings _appSettings;
         private readonly HttpContext _hcontext;
         private readonly ClaimsPrincipal _cp;
-        public SecurityService(IUsersRepository usersRepository, IOptions<AppSettings> appSettings, IRoleRepository rolesRepository, IMapper mapper, IHttpContextAccessor haccess)
+
+        public SecurityService(IUnitOfWork unitOfWork, IOptions<AppSettings> appSettings, IMapper mapper, IHttpContextAccessor haccess) : base(unitOfWork)
         {
-            _usersRepository = usersRepository;
-            _rolesRepository = rolesRepository;
             _mapper = mapper;
             _appSettings = appSettings.Value;
             _hcontext = haccess.HttpContext!;
@@ -31,7 +29,7 @@ namespace Aramis.Api.SecurityService.Application
         }
 
         #region USERS
-        public UserAuth Authenticate(string username, string password)
+        public async Task<UserAuth> Authenticate(string username, string password)
         {
             try
             {
@@ -40,7 +38,8 @@ namespace Aramis.Api.SecurityService.Application
                     return null!;
                 }
 
-                SecUser user = _usersRepository.GetByName(username);
+
+                SecUser user = await GetUserBaseByName(username);
 
                 // check if username exists
                 if (user == null || user.Active == false)
@@ -60,13 +59,8 @@ namespace Aramis.Api.SecurityService.Application
                 }
 
                 // authentication successful
-                UserAuth userAuth = new()
-                {
-                    Id = user.Id.ToString(),
-                    RealName = user.RealName,
-                    Role = user.RoleNavigation.Name!,
-                    UserName = user.UserName
-                };
+                UserAuth userAuth = _mapper.Map<UserAuth>(user);
+
                 string? token = ExtensionMethods.GetToken(userAuth, _appSettings.Secret!);
                 userAuth.Token = token;
 
@@ -77,13 +71,14 @@ namespace Aramis.Api.SecurityService.Application
                 throw new Exception(ex.Message);
             }
         }
-        public UserAuth ChangePassword(string username, string password, string npassword)
+        public async Task<UserAuth> ChangePassword(string username, string password, string npassword)
         {
             try
             {
                 SecUser? secUser = new();
-                UserAuth? user = Authenticate(username, password);
-                if (user != null) { secUser = _usersRepository.GetByName(username); }
+                UserAuth? user = await Authenticate(username, password);
+
+                if (user != null) { secUser = await GetUserBaseByName(username); }
 
                 if (string.IsNullOrWhiteSpace(npassword))
                 {
@@ -95,75 +90,71 @@ namespace Aramis.Api.SecurityService.Application
                 secUser.PasswordHash = passwordHash;
                 secUser.PasswordSalt = passwordSalt;
                 secUser.EndOfLife = DateTime.Today.AddMonths(1);
-                _usersRepository.Update(secUser);
-                return Authenticate(username, npassword);
+                await Update(secUser);
+                return await Authenticate(username, npassword);
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
         }
-        public UserDto CreateUser(SecUser user, string password)
+        public async Task<UserAuth> CreateUser(UserInsertDto userInsert)
         {
             try
             {
                 // validation
-                if (string.IsNullOrWhiteSpace(password))
+                if (string.IsNullOrWhiteSpace(userInsert.PassWord))
                 {
                     throw new Exception("Falta la contraseña");
                 }
 
-                if (_usersRepository.GetByName(user.UserName) != null)
+                if (GetUserByName(userInsert.UserName!) != null)
                 {
-                    throw new Exception("El usuario\"" + user.UserName + "\" ya está en uso");
+                    throw new Exception("El usuario\"" + userInsert.UserName + "\" ya está en uso");
                 }
 
-                ExtensionMethods.CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
-
+                ExtensionMethods.CreatePasswordHash(userInsert.PassWord, out byte[] passwordHash, out byte[] passwordSalt);
+                SecUser user = new();
+                user.UserName = userInsert.UserName!;
+                user.RealName = userInsert.RealName!;
                 user.PasswordHash = passwordHash;
                 user.PasswordSalt = passwordSalt;
                 user.EndOfLife = DateTime.Today.AddDays(-1);
                 user.Active = false;
-                user.Role = _rolesRepository.GetByName("User").Id;
-                _usersRepository.Add(user);
-                return GetUserById(user.Id.ToString());
+                user.Role = user.Role;
+                await Add(user);
+                return await GetUserById(user.Id);
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
         }
-        public void DeleteUser(string id)
+        public async Task DeleteUser(Guid id)
         {
-            _usersRepository.Delete(_usersRepository.GetById(id));
+            SecUser user = await base.Get(id);
+            await base.Delete(user);
         }
-        public IEnumerable<UserDto> GetAllUsers()
+        public IEnumerable<UserAuth> GetAllUsers()
         {
-            List<SecUser>? users = _usersRepository.GetAll();
-            return _mapper.Map<List<SecUser>, List<UserDto>>(users);
+            List<SecUser>? users = GetAll().ToList();
+            return _mapper.Map<List<UserAuth>>(users);
         }
-        public UserDto GetUserById(string id)
+        public async Task<UserAuth> GetUserById(Guid id)
         {
-            SecUser? user = _usersRepository.GetById(id);
-            return _mapper.Map<SecUser, UserDto>(user);
+            SecUser? user = await Get(id);
+            return _mapper.Map<UserAuth>(user);
         }
-        public UserDto GetUserByName(string name)
+        public async Task<UserAuth> GetUserByName(string name)
         {
-            SecUser? user = _usersRepository.GetByName(name);
-            return _mapper.Map<SecUser, UserDto>(user);
+            return _mapper.Map<UserAuth>(await GetUserBaseByName(name));
         }
-        public UserDto UpdateUser(UserDto userdto)
+        public async Task UpdateUser(UserBaseDto user)
         {
-            SecUser? user = _mapper.Map<UserDto, SecUser>(userdto);
-            SecUser? userpass = _usersRepository.GetById(userdto.Id.ToString());
-            user.PasswordHash = userpass.PasswordHash;
-            user.PasswordSalt = userpass.PasswordSalt;
-            user.RoleNavigation = null!;
-            _usersRepository.Update(user);
-            return GetUserById(user.Id.ToString());
+            await base.Update(_mapper.Map<SecUser>(user));
         }
-
         #endregion USERS
+
         #region Claims
         public string GetUserAuthenticated()
         {
@@ -175,48 +166,23 @@ namespace Aramis.Api.SecurityService.Application
 
             return user;
         }
-
         public string GetPerfilAuthenticated()
         {
             string? perfil = ExtensionMethods.GetUserPerfil(_cp);
             return perfil;
         }
         #endregion Claims
-        #region ROLES
-        public void DeleteRole(string id)
-        {
-            _rolesRepository.Delete(_rolesRepository.GetById(Guid.Parse(id)));
-        }
 
-        public IEnumerable<RoleDto> GetAllRoles()
+        #region PRIVATE
+        private async Task<SecUser> GetUserBaseByName(string name)
         {
-            List<SecRole>? roles = _rolesRepository.GetAll();
-            return _mapper.Map<List<SecRole>, List<RoleDto>>(roles);
+            Expression<Func<SecUser, bool>> expression = c => c.UserName == name;
+            Expression<Func<SecUser, object>>[] includeProperties = new Expression<Func<SecUser, object>>[]
+            {
+                    u=>u.RoleNavigation
+            };
+            return await Get(expression, includeProperties);
         }
-
-        public RoleDto GetRoleById(string id)
-        {
-            SecRole? role = _rolesRepository.GetById(Guid.Parse(id));
-            return _mapper.Map<SecRole, RoleDto>(role);
-        }
-
-        public RoleDto GetRoleByName(string name)
-        {
-            SecRole? role = _rolesRepository.GetByName(name);
-            return _mapper.Map<SecRole, RoleDto>(role);
-        }
-
-        public void UpdateRole(RoleDto roledto)
-        {
-            SecRole? role = _mapper.Map<RoleDto, SecRole>(roledto);
-            _rolesRepository.Update(role);
-        }
-
-        public void CreateRole(RoleDto roledto)
-        {
-            SecRole? role = _mapper.Map<RoleDto, SecRole>(roledto);
-            _rolesRepository.Add(role);
-        }
-        #endregion ROLES
+        #endregion
     }
 }

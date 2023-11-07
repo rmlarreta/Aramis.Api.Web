@@ -5,7 +5,7 @@ namespace Aramis.Api.CustomersService.Extensions
 {
     public static class ExtensionMethods
     {
-        public static string ConformaCui(OpClienteInsert clienteDto, string genderName)
+        public static string ConformaCui(OpClienteBase clienteDto, string genderName)
         {
             if (clienteDto.Cui.Length == 11)
             {

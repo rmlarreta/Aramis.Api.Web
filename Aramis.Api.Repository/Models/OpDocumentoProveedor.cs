@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Aramis.Api.Repository.Application.Commons;
 
 namespace Aramis.Api.Repository.Models;
 
-public partial class OpDocumentoProveedor
+public partial class OpDocumentoProveedor : Entity
 {
-    public Guid Id { get; set; }
-
     public Guid ProveedorId { get; set; }
 
     public DateTime Fecha { get; set; }

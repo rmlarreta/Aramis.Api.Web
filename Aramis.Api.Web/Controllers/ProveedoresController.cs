@@ -30,7 +30,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
         }
 
@@ -44,7 +44,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
         }
 
@@ -59,7 +59,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
         }
 
@@ -74,7 +74,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
         }
 
@@ -89,7 +89,7 @@ namespace Aramis.Api.Web.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.InnerException != null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
         }
 

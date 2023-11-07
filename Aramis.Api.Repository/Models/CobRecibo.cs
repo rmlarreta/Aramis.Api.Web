@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Aramis.Api.Repository.Application.Commons;
 
 namespace Aramis.Api.Repository.Models;
 
-public partial class CobRecibo
+public partial class CobRecibo : Entity
 {
-    public Guid Id { get; set; }
-
     public Guid ClienteId { get; set; }
 
     public DateTime Fecha { get; set; }

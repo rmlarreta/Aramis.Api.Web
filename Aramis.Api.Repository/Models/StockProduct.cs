@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Aramis.Api.Repository.Application.Commons;
 
 namespace Aramis.Api.Repository.Models;
 
-public partial class StockProduct
+public partial class StockProduct : Entity
 {
-    public Guid Id { get; set; }
-
     public decimal Cantidad { get; set; }
 
     public string Plu { get; set; } = null!;

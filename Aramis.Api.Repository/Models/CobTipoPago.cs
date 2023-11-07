@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Aramis.Api.Repository.Application.Commons;
 
 namespace Aramis.Api.Repository.Models;
 
-public partial class CobTipoPago
+public partial class CobTipoPago : Entity
 {
-    public Guid Id { get; set; }
-
     public string Name { get; set; } = null!;
 
     public Guid? CuentaId { get; set; }

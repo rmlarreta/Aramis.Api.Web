@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Aramis.Api.Repository.Application.Commons;
 
 namespace Aramis.Api.Repository.Models;
 
-public partial class BusOperacionDetalle
+public partial class BusOperacionDetalle : Entity
 {
-    public Guid Id { get; set; }
-
     public Guid OperacionId { get; set; }
 
     public decimal Cantidad { get; set; }

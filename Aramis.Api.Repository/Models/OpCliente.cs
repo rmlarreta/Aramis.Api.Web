@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Aramis.Api.Repository.Application.Commons;
 
 namespace Aramis.Api.Repository.Models;
 
-public partial class OpCliente
+public partial class OpCliente : Entity
 {
-    public Guid Id { get; set; }
-
     public string Cui { get; set; } = null!;
 
     public Guid Resp { get; set; }

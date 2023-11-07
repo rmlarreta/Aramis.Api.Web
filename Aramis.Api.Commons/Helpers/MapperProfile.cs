@@ -16,21 +16,51 @@ namespace Aramis.Api.Commons.Helpers
         {
             #region Clientes
             CreateMap<OpCliente, OpClienteDto>()
-          .ForMember(dest => dest.PaisName, opt => opt.MapFrom(src => src.PaisNavigation.Name))
-          .ForMember(dest => dest.GenderName, opt => opt.MapFrom(src => src.GenderNavigation.Name))
-          .ForMember(dest => dest.RespName, opt => opt.MapFrom(src => src.RespNavigation.Name))
-          .ReverseMap();
+           .ForMember(dest => dest.PaisName, opt => opt.MapFrom(src => src.PaisNavigation.Name))
+           .ForMember(dest => dest.GenderName, opt => opt.MapFrom(src => src.GenderNavigation.Name))
+           .ForMember(dest => dest.RespName, opt => opt.MapFrom(src => src.RespNavigation.Name))
+           .ReverseMap();
 
-            CreateMap<OpCliente, OpClienteInsert>().ReverseMap();
+            CreateMap<OpCliente, OpClienteBase>().ReverseMap();
 
             CreateMap<OpResp, OpRespDto>().ReverseMap();
             CreateMap<OpPai, OpPaiDto>().ReverseMap();
             CreateMap<OpGender, OpGenderDto>().ReverseMap();
             #endregion
 
+            #region Operaciones
+            CreateMap<BusOperacion, BusOperacionBaseDto>()
+           .ReverseMap();
+
+            CreateMap<BusOperacion, BusOperacionesDto>()
+           .ForMember(dest => dest.TipoDocName, opt => opt.MapFrom(src => src.TipoDoc.Name))
+           .ForMember(dest => dest.EstadoName, opt => opt.MapFrom(src => src.Estado.Name))
+           .ForMember(dest => dest.Cui, opt => opt.MapFrom(src => src.Cliente.Cui))
+           .ForMember(dest => dest.Domicilio, opt => opt.MapFrom(src => src.Cliente.Domicilio))
+           .ForMember(dest => dest.Resp, opt => opt.MapFrom(src => src.Cliente.RespNavigation.Name))
+           .ForMember(dest => dest.Detalles, opt => opt.MapFrom(src => src.BusOperacionDetalles))
+           .ForMember(dest => dest.Observaciones, opt => opt.MapFrom(src => src.BusOperacionObservacions))
+           .ReverseMap();
+
+            CreateMap<BusOperacionDetalle, BusDetalleOperacionBase>()
+           .ReverseMap();
+
+            CreateMap<BusOperacionDetalle, BusDetallesOperacionesDto>()
+           .ForMember(dest => dest.Detalle, opt => opt.MapFrom(src => src.Detalle))
+           .ReverseMap();
+
+            CreateMap<SystemEmpresa, SysEmpresaDto>().ReverseMap();
+            CreateMap<BusOperacionTipo, BusOperacionTipoDto>().ReverseMap();
+            CreateMap<BusEstado, BusEstadoDto>().ReverseMap();
+            CreateMap<BusOperacionPago, BusOperacionPagoDto>().ReverseMap();
+            #endregion
+
             #region Security
-            CreateMap<SecUser, UserDto>()
+            CreateMap<SecUser, UserAuth>()
            .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.RoleNavigation.Name))
+           .ReverseMap();
+
+            CreateMap<SecUser, UserBaseDto>()
            .ReverseMap();
 
             CreateMap<SecRole, RoleDto>().ReverseMap();
@@ -53,30 +83,8 @@ namespace Aramis.Api.Commons.Helpers
 
             #endregion
 
-            #region Operaciones
-            CreateMap<BusOperacion, BusOperacionesInsert>()
-           .ReverseMap();
 
-            CreateMap<BusOperacion, BusOperacionesDto>()
-            .ForMember(dest => dest.TipoDocName, opt => opt.MapFrom(src => src.TipoDoc.Name))
-            .ForMember(dest => dest.EstadoName, opt => opt.MapFrom(src => src.Estado.Name))
-            .ForMember(dest => dest.Cui, opt => opt.MapFrom(src => src.Cliente.Cui))
-            .ForMember(dest => dest.Domicilio, opt => opt.MapFrom(src => src.Cliente.Domicilio))
-            .ForMember(dest => dest.Resp, opt => opt.MapFrom(src => src.Cliente.RespNavigation.Name))
-            .ForMember(dest => dest.Detalles, opt => opt.MapFrom(src => src.BusOperacionDetalles))
-            .ForMember(dest => dest.Observaciones, opt => opt.MapFrom(src => src.BusOperacionObservacions))
-            .ReverseMap();
 
-            CreateMap<BusOperacionDetalle, BusDetallesOperacionesDto>()
-            .ForMember(dest => dest.Detalle, opt => opt.MapFrom(src => src.Detalle))
-            .ReverseMap();
-
-            CreateMap<BusOperacionDetalle, BusDetalleOperacionesInsert>().ReverseMap();
-
-            CreateMap<BusOperacionTipo, BusOperacionTipoDto>().ReverseMap();
-            CreateMap<BusEstado, BusEstadoDto>().ReverseMap();
-            CreateMap<BusOperacionPago, BusOperacionPagoDto>().ReverseMap();
-            #endregion
 
             #region Ordenes
             CreateMap<BusOperacion, BusOrdenesTicketDto>()

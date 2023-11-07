@@ -1,5 +1,5 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Security;
-using Aramis.Api.Repository.Models;
+using Aramis.Api.ExceptionService.Interfaces;
 using Aramis.Api.SecurityService.Extensions;
 using Aramis.Api.SecurityService.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -7,13 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Aramis.Api.Web.Controllers
 {
-    [Authorize]
-    [Route("api/[controller]/[action]")]
-    [ApiController]
-    public class UsersController : ControllerBase
+    public class UsersController : CommonController
     {
         private readonly ISecurityService _securityService;
-        public UsersController(ISecurityService securityService)
+        public UsersController(IExceptionService exceptionService, ISecurityService securityService) : base(exceptionService)
         {
             _securityService = securityService;
         }
@@ -21,16 +18,16 @@ namespace Aramis.Api.Web.Controllers
         [AllowAnonymous]
         [HttpGet]
         [Route("{user}/{password}")]
-        public IActionResult Authenticate(string user, string password)
+        public async Task<IActionResult> AuthenticateAsync(string user, string password)
         {
             try
             {
-                UserAuth? data = _securityService.Authenticate(user, password);
+                UserAuth? data = await _securityService.Authenticate(user, password);
                 return Ok(data);
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
 
         }
@@ -38,37 +35,31 @@ namespace Aramis.Api.Web.Controllers
         [AllowAnonymous]
         [HttpGet]
         [Route("{user}/{password}/{npassword}")]
-        public IActionResult ChangePassword(string user, string password, string npassword)
+        public async Task<IActionResult> ChangePassword(string user, string password, string npassword)
         {
             try
             {
-                UserAuth? data = _securityService.ChangePassword(user, password, npassword);
+                UserAuth? data = await _securityService.ChangePassword(user, password, npassword);
                 return Ok(data);
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
 
         }
         [AllowAnonymous]
         [HttpPost]
-        public IActionResult Insert([FromBody] UserInsertDto userInsertDto)
+        public async Task<IActionResult> Insert([FromBody] UserInsertDto userInsertDto)
         {
             try
             {
-                SecUser user = new()
-                {
-                    UserName = userInsertDto.UserName!,
-                    RealName = userInsertDto.RealName!,
-                    Id = Guid.NewGuid(),
-                };
-                UserDto? data = _securityService.CreateUser(user, userInsertDto.PassWord!);
+                UserAuth? data = await _securityService.CreateUser(userInsertDto);
                 return Ok(data);
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
 
         }
@@ -79,12 +70,12 @@ namespace Aramis.Api.Web.Controllers
         {
             try
             {
-                IEnumerable<UserDto>? data = _securityService.GetAllUsers();
+                IEnumerable<UserAuth>? data = _securityService.GetAllUsers();
                 return Ok(data);
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
 
         }
@@ -92,63 +83,63 @@ namespace Aramis.Api.Web.Controllers
         [HttpGet]
         [Authorize(Policy = Policies.Admin)]
         [Route("{id}")]
-        public IActionResult GetUserById(string id)
+        public async Task<IActionResult> GetUserById(string id)
         {
             try
             {
-                UserDto? data = _securityService.GetUserById(id);
+                UserAuth? data = await _securityService.GetUserById(Guid.Parse(id));
                 return Ok(data);
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
         }
 
         [HttpGet]
         [Authorize(Policy = Policies.Admin)]
         [Route("{name}")]
-        public IActionResult GetUserByName(string name)
+        public async Task<IActionResult> GetUserByName(string name)
         {
             try
             {
-                UserDto? data = _securityService.GetUserByName(name);
+                UserAuth? data = await _securityService.GetUserByName(name);
                 return Ok(data);
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
         }
 
         [HttpPatch]
         [Authorize(Policy = Policies.Admin)]
-        public IActionResult Update([FromBody] UserDto userDto)
+        public async Task<IActionResult> Update([FromBody] UserBaseDto userDto)
         {
             try
             {
-                UserDto? data = _securityService.UpdateUser(userDto);
-                return Ok(data);
+                await _securityService.UpdateUser(userDto);
+                return Ok("USuario Actualizado");
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
         }
 
         [HttpDelete]
         [Authorize(Policy = Policies.Admin)]
         [Route("{id}")]
-        public IActionResult DeleteUser(string id)
+        public async Task<IActionResult> DeleteUser(string id)
         {
             try
             {
-                _securityService.DeleteUser(id);
+                await _securityService.DeleteUser(Guid.Parse(id));
                 return Ok("Usuario ELiminado Correctamente");
             }
             catch (Exception ex)
             {
-              return BadRequest(new { message = ex.InnerException!=null ? ex.InnerException.Message : ex.Message });
+                return _exceptionService.ReturnResult(ex);
             }
         }
     }

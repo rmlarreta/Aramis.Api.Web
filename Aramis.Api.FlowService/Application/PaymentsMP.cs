@@ -10,9 +10,9 @@ namespace Aramis.Api.FlowService.Application
 {
     public class PaymentsMP : IPaymentsMp
     {
-        private readonly IGenericRepository<CobPo> _points;
-        private readonly IGenericRepository<SystemIndex> _indexs;
-        public PaymentsMP(IGenericRepository<CobPo> points, IGenericRepository<SystemIndex> indexs)
+        private readonly IService<CobPo> _points;
+        private readonly IService<SystemIndex> _indexs;
+        public PaymentsMP(IService<CobPo> points, IService<SystemIndex> indexs)
         {
             _points = points;
             _indexs = indexs;

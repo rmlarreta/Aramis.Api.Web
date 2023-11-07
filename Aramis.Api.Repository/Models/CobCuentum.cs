@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Aramis.Api.Repository.Application.Commons;
 
 namespace Aramis.Api.Repository.Models;
 
-public partial class CobCuentum
+public partial class CobCuentum : Entity
 {
-    public Guid Id { get; set; }
 
     public string Name { get; set; } = null!;
 

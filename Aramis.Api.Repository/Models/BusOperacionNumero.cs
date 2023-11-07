@@ -1,8 +1,9 @@
-﻿namespace Aramis.Api.Repository.Models;
+﻿using Aramis.Api.Repository.Application.Commons;
 
-public partial class BusOperacionNumero
+namespace Aramis.Api.Repository.Models;
+
+public partial class BusOperacionNumero : Entity
 {
-    public Guid Id { get; set; }
 
     public Guid OperacionId { get; set; }
 

@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Aramis.Api.Repository.Application.Commons;
 
 namespace Aramis.Api.Repository.Models;
 
-public partial class BusEstado
+public partial class BusEstado : Entity
 {
-    public Guid Id { get; set; }
-
     public string Name { get; set; } = null!;
 
     public virtual ICollection<BusOperacion> BusOperacions { get; } = new List<BusOperacion>();

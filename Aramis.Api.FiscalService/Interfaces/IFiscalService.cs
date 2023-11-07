@@ -4,6 +4,6 @@ namespace Aramis.Api.FiscalService.Interfaces
 {
     public interface IFiscalService
     {
-        Task<BusOperacionesDto> GenerarFactura(List<BusDetallesOperacionesDto> busDetalles);
+        Task<BusOperacionesDto> GenerarFactura(List<BusDetalleOperacionesInsert> busDetalles);
     }
 }

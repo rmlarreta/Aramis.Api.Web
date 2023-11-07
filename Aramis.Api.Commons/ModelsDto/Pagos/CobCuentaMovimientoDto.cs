@@ -2,9 +2,9 @@
 {
     public class CobCuentaMovimientoDto
     {
-        public string? Id { get; set; }
+        public Guid Id { get; set; }
 
-        public string? Cuenta { get; set; }
+        public Guid Cuenta { get; set; }
 
         public bool Debito { get; set; }
 

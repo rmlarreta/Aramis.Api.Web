@@ -13,17 +13,17 @@ namespace Aramis.Api.FiscalService.Application
     public class FiscalService : IFiscalService
     {
         private readonly IOperacionesRepository _repository;
-        private readonly IGenericRepository<SystemEmpresa> _empresa;
+        private readonly IService<SystemEmpresa> _empresa;
         private readonly IMapper _mapper;
-        public FiscalService(IOperacionesRepository repository, IGenericRepository<SystemEmpresa> empresa, IMapper mapper)
+        public FiscalService(IOperacionesRepository repository, IService<SystemEmpresa> empresa, IMapper mapper)
         {
             _repository = repository;
             _empresa = empresa;
             _mapper = mapper;
         }
-        public async Task<BusOperacionesDto> GenerarFactura(List<BusDetallesOperacionesDto> busDetalles)
+        public async Task<BusOperacionesDto> GenerarFactura(List<BusDetalleOperacionesInsert> busDetalles)
         {
-            foreach (IGrouping<Guid, BusDetallesOperacionesDto>? docs in busDetalles.GroupBy(x => x.OperacionId))
+            foreach (IGrouping<Guid, BusDetalleOperacionesInsert>? docs in busDetalles.GroupBy(x => x.OperacionId))
             {
                 if (!_repository.Get(docs.Key.ToString()!).Estado.Name.Equals("ENTREGADO"))
                 {
@@ -96,22 +96,22 @@ namespace Aramis.Api.FiscalService.Application
 
             if (cae.Body.FECAESolicitarResult.FeCabResp.Resultado == "A")
             {
-                List<BusOperacionDetalle> actualizarFacturados = new();
-                foreach (BusDetallesOperacionesDto? det in busDetalles) //trer los detalles originales
+                List<BusDetalleOperacionesInsert> actualizarFacturados = new();
+                foreach (BusDetalleOperacionesInsert? det in busDetalles) //trer los detalles originales
                 {
                     BusOperacionDetalle? data = _repository.Get(det.OperacionId.ToString()).BusOperacionDetalles!.Where(x => x.Id.Equals(det.Id)).FirstOrDefault();
                     if (data != null)
                     {
                         data.Facturado += det.Cantidad;
-                        actualizarFacturados.Add(data);
+                        actualizarFacturados.Add(_mapper.Map<BusDetalleOperacionesInsert>(data));
                     }
                 }
 
-                _repository.UpdateDetalles(actualizarFacturados);
+                _repository.UpdateDetalles(_mapper.Map<List<BusOperacionDetalle>>(actualizarFacturados));
                 List<BusDetalleOperacionesInsert> detallesFiscales = new();
                 BusOperacion factura = new();
                 factura.Id = Guid.NewGuid();
-                foreach (BusDetallesOperacionesDto? d in busDetalles)
+                foreach (BusDetalleOperacionesInsert? d in busDetalles)
                 {
                     detallesFiscales.Add(new BusDetalleOperacionesInsert
                     {
@@ -141,7 +141,7 @@ namespace Aramis.Api.FiscalService.Application
                 factura.CodAut = cae.Body.FECAESolicitarResult.FeDetResp.First().CAE;
                 _repository.Insert(factura);
                 List<BusObservacionesDto> busObservaciones = new();
-                foreach (IGrouping<Guid, BusDetallesOperacionesDto>? docs in busDetalles.GroupBy(x => x.OperacionId))
+                foreach (IGrouping<Guid, BusDetalleOperacionesInsert>? docs in busDetalles.GroupBy(x => x.OperacionId))
                 {
                     busObservaciones.Add(new()
                     {

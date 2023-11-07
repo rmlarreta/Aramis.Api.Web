@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Aramis.Api.Repository.Application.Commons;
 
 namespace Aramis.Api.Repository.Models;
 
-public partial class OpPago
+public partial class OpPago : Entity
 {
-    public Guid Id { get; set; }
-
     public DateTime Fecha { get; set; }
 
     public Guid Tipo { get; set; }

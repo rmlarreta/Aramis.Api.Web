@@ -1,17 +1,14 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Customers;
-using Aramis.Api.Repository.Interfaces.Customers;
 
 namespace Aramis.Api.CustomersService.Interfaces
 {
     public interface ICustomersService
     {
-        List<OpClienteDto> GetAll();
-        OpClienteDto GetById(string id);
-        OpClienteDto GetByCui(string cui);
-        bool Delete(string id);
-        OpClienteDto Update(OpClienteInsert entity);
-        OpClienteDto Insert(OpClienteInsert entity);
-        ICustomersAttributesRepository Attributes { get; }
-
+        Task<List<OpClienteDto>> GetAllClientes();
+        Task<OpClienteDto> GetById(Guid id);
+        Task<OpClienteDto> GetByCui(string cui);
+        Task<int> DeleteCliente(Guid id);
+        Task Update(OpClienteBase entity);
+        Task Insert(OpClienteBase entity);
     }
 }

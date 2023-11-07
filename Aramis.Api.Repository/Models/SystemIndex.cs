@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Aramis.Api.Repository.Application.Commons;
 
 namespace Aramis.Api.Repository.Models;
 
-public partial class SystemIndex
+public partial class SystemIndex : Entity
 {
-    public Guid Id { get; set; }
 
     public int Remito { get; set; }
 

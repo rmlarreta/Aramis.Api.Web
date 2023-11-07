@@ -3,7 +3,7 @@
     public class OpDocumentProveedorPago
     {
         public OpDocumentoProveedorDto? Documento { get; set; }
-        public string? Cuenta { get; set; }
+        public Guid Cuenta { get; set; }
         public string? Operador { get; set; }
 
     }

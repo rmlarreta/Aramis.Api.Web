@@ -1,71 +1,77 @@
 ﻿using Aramis.Api.Commons.ModelsDto.Pagos;
 using Aramis.Api.Commons.ModelsDto.Suppliers;
 using Aramis.Api.FlowService.Interfaces;
-using Aramis.Api.Repository.Interfaces;
+using Aramis.Api.Repository.Application;
+using Aramis.Api.Repository.Interfaces.Commons;
 using Aramis.Api.Repository.Models;
 using AutoMapper;
 
 namespace Aramis.Api.FlowService.Application
 {
-    public class CuentasService : ICuentasService
+    public class CuentasService : Service<CobCuentum>, ICuentasService
     {
-        private readonly IGenericRepository<CobCuentum> _cuentas;
-        private readonly IGenericRepository<CobCuentaMovimiento> _cuentasMovimientos;
+
+        private readonly IRepository<CobCuentaMovimiento> _cuentasMovimientos;
         private readonly IMapper _mapper;
 
-        public CuentasService(IGenericRepository<CobCuentum> cuentas, IGenericRepository<CobCuentaMovimiento> cuentasMovimientos, IMapper mapper)
+        public CuentasService(IUnitOfWork unitOfWork, IRepository<CobCuentaMovimiento> cuentasMovimientos, IMapper mapper) : base(unitOfWork)
         {
-            _cuentas = cuentas;
             _cuentasMovimientos = cuentasMovimientos;
             _mapper = mapper;
         }
 
-        public bool DebitarPago(OpDocumentProveedorPago documentProveedorPago)
+        public async Task DebitarPago(OpDocumentProveedorPago documentProveedorPago)
         {
-            var cuenta = _cuentas.Get(Guid.Parse(documentProveedorPago.Cuenta!));
+            CobCuentum cuenta = await Get(documentProveedorPago.Cuenta);
             cuenta.Saldo -= documentProveedorPago.Documento!.Monto;
-            _cuentas.Update(cuenta);
-            return _cuentas.Save();
+
+            CobCuentaMovimientoDto movimiento = new()
+            {
+                Computa = false,
+                Debito = true,
+                Detalle = $"Pago a Proveedor {documentProveedorPago.Documento.Razon} ({documentProveedorPago.Documento.Numero})",
+                Cuenta = documentProveedorPago.Cuenta,
+                Fecha = DateTime.Now,
+                Monto = documentProveedorPago.Documento.Monto,
+                Operador = documentProveedorPago.Operador
+            };
+            InsertMovimiento(movimiento);
+            await Update(cuenta);
         }
 
-        public bool Delete(string id)
+        public async Task Delete(string id)
         {
-            _cuentas.Delete(Guid.Parse(id));
-            return _cuentas.Save();
+            await Delete(Guid.Parse(id));
         }
 
-        public List<CobCuentDto> GetAll()
+        public List<CobCuentDto> GetAllCuentas()
         {
-            return _mapper.Map<List<CobCuentum>, List<CobCuentDto>>(_cuentas.Get().OrderBy(x=>x.Name).ToList());
+            List<CobCuentum>? cuentas = base.GetAll().OrderBy(x => x.Name).ToList();
+            return (_mapper.Map<List<CobCuentDto>>(cuentas));
         }
 
-        public CobCuentDto GetById(string id)
+        public async Task<CobCuentDto> GetById(string id)
         {
-            return _mapper.Map<CobCuentum, CobCuentDto>(_cuentas.Get(Guid.Parse(id)));
-        }
-
-        public CobCuentDto Insert(CobCuentDto cobCuentum)
-        {
-            cobCuentum.Id = Guid.NewGuid();
-            _cuentas.Add(_mapper.Map<CobCuentDto, CobCuentum>(cobCuentum));
-            return cobCuentum;
-        }
-
-        public CobCuentDto Insert(CobCuentaMovimientoDto cobCuentaMovimiento)
-        {
-            cobCuentaMovimiento.Id = Guid.NewGuid().ToString();
-            _cuentasMovimientos.Add(_mapper.Map<CobCuentaMovimiento>(cobCuentaMovimiento)); 
-            CobCuentum cuenta = _cuentas.Get(Guid.Parse(cobCuentaMovimiento.Cuenta!));
-            cuenta.Saldo = cobCuentaMovimiento.Debito ? cuenta.Saldo - cobCuentaMovimiento.Monto : cuenta.Saldo + cobCuentaMovimiento.Monto;
-            _cuentas.Update(cuenta);
-            _cuentas.Save();
+            CobCuentum? cuenta = await Get(Guid.Parse(id));
             return _mapper.Map<CobCuentDto>(cuenta);
         }
 
-        public CobCuentDto Update(CobCuentDto cobCuentum)
+        public async Task<CobCuentDto> Insert(CobCuentDto cobCuentum)
         {
-            _cuentas.Update(_mapper.Map<CobCuentDto, CobCuentum>(cobCuentum));
-            _cuentas.Save();
+            cobCuentum.Id = Guid.NewGuid();
+            await Add(_mapper.Map<CobCuentum>(cobCuentum));
+            return cobCuentum;
+        }
+
+        private void InsertMovimiento(CobCuentaMovimientoDto cobCuentaMovimiento)
+        {
+            cobCuentaMovimiento.Id = Guid.NewGuid();
+            _cuentasMovimientos.Add(_mapper.Map<CobCuentaMovimiento>(cobCuentaMovimiento));
+        }
+
+        public async Task<CobCuentDto> Update(CobCuentDto cobCuentum)
+        {
+            await Update(_mapper.Map<CobCuentum>(cobCuentum));
             return cobCuentum;
         }
     }

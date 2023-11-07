@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Aramis.Api.Commons\Aramis.Api.Commons.csproj" />
     <ProjectReference Include="..\Aramis.Api.CustomersService\Aramis.Api.CustomersService.csproj" />
+    <ProjectReference Include="..\Aramis.Api.ExceptionService\Aramis.Api.ExceptionService.csproj" />
     <ProjectReference Include="..\Aramis.Api.FiscalService\Aramis.Api.FiscalService.csproj" />
     <ProjectReference Include="..\Aramis.Api.FlowService\Aramis.Api.FlowService.csproj" />
     <ProjectReference Include="..\Aramis.Api.OperacionesService\Aramis.Api.OperacionesService.csproj" />
